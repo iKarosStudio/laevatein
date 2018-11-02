@@ -16,7 +16,7 @@ public class Account
 	public PcInstance activePc = null;
 	
 	public Account () {
-		super ();
+		//super ();
 	}
 	
 	public Account (SessionHandler _session, String _account, String _password) {
@@ -53,11 +53,11 @@ public class Account
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace () ;
+			e.printStackTrace ();
 			
 		} finally {
-			DatabaseUtil.close (rs) ;
-			DatabaseUtil.close (online) ;
+			DatabaseUtil.close (rs);
+			DatabaseUtil.close (online);
 			
 		}
 		return loginResult;

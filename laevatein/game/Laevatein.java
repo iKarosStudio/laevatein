@@ -9,6 +9,7 @@ import laevatein.server.*;
 import laevatein.server.ai_service.*;
 import laevatein.server.threadpool.*;
 import laevatein.server.utility.*;
+import laevatein.server.process_server.*;
 
 import laevatein.game.map.*;
 import laevatein.game.model.*;
@@ -32,7 +33,7 @@ public class Laevatein extends Thread
 	public static final byte WEATHER_DEGREE_LIGHT = 0x01;
 	public static final byte WEATHER_DEGREE_MEDIUM = 0x02;
 	public static final byte WEATHER_DEGREE_HEAVY = 0x03;
-	public byte weather = 0x00;
+	private int weather = 0x00;
 	
 	public void run () {
 		//
@@ -108,6 +109,17 @@ public class Laevatein extends Thread
 		} catch (Exception e) {
 			e.printStackTrace ();
 		}
+	}
+	
+	public void setWeather (int mapId, int _weather) {
+		weather = _weather & 0x0FF;
+		getAllPlayer ().forEach ((PcInstance p)->{
+			p.getHandle ().sendPacket (new ReportWeather (weather).getRaw ());
+		});
+	}
+	
+	public int getWeather (int mapId) {
+		return weather;
 	}
 	
 	public void addMap (LaeMap map) {

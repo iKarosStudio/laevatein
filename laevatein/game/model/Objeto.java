@@ -15,6 +15,7 @@ public abstract class Objeto
 	public int uuid;
 	
 	/* 外型敘述 */
+	public int originGfx = 0;
 	public int gfx = 0;
 	public int actId = 0;
 	

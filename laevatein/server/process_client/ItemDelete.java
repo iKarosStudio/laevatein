@@ -15,7 +15,7 @@ public class ItemDelete
 		
 		ItemInstance item = pc.itemBag.get (itemUuid);
 		if (item != null) {
-			pc.removeItem (item);
+			pc.deleteItem (item);
 		}
 	}
 }

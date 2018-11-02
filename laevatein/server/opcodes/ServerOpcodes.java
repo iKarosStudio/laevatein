@@ -23,7 +23,7 @@ public class ServerOpcodes
 	public static final int PACKET_BOX = 62;
 	public static final int LOGIN_START = 62; //active spells
 	public static final int FUNCTION_KEY = 62;
-	public static final int SKILL_ICON_GFX = 62;
+	public static final int SKILL_ICON = 62;
 	public static final int UNKNOWN1 = 66;
 	public static final int MATK_MRST = 67;
 	public static final int SYS_TICK = 69;
@@ -35,7 +35,7 @@ public class ServerOpcodes
 	public static final int VISUAL_EFFECT = 80;
 	public static final int DOOR_DETAIL = 81;
 	public static final int ITEM_LIST = 82;
-	public static final int UPDATE_PC_GFX = 84;
+	public static final int UPDATE_MODEL_ACTID = 84;
 	public static final int NODE_DEF = 85;
 	public static final int DISCONNECT = 88; /*強制客戶端離線*/
 	public static final int NODE_STATUS = 89;
@@ -48,6 +48,7 @@ public class ServerOpcodes
 	public static final int UNKNOWN2 = 105;
 	public static final int SET_HEADING = 105;
 	public static final int CHAR_TITLE = 109;
+	public static final int UPDATE_MODEL_GFX = 112;
 	public static final int SKILL_SHIELD = 114;
 	public static final int CHAR_AMOUNT = 117;
 	public static final int CHAR_LIST = 118;

@@ -27,6 +27,7 @@ public class CharacterOperation {
 			
 			//載入角色記憶座標
 			
+			pc.equipment = new Equipment (handle);
 			pc.loadItemBag ();
 			pc.loadSkills ();
 			pc.loadBuffs ();
@@ -46,7 +47,7 @@ public class CharacterOperation {
 			handle.sendPacket (new ReportSpMr (handle).getRaw ());
 			handle.sendPacket (new ReportTitle (handle).getRaw ());
 			
-			handle.sendPacket (new ReportWeather (Laevatein.getInstance ().weather).getRaw ());
+			handle.sendPacket (new ReportWeather (Laevatein.getInstance ().getWeather (pc.loc.mapId)).getRaw ());
 			
 			//Set Emblem here
 

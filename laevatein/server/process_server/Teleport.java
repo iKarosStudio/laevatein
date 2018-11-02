@@ -50,7 +50,7 @@ public class Teleport
 		
 		handle.sendPacket (mapPacket);
 		handle.sendPacket (pcPacket);
-		handle.sendPacket (new UpdateModelGfx (pc.uuid, pc.actId).getRaw ());
+		handle.sendPacket (new UpdateModelActId (pc.uuid, pc.actId).getRaw ());
 	
 		pc.boardcastPcInsight (pcPacket);
 	}

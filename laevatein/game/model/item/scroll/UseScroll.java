@@ -4,7 +4,6 @@ import laevatein.types.*;
 import laevatein.server.*;
 import laevatein.server.packet.*;
 import laevatein.server.process_server.*;
-import laevatein.game.model.*;
 import laevatein.game.model.player.*;
 import laevatein.game.model.item.*;
 import static laevatein.game.template.ItemTypeTable.*;
@@ -24,6 +23,33 @@ public class UseScroll
 			
 		case TYPE_USE_SOSC:
 			//變形類道具
+			/* 參考l1j
+			public static void doPoly(L1PcInstance pc, int polyId, int timeSecs) {
+		pc.killSkillEffectTimer(L1SkillId.SHAPE_CHANGE);
+		pc.setSkillEffect(L1SkillId.SHAPE_CHANGE, timeSecs * 1000);
+		if (pc.getTempCharGfx() != polyId) { // ???澈?文??????縑隞亙???閬???
+			L1ItemInstance weapon = pc.getWeapon();
+			// ?澈?∴??甇血??????
+			boolean weaponTakeoff = (weapon != null && !isEquipableWeapon(
+					polyId, weapon.getItem().getType()));
+			pc.setTempCharGfx(polyId);
+			pc
+					.sendPackets(new S_ChangeShape(pc.getId(), polyId,
+							weaponTakeoff));
+			if (!pc.isGmInvis() && !pc.isInvisble()) {
+				pc.broadcastPacket(new S_ChangeShape(pc.getId(), polyId));
+			}
+			pc.getInventory().takeoffEquip(polyId);
+			weapon = pc.getWeapon();
+			if (weapon != null) {
+				S_CharVisualUpdate charVisual = new S_CharVisualUpdate(pc);
+				pc.sendPackets(charVisual);
+				pc.broadcastPacket(charVisual);
+			}
+		}
+		pc.sendPackets(new S_SkillIconGFX(35, timeSecs));
+	}
+			 */
 			String s = packetReader.readString ();
 			break;
 		case TYPE_USE_BLANK: //空的魔法卷軸

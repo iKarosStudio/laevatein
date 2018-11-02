@@ -38,8 +38,10 @@ public class CharacterInitializer
 		pc.sex = sex;
 		if (pc.sex == 0) { //Male
 			pc.gfx = MALE_LIST[pc.type];
+			pc.originGfx = pc.gfx;
 		} else { //Female
 			pc.gfx = FEMALE_LIST[pc.type];
+			pc.originGfx = pc.gfx;
 		}
 		//pc.gfxTemp = pc.gfx;
 		pc.lawful = 0;

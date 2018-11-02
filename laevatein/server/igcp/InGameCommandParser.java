@@ -38,6 +38,10 @@ public class InGameCommandParser
 			
 		} else if (text.startsWith (".status")) { //改變status參數
 			new RdPcStatus (pc, text);
+			
+		} else if (text.startsWith (".weather")) {
+			new RdWeather (pc, text);
+			
 		} else if (text.startsWith (".server")) { //顯示伺服器資料
 			//
 		} else if (text.startsWith (".map")) { //顯示地圖資料

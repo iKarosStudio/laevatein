@@ -177,8 +177,6 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 				basicParameters.maxHp = rs.getInt ("MaxHp");
 				basicParameters.maxMp = rs.getInt ("MaxMp");
 				
-				equipment = new Equipment ();
-				
 				rs.getInt ("PKcount");
 				
 				//routineTask = new (this);
@@ -240,12 +238,9 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 				ItemInstance item = new ItemInstance (itemId, itemUuid, itemOwnerUuid, itemEnchant, itemCount, itemDurability, itemChargeCount, itemIsUsing, itemIsIdentified);
 				itemBag.put (item.uuid, item);
 				
-				if (item.isWeapon () && item.isUsing) {
-					//
-				} else if (item.isArmor () && item.isUsing) {
-					//
-				} else if (item.isArrow () && item.isUsing) {
-					//
+				//穿上裝備
+				if ((item.isWeapon () || item.isArmor () || item.isArrow ()) && item.isUsing) {
+					equipment.set (item);
 				}
 			}
 			
@@ -285,15 +280,10 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	//回報全部道具重量
 	public int getWeight () {
 		int totalWeight = 0;
-		ArrayList<Integer> allItemsWeight = new ArrayList<Integer> ();
-
-		itemBag.forEachValue (Configurations.PARALLELISM_THRESHOLD, (ItemInstance i)->{
-			//System.out.printf ("%s weight:%d\n", i.getName (), i.weight);
-			allItemsWeight.add (i.weight);
-		});
 		
-		for (int w : allItemsWeight) {
-			totalWeight += w;
+		Iterator<ItemInstance> weights = itemBag.values ().iterator ();
+		while (weights.hasNext ()) {
+			totalWeight += ((ItemInstance) weights.next ()).weight;
 		}
 		
 		return totalWeight;
@@ -318,12 +308,12 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	}
 	
 	public void setArmor (int aUuid) {
-		equipment.setArmor (itemBag.get (aUuid));
+		//equipment.setArmor (itemBag.get (aUuid));
+		equipment.setEquipment (itemBag.get (aUuid));
 	}
 	
 	public void setArrow (int aUuid) {
 		equipment.setArrow (itemBag.get (aUuid));
-		//$452 + arg1 :/f1 arg1 被選擇了
 	}
 	
 	public void setSting (int sUuid) {
@@ -360,8 +350,7 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 		packet.writeWord (loc.p.y);
 		packet.writeDoubleWord (uuid);
 		packet.writeWord (gfx); //外型
-		//packet.writeByte (actId); //動作
-		packet.writeByte (4);
+		packet.writeByte (actId); //動作
 		packet.writeByte (heading); //方向
 		packet.writeByte (light);
 		packet.writeByte (moveSpeed);
@@ -683,6 +672,14 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 				handle.sendPacket (new ItemRemove (item).getRaw ());
 			}
 			
+		}
+	}
+	
+	public void deleteItem (ItemInstance i) {
+		if (i.isUsing) {
+			handle.sendPacket (new GameMessage (GameMessageId.$125).getRaw ());
+		} else {
+			removeItem (i);
 		}
 	}
 

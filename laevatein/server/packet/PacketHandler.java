@@ -1,5 +1,6 @@
 package laevatein.server.packet;
 
+import laevatein.game.skill.NormalAttack;
 import laevatein.server.*;
 import laevatein.server.opcodes.*;
 import laevatein.server.process_client.*;
@@ -32,7 +33,7 @@ public class PacketHandler
 			break;
 			
 		case ClientOpcodes.ATTACK:
-			//new Attack (handle, packet);
+			new NormalAttack (handle, packet);
 			break;
 			
 		case ClientOpcodes.REMOTE_ATTACK:

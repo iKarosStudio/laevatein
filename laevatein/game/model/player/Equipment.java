@@ -4,7 +4,8 @@ import java.util.*;
 
 import laevatein.game.model.*;
 import laevatein.game.model.item.*;
-import laevatein.server.process_server.UpdateModelGfx;
+import laevatein.server.*;
+import laevatein.server.process_server.*;
 
 import static laevatein.game.template.ItemTypeTable.*;
 
@@ -26,7 +27,9 @@ public class Equipment implements ApAccessable
 	public static final int INDEX_ARROW = 13;
 	public static final int INDEX_STING = 14;
 	
-	private ArrayList<ItemInstance> equipment;
+	private SessionHandler handle;
+	private PcInstance pc;
+	private HashMap<Integer, ItemInstance> equipment;
 	
 	/*
 	public static final int ARMOR_TYPE_HELM = 1;
@@ -57,35 +60,334 @@ public class Equipment implements ApAccessable
 	//$166:
 	
 
-	public Equipment () {
-		equipment = new ArrayList<ItemInstance> (15);
+	public Equipment (SessionHandler _handle) {
+		handle = _handle;
+		pc = handle.user.activePc;
+		equipment = new HashMap<Integer, ItemInstance> (15);
 	}
 	
-	public List<ItemInstance> toList () {
-		return equipment;
+	public Iterator<ItemInstance> getIterator () {
+		Iterator<ItemInstance> result = equipment.values ().iterator ();
+		return result;
+	}
+	
+	public void set (ItemInstance e) {
+		switch (e.minorType) {
+		case ARMOR_TYPE_ARMOR:
+			equipment.put (INDEX_ARMOR, e);
+			break;
+			
+		case ARMOR_TYPE_T:
+			equipment.put (INDEX_TSHIRT, e);
+			break;
+			
+		case ARMOR_TYPE_SHIELD:
+			equipment.put (INDEX_SHIELD, e);
+			break;
+			
+		case ARMOR_TYPE_CLOAK:
+			equipment.put (INDEX_CLOAK, e);
+			break;
+			
+		case ARMOR_TYPE_GLOVE:
+			equipment.put (INDEX_GLOVE, e);
+			break;
+		
+		case ARMOR_TYPE_BOOTS:
+			equipment.put (INDEX_BOOTS, e);
+			break;
+		
+		case ARMOR_TYPE_HELM:
+			equipment.put (INDEX_HELM, e);
+			break;
+			
+		case ARMOR_TYPE_AMULET:
+			equipment.put (INDEX_AMULET, e);
+			break;
+			
+		case ARMOR_TYPE_RING:
+			equipment.put (INDEX_RING1, e);
+			break;
+		
+		case ARMOR_TYPE_RING2:
+			equipment.put (INDEX_RING2, e);
+			break;
+			
+		case ARMOR_TYPE_BELT:
+			equipment.put (INDEX_BELT, e);
+			break;
+			
+		case ARMOR_TYPE_EARRING:
+			equipment.put (INDEX_EARRING, e);
+			break;
+			
+		default:
+			break;
+		}
+	}
+	
+	private void putOn (int index, ItemInstance e) {
+		e.isUsing = true;
+		equipment.put (index, e);
+		handle.sendPacket (new UpdateItemName (e).getRaw ());
+	}
+	
+	private void takeOff (int index, ItemInstance e) {
+		e.isUsing = false;
+		equipment.remove (index);
+		handle.sendPacket (new UpdateItemName (e).getRaw ());
+	}
+	
+	private void swapTo (int index, ItemInstance e) {
+		ItemInstance prevE = equipment.get (index);
+		prevE.isUsing = false;
+		handle.sendPacket (new UpdateItemName (prevE).getRaw ());
+		
+		e.isUsing = true;
+		equipment.replace (index, e);
+		handle.sendPacket (new UpdateItemName (e).getRaw ());
+		
 	}
 	
 	public void setWeapon (ItemInstance weapon) {
-		if (equipment.get (INDEX_WEAPON) == null) { //空手->weapon
-			
-		} else {
-			if (equipment.get (INDEX_WEAPON).uuid == weapon.uuid) { //weapon->空手
-				
-			} else { //weapon交換
-				
-			}
+		int prevActId = pc.actId;
+		
+		//職業可用性檢查
+		if (!weapon.isClassUsable (pc.type)) {
+			handle.sendPacket (new GameMessage (264).getRaw ());
+			return;
 		}
 		
-		//new UpdateModelGfx (pc.uuid, equipment.get (INDEX_WEAPON).actId).getRaw ();
+		//持有盾牌檢查
+		if (weapon.isTwoHanded && equipment.containsKey (INDEX_SHIELD)) {
+			handle.sendPacket (new GameMessage (128).getRaw ());
+			return;			
+		}
+		
+		//最低等級使用檢查
+		if (pc.level < weapon.minLevel) {
+			handle.sendPacket (new GameMessage (318, String.format ("%s", weapon.minLevel)).getRaw ());
+			return;	
+		}
+		
+		//最高等級使用檢查
+		//if (pc.level > weapon.maxLevel) {
+		//	handle.sendPacket (new GameMessage (673, String.format ("%s", weapon.maxLevel)).getRaw ());
+		//	return;	
+		//}
+		
+		//換裝備
+		if (equipment.containsKey (INDEX_WEAPON)) {
+			if (equipment.get (INDEX_WEAPON).uuid == weapon.uuid) { //weapon->null
+				takeOff (INDEX_WEAPON, weapon);
+				pc.actId = 0;
+				
+			} else { //weapon1->weapon2
+				swapTo (INDEX_WEAPON, weapon);
+				pc.actId = weapon.actId;
+			}
+		} else { //null->weapon
+			putOn (INDEX_WEAPON, weapon);
+			pc.actId = weapon.actId;
+		}
+		
+		//改變角色外型(若需要)
+		if (prevActId != pc.actId) {
+			byte[] packet = new UpdateModelActId (pc.uuid, pc.actId).getRaw ();
+			handle.sendPacket (packet);
+			pc.boardcastPcInsight (packet);
+		}
 	}
 	
-	public void setArmor (ItemInstance armor) {
+	public void setEquipment (ItemInstance e) {	
+		
+		switch (e.minorType) {
+		case ARMOR_TYPE_ARMOR:
+			setArmor (e);
+			break;
+			
+		case ARMOR_TYPE_T:
+			setTshirt (e);
+			break;
+			
+		case ARMOR_TYPE_SHIELD:
+			setShield (e);
+			break;
+		
+		//
+			
+		case ARMOR_TYPE_CLOAK:
+			setE (INDEX_CLOAK, e);
+			break;
+			
+		case ARMOR_TYPE_GLOVE:
+			setE (INDEX_GLOVE, e);
+			break;
+		
+		case ARMOR_TYPE_BOOTS:
+			setE (INDEX_BOOTS, e);
+			break;
+		
+		case ARMOR_TYPE_HELM:
+			setE (INDEX_HELM, e);
+			break;
+			
+		case ARMOR_TYPE_AMULET:
+			setE (INDEX_AMULET, e);
+			break;
+			
+		case ARMOR_TYPE_RING:
+			setE (INDEX_RING1, e);
+			break;
+		
+		case ARMOR_TYPE_RING2:
+			setE (INDEX_RING2, e);
+			break;
+			
+		case ARMOR_TYPE_BELT:
+			setE (INDEX_BELT, e);
+			break;
+			
+		case ARMOR_TYPE_EARRING:
+			setE (INDEX_EARRING, e);
+			break;
+			
+		default:
+			break;
+		}
 	}
+	
+	private void setArmor (ItemInstance e) {		
+		if (equipment.containsKey (INDEX_ARMOR)) {
+			if (equipment.get (INDEX_ARMOR).uuid == e.uuid) {
+				//take off
+				if (equipment.containsKey (INDEX_CLOAK)) {
+					handle.sendPacket (new GameMessage (127).getRaw ());
+				} else {
+					takeOff (INDEX_ARMOR, e);
+				}
+				
+			} else {
+				//swpa
+				handle.sendPacket (new GameMessage (124).getRaw ());
+				
+			}
+		} else {
+			//puton
+			if (equipment.containsKey (INDEX_CLOAK)) {
+				handle.sendPacket (new GameMessage (126, equipment.get (INDEX_CLOAK).name).getRaw ());
+			} else {
+				putOn (INDEX_ARMOR, e);
+			}
+			
+		}
+	}
+	
+	private void setTshirt (ItemInstance e) {
+		if (equipment.containsKey (INDEX_TSHIRT)) {
+			if (equipment.get (INDEX_TSHIRT).uuid == e.uuid) {
+				//take off
+				if (equipment.containsKey (INDEX_ARMOR)) {
+					handle.sendPacket (new GameMessage (127).getRaw ());
+					return;
+				}
+				
+				if (equipment.containsKey (INDEX_CLOAK)) {
+					handle.sendPacket (new GameMessage (127).getRaw ());
+					return;
+				}
+				
+				takeOff (INDEX_TSHIRT, e);
+				
+			} else {
+				//swap
+				handle.sendPacket (new GameMessage (124).getRaw ());
+			}
+		} else {
+			//puton
+			if (equipment.containsKey (INDEX_CLOAK)) {
+				handle.sendPacket (new GameMessage (126, equipment.get (INDEX_CLOAK).name).getRaw ());
+				return;
+			}
+			
+			if (equipment.containsKey (INDEX_ARMOR)) {
+				handle.sendPacket (new GameMessage (126, equipment.get (INDEX_ARMOR).name).getRaw ());
+				return;
+			}
+			
+			putOn (INDEX_TSHIRT, e);
+		}
+	}
+	
+	private void setShield (ItemInstance e) {
+		if (equipment.containsKey (INDEX_SHIELD)) {
+			if (equipment.get (INDEX_SHIELD).uuid == e.uuid) {
+				//takeoff
+				takeOff (INDEX_SHIELD, e);
+			} else {
+				//swap
+				handle.sendPacket (new GameMessage (124).getRaw ());
+			}
+		} else {
+			//puton
+			if (equipment.containsKey (INDEX_WEAPON)) {
+				if (equipment.get (INDEX_WEAPON).isTwoHanded) {
+					handle.sendPacket (new GameMessage (129).getRaw ());
+				} else {
+					putOn (INDEX_SHIELD, e);
+				}
+			} else {
+				putOn (INDEX_SHIELD, e);
+			}
+		}
+	}
+	
+	
+	private void setE (int index, ItemInstance e) {
+		if (equipment.containsKey (index)) {
+			if (equipment.get (index).uuid == e.uuid) {
+				//take off
+				takeOff (index, e);
+				
+			} else {
+				//swap
+				handle.sendPacket (new GameMessage (124).getRaw ());
+			}
+		} else {
+			//puton
+			putOn (index, e);
+		}
+	}
+	
 	
 	public void setArrow (ItemInstance arrow) {
+		if (equipment.containsKey (INDEX_ARROW)) {
+			if (equipment.get (INDEX_ARROW).uuid == arrow.uuid) { //weapon->null
+				takeOff (INDEX_ARROW, arrow);
+				
+			} else { //weapon1->weapon2
+				swapTo (INDEX_ARROW, arrow);
+				handle.sendPacket (new GameMessage (452, arrow.getName ()).getRaw ());
+			}
+		} else { //null->weapon
+			putOn (INDEX_ARROW, arrow);
+			handle.sendPacket (new GameMessage (452, arrow.getName ()).getRaw ());
+		}
 	}
 	
 	public void setSting (ItemInstance sting) {
+		if (equipment.containsKey (INDEX_STING)) {
+			if (equipment.get (INDEX_STING).uuid == sting.uuid) {
+				takeOff (INDEX_STING, sting);
+				
+			} else {
+				swapTo (INDEX_STING, sting);
+				handle.sendPacket (new GameMessage (452, sting.getName ()).getRaw ());
+			}
+		} else {
+			putOn (INDEX_STING, sting);
+			handle.sendPacket (new GameMessage (452, sting.getName ()).getRaw ());
+		}
 	}
 	
 	public void useArrow () {
