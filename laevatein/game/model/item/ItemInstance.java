@@ -504,7 +504,7 @@ public class ItemInstance
 			detail = getWeaponDetail ();
 			break;
 		case 2:
-			detail = getItemDetail ();
+			detail = getArmorDetail ();
 			break;
 		default: break;
 		}

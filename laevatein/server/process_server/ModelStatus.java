@@ -13,7 +13,7 @@ public class ModelStatus
 	public ModelStatus (PcInstance p) {
 		ServerTime serverTime = ServerTime.getInstance ();
 		try {
-			packet.writeByte (ServerOpcodes.NODE_STATUS);
+			packet.writeByte (ServerOpcodes.UPDATE_MODEL_STATUS);
 			packet.writeDoubleWord (p.uuid); //id
 			packet.writeByte (p.level);
 			packet.writeDoubleWord (p.exp);

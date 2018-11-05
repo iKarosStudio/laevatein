@@ -7,14 +7,12 @@ import laevatein.game.model.player.*;
 
 public class ReportSpMr
 {
-	PacketBuilder packet = new PacketBuilder () ;
+	PacketBuilder packet = new PacketBuilder ();
 	
-	public ReportSpMr (SessionHandler handle) {
-		PcInstance pc = handle.user.activePc;
-		
+	public ReportSpMr (int sp, int mr) {
 		packet.writeByte (ServerOpcodes.MATK_MRST) ;
-		packet.writeByte (0); //sp
-		packet.writeByte (0); //mr
+		packet.writeByte (sp); //sp
+		packet.writeByte (mr); //mr
 	}
 	
 	public byte[] getRaw () {

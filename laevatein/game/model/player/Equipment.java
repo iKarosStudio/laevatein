@@ -1,6 +1,7 @@
 package laevatein.game.model.player;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 import laevatein.game.model.*;
 import laevatein.game.model.item.*;
@@ -29,22 +30,7 @@ public class Equipment implements ApAccessable
 	
 	private SessionHandler handle;
 	private PcInstance pc;
-	private HashMap<Integer, ItemInstance> equipment;
-	
-	/*
-	public static final int ARMOR_TYPE_HELM = 1;
-	public static final int ARMOR_TYPE_ARMOR = 2;
-	public static final int ARMOR_TYPE_T = 3;
-	public static final int ARMOR_TYPE_CLOAK = 4;
-	public static final int ARMOR_TYPE_GLOVE = 5;
-	public static final int ARMOR_TYPE_BOOTS = 6;
-	public static final int ARMOR_TYPE_SHIELD = 7;
-	public static final int ARMOR_TYPE_AMULET = 8;
-	public static final int ARMOR_TYPE_RING = 9;
-	public static final int ARMOR_TYPE_BELT = 10;
-	public static final int ARMOR_TYPE_RING2 = 11;
-	public static final int ARMOR_TYPE_EARRING = 12;
-	*/
+	private ConcurrentHashMap<Integer, ItemInstance> equipment;
 	
 	//$318:等級?以上才可以使用
 	//$673:等級?以下才可以使用 
@@ -63,7 +49,12 @@ public class Equipment implements ApAccessable
 	public Equipment (SessionHandler _handle) {
 		handle = _handle;
 		pc = handle.user.activePc;
-		equipment = new HashMap<Integer, ItemInstance> (15);
+		equipment = new ConcurrentHashMap<Integer, ItemInstance> (15);
+	}
+	
+	public List<ItemInstance> getList () {
+		List<ItemInstance> result = new ArrayList<ItemInstance> (equipment.values ());
+		return result;
 	}
 	
 	public Iterator<ItemInstance> getIterator () {
@@ -71,8 +62,36 @@ public class Equipment implements ApAccessable
 		return result;
 	}
 	
+	public AbilityParameter getAbilities () {
+		AbilityParameter result = new AbilityParameter ();
+		for (ItemInstance e : getList ()) {
+			result.str += e.str;
+			result.con += e.con;
+			result.dex += e.dex;
+			result.wis += e.wis;
+			result.cha += e.cha;
+			result.intel += e.intel;
+			
+			result.sp += e.sp;
+			result.mr += e.mr;
+			
+			result.maxHp += e.hp;
+			result.maxMp += e.mp;
+			
+			result.hpR += e.hpr;
+			result.mpR += e.mpr;
+			
+			result.ac += e.ac;
+			
+			result.dmgReduction += e.dmgReduction;
+			result.weightReduction += e.weightReduction;
+		}
+		
+		return result;
+	}
+	
 	public void set (ItemInstance e) {
-		switch (e.minorType) {
+		switch (e.minorType) {		
 		case ARMOR_TYPE_ARMOR:
 			equipment.put (INDEX_ARMOR, e);
 			break;
@@ -275,7 +294,7 @@ public class Equipment implements ApAccessable
 		} else {
 			//puton
 			if (equipment.containsKey (INDEX_CLOAK)) {
-				handle.sendPacket (new GameMessage (126, equipment.get (INDEX_CLOAK).name).getRaw ());
+				handle.sendPacket (new GameMessage (126, e.name, equipment.get (INDEX_CLOAK).name).getRaw ());
 			} else {
 				putOn (INDEX_ARMOR, e);
 			}
@@ -306,12 +325,12 @@ public class Equipment implements ApAccessable
 		} else {
 			//puton
 			if (equipment.containsKey (INDEX_CLOAK)) {
-				handle.sendPacket (new GameMessage (126, equipment.get (INDEX_CLOAK).name).getRaw ());
+				handle.sendPacket (new GameMessage (126, e.name, equipment.get (INDEX_ARMOR).name).getRaw ());
 				return;
 			}
 			
 			if (equipment.containsKey (INDEX_ARMOR)) {
-				handle.sendPacket (new GameMessage (126, equipment.get (INDEX_ARMOR).name).getRaw ());
+				handle.sendPacket (new GameMessage (126, e.name, equipment.get (INDEX_CLOAK).name).getRaw ());
 				return;
 			}
 			
@@ -344,6 +363,7 @@ public class Equipment implements ApAccessable
 	
 	
 	private void setE (int index, ItemInstance e) {
+		System.out.printf ("index:%d\n", index) ;
 		if (equipment.containsKey (index)) {
 			if (equipment.get (index).uuid == e.uuid) {
 				//take off
@@ -406,68 +426,119 @@ public class Equipment implements ApAccessable
 	
 	@Override
 	public int getStr () {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.str;
+		}
+		return result;
 	}
 
 	@Override
 	public int getCon () {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.con;
+		}
+		return result;
 	}
 
 	@Override
 	public int getDex () {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.dex;
+		}
+		return result;
 	}
 
 	@Override
 	public int getWis () {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.wis;
+		}
+		return result;
 	}
 
 	@Override
 	public int getCha () {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.cha;
+		}
+		return result;
 	}
 
 	@Override
 	public int getIntel () {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.intel;
+		}
+		return result;
 	}
 
 	@Override
 	public int getMaxHp () {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.hp;
+		}
+		return result;
 	}
 
 	@Override
 	public int getMaxMp () {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.mp;
+		}
+		return result;
+	}
+	
+	@Override
+	public int getHpR () {
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.hpr;
+		}
+		return result;
+	}
+
+	@Override
+	public int getMpR () {
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.mpr;
+		}
+		return result;
 	}
 
 	@Override
 	public int getSp () {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.sp;
+		}
+		return result;
 	}
 
 	@Override
 	public int getMr () {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.mr;
+		}
+		return result;
 	}
 
 	@Override
 	public int getAc () {
-		// TODO Auto-generated method stub
-		return 0;
+		int result = 0;
+		for (ItemInstance e : getList ()) {
+			result += e.ac;
+		}
+		return result;
 	}
 
 }

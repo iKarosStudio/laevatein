@@ -6,6 +6,8 @@ import laevatein.server.threadpool.*;
 import laevatein.game.model.player.*;
 
 //HS(HighSpeed) task
+//hp monitor
+//exp monitor
 public class HsTask implements Runnable
 {
 	ScheduledFuture<?> schedulor;

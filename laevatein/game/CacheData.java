@@ -239,7 +239,7 @@ public class CacheData
 					rs.getInt ("min_lvl"),
 					rs.getInt ("max_lvl"),
 					rs.getInt ("bless"),
-					rs.getBoolean ("trade"),
+					!rs.getBoolean ("trade"),
 					rs.getInt ("delay_id"),
 					rs.getInt ("delay_time"),
 					rs.getInt ("food_volume"),
@@ -386,12 +386,12 @@ public class CacheData
 		
 		try {
 			ps = con.prepareStatement ("SELECT * FROM weapon;");
-			rs = ps.executeQuery () ;
+			rs = ps.executeQuery ();
 			
 			int Counter = 0;
 			long timeStarts = System.currentTimeMillis () ;
-			while (rs.next () ) {
-				int itemId = rs.getInt ("item_id") ;
+			while (rs.next ()) {
+				int itemId = rs.getInt ("item_id");
 				WeaponTemplate w = new WeaponTemplate (
 					itemId,
 					rs.getString ("name"),
@@ -430,7 +430,7 @@ public class CacheData
 					rs.getInt ("min_lvl"),
 					rs.getInt ("max_lvl"),
 					rs.getInt ("bless"),
-					rs.getBoolean ("trade"),
+					!rs.getBoolean ("trade"),
 					rs.getBoolean ("mana_item") ) ;
 				
 				weapon.putIfAbsent (itemId, w) ;
@@ -502,7 +502,7 @@ public class CacheData
 					rs.getInt ("weight_reduction"),
 					rs.getInt ("bow_hit_rate"),
 					rs.getInt ("bless"),
-					rs.getBoolean ("trade"),
+					!rs.getBoolean ("trade"),
 					rs.getInt ("defense_water"),
 					rs.getInt ("defense_wind"),
 					rs.getInt ("defense_fire"),

@@ -12,6 +12,8 @@ public interface ApAccessable
 	
 	public int getMaxHp ();
 	public int getMaxMp ();
+	public int getHpR ();
+	public int getMpR ();
 	
 	public int getSp ();
 	public int getMr ();

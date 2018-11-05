@@ -9,6 +9,8 @@ import laevatein.server.database.*;
 import laevatein.server.utility.*;
 import laevatein.game.*;
 import laevatein.game.model.player.*;
+import laevatein.game.routine_task.HsTask;
+import laevatein.game.routine_task.LsTask;
 
 public class CharacterOperation {
 	
@@ -44,7 +46,8 @@ public class CharacterOperation {
 			handle.sendPacket (new MapId (pc.loc.mapId).getRaw ());
 			handle.sendPacket (new ModelStatus (pc).getRaw ());
 			handle.sendPacket (pc.getPacket ());
-			handle.sendPacket (new ReportSpMr (handle).getRaw ());
+			
+			handle.sendPacket (new ReportSpMr (pc.getSp (), pc.getMr ()).getRaw ());
 			handle.sendPacket (new ReportTitle (handle).getRaw ());
 			
 			handle.sendPacket (new ReportWeather (Laevatein.getInstance ().getWeather (pc.loc.mapId)).getRaw ());
@@ -54,7 +57,10 @@ public class CharacterOperation {
 			handle.sendPacket (new ModelStatus (pc).getRaw ());
 			
 			/* 固定循環工作 */
+			pc.hsTask = new HsTask (pc);
 			pc.hsTask.start ();
+			
+			pc.lsTask = new LsTask (pc);
 			pc.lsTask.start ();
 			//pc.routineTasks.start ();
 			//pc.skillBuffs.start ();

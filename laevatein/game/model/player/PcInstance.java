@@ -50,6 +50,8 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	
 	/* 持有道具 */
 	public ConcurrentHashMap<Integer, ItemInstance> itemBag;
+	public int weight;
+	public int weightScale30; //for cache
 	
 	/* 道具延遲效果 */
 	public ConcurrentHashMap<Integer, Long> itemDelay;
@@ -65,6 +67,10 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	/* 視線內物件 <K, V> = <UUID, 實體> */
 	public ConcurrentHashMap<Integer, PcInstance> pcsInsight;
 	public ConcurrentHashMap<Integer, Objeto> modelsInsight;
+	
+	/* 戰鬥狀態&移動狀態剩餘秒數 */
+	public int battleCounter;
+	public int moveCounter;
 	
 	public SightUpdate sight;
 	public HsTask hsTask;
@@ -169,8 +175,8 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 				basicParameters.mr = Utility.calcMr (type, level, basicParameters.wis);
 				basicParameters.sp = Utility.calcSp (type, level, basicParameters.intel);
 				
-				basicParameters.hpR = Utility.calcHpr (10);				
-				basicParameters.mpR = Utility.calcMpr (10);
+				basicParameters.hpR = Utility.calcHpr (basicParameters.con);				
+				basicParameters.mpR = Utility.calcMpr (basicParameters.wis);
 				
 				hp = rs.getInt ("CurHp");
 				mp = rs.getInt ("CurMp");
@@ -181,8 +187,6 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 				
 				//routineTask = new (this);
 				sight = new SightUpdate (this);
-				hsTask = new HsTask (this);
-				lsTask = new LsTask (this);
 				
 				result = true;
 			}
@@ -237,12 +241,24 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 				//生成ItemInstace, WeaponInstance, ArmorInstance
 				ItemInstance item = new ItemInstance (itemId, itemUuid, itemOwnerUuid, itemEnchant, itemCount, itemDurability, itemChargeCount, itemIsUsing, itemIsIdentified);
 				itemBag.put (item.uuid, item);
-				
-				//穿上裝備
-				if ((item.isWeapon () || item.isArmor () || item.isArrow ()) && item.isUsing) {
-					equipment.set (item);
-				}
 			}
+			
+			itemBag.forEach ((Integer iid, ItemInstance e)->{
+				if (e.isWeapon () && e.isUsing) {
+					setWeapon (iid);
+				}				
+				
+				if (e.isArmor () && e.isUsing) {
+					equipment.set (e);
+				}
+				
+				if (e.isArrow () && e.isUsing) {
+					equipment.set (e);
+				}
+			});
+			
+			equipmentParameters = null;
+			equipmentParameters = equipment.getAbilities ();
 			
 			handle.sendPacket (new ReportItemBag (itemBag).getRaw ());
 			
@@ -305,11 +321,17 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	
 	public void setWeapon (int wUuid) {
 		equipment.setWeapon (itemBag.get (wUuid));
+		equipmentParameters = null;
+		equipmentParameters = equipment.getAbilities ();
 	}
 	
 	public void setArmor (int aUuid) {
-		//equipment.setArmor (itemBag.get (aUuid));
 		equipment.setEquipment (itemBag.get (aUuid));
+		equipmentParameters = null;
+		equipmentParameters = equipment.getAbilities ();
+		
+		handle.sendPacket (new UpdateAc (getAc ()).getRaw ());
+		handle.sendPacket (new ReportSpMr (getSp(), getMr()).getRaw ());
 	}
 	
 	public void setArrow (int aUuid) {
@@ -383,7 +405,7 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	@Override
 	public void receiveAttack (NormalAttack attack) {
 		// TODO Auto-generated method stub
-		
+		battleCounter = 30; //check for 30s
 	}
 
 	@Override
@@ -457,6 +479,8 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 		loc.p.y = y;
 		map.setOccupied (x, y, true);
 		
+		moveCounter = 30; //check for 30s
+		
 	}
 
 	@Override
@@ -497,6 +521,16 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	@Override
 	public int getMaxMp () {
 		return basicParameters.maxMp + skillParameters.maxMp + equipmentParameters.maxMp;
+	}
+	
+	@Override
+	public int getHpR () {
+		return basicParameters.hpR + skillParameters.hpR + equipmentParameters.hpR;
+	}
+
+	@Override
+	public int getMpR () {
+		return basicParameters.mpR + skillParameters.mpR + equipmentParameters.mpR;
 	}
 
 	@Override
@@ -564,6 +598,12 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	public void dropItem (int itemUuid, int count, int x, int y) {		
 		if (itemBag.containsKey (itemUuid)) {
 			ItemInstance item = itemBag.get (itemUuid);
+			
+			if (!item.isTradeable) { //不可轉移
+				handle.sendPacket (new GameMessage (210, item.getName ()).getRaw ());
+				return;
+			}
+			
 			ItemInstance dropItem = null;
 			
 			removeItem (itemUuid, count);
@@ -698,5 +738,6 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	public void setItemDelay (int itemId, long nowTime) {
 		itemDelay.put (itemId, nowTime);
 	}
+
 	
 }
