@@ -12,7 +12,7 @@ public class KernelThreadPool
 	
 	public static KernelThreadPool getInstance () {
 		if (instance == null) {
-			instance = new KernelThreadPool () ;
+			instance = new KernelThreadPool ();
 		}
 		return instance;
 	}
@@ -20,7 +20,7 @@ public class KernelThreadPool
 	private KernelThreadPool () {
 		System.out.print ("Kernel  thread pool initializing...") ;
 		
-		pool = Executors.newCachedThreadPool () ;
+		pool = Executors.newCachedThreadPool ();
 		
 		kernelPool = Executors.newScheduledThreadPool (
 			8, //Size

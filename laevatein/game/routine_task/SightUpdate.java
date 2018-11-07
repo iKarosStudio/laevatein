@@ -34,7 +34,7 @@ public class SightUpdate implements Runnable
 		//
 		List<PcInstance> pcs = pc.map.getPcsInsight (pc.loc.p);
 		pcs.forEach ((PcInstance eachPc)->{
-			if (!pc.pcsInsight.containsKey (eachPc.uuid) && (eachPc.uuid != pc.uuid)) {
+			if (!pc.pcsInsight.containsKey (eachPc.uuid) && (eachPc.uuid != pc.uuid)  && !(eachPc.isInvisible ())) {
 				pc.pcsInsight.putIfAbsent (eachPc.uuid, eachPc);
 				handle.sendPacket (eachPc.getPacket ());
 			}
@@ -44,7 +44,7 @@ public class SightUpdate implements Runnable
 		//玩家必須額外注意是否已經離線, 檢查socket close or thread is Alive
 		//
 		pc.pcsInsight.forEachValue (Configurations.PARALLELISM_THRESHOLD, (PcInstance p)->{
-			if (!pc.isInsight (p.loc) || !pcs.contains (p)) {
+			if (!pc.isInsight (p.loc) || !pcs.contains (p) || pc.isInvisible ()) {
 				pc.pcsInsight.remove (p.uuid);
 				handle.sendPacket (new RemoveModel (p.uuid).getRaw ());
 			}

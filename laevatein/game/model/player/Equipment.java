@@ -424,6 +424,8 @@ public class Equipment implements ApAccessable
 	public void useSting (int amount) {
 	}
 	
+	//套裝確認 => private
+	
 	@Override
 	public int getStr () {
 		int result = 0;

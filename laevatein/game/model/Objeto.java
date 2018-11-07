@@ -49,7 +49,6 @@ public abstract class Objeto
 	public int hpScale = (byte) 0xFF;
 	public int levelScale = (byte) 0;
 	
-	
 	//model packet non-essetial data
 	public volatile int hp;
 	public volatile int mp;

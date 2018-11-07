@@ -8,7 +8,7 @@ public class UpdateHp
 	PacketBuilder packet = new PacketBuilder ();
 	
 	public UpdateHp (int hp, int maxHp) {
-		packet.writeByte (ServerOpcodes.HP_UPDATE);
+		packet.writeByte (ServerOpcodes.UPDATE_HP);
 		packet.writeWord (hp);
 		packet.writeWord (maxHp);
 	}

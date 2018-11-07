@@ -41,7 +41,7 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	/* 角色性別 */
 	public int sex;
 	
-	/* 飽食度 */
+	/* 飽食度 29=100%*/
 	public int satiation;
 	
 	/* 開發人員設定 */
@@ -192,6 +192,7 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 			}
 		} catch (Exception e) {
 			e.printStackTrace ();
+			
 		} finally {
 			DatabaseUtil.close (rs);
 			DatabaseUtil.close (ps);
@@ -260,6 +261,8 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 			equipmentParameters = null;
 			equipmentParameters = equipment.getAbilities ();
 			
+			updateWeightCache ();
+			
 			handle.sendPacket (new ReportItemBag (itemBag).getRaw ());
 			
 		} catch (Exception e) {
@@ -289,8 +292,27 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	}
 	
 	//檢查是否超過可負載重量
-	public boolean canCarryWeight (int weight) {
-		return true;
+	public boolean canCarryWeight (int _weight) {
+		return (weight + _weight) < getMaxWeight ();
+	}
+	
+	public void updateWeightCache () {
+		int prevW30 = weightScale30;
+		
+		weight = getWeight ();
+		weightScale30 = getWeightInScale30 ();
+		
+		if (prevW30 != weightScale30) {
+			handle.sendPacket (new ModelStatus (this).getRaw ());
+		}
+	}
+	
+	public void updateAc () {
+		handle.sendPacket (new UpdateAc (getAc ()).getRaw ());
+	}
+	
+	public void updateLevelExp () {
+		handle.sendPacket (new UpdateExp (this).getRaw ());
 	}
 	
 	//回報全部道具重量
@@ -309,7 +331,11 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	public int getMaxWeight () {
 		int maxWeight = 1500 + (((getStr () + getCon () - 18) >> 1) * 150);
 		//apply skill effect
+		//負重強化
+		
 		//apply equip effect
+		//多羅皮帶, 歐吉皮帶, 泰坦腰帶
+		
 		//apply doll effect
 		
 		return maxWeight * 1000;
@@ -323,6 +349,8 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 		equipment.setWeapon (itemBag.get (wUuid));
 		equipmentParameters = null;
 		equipmentParameters = equipment.getAbilities ();
+		
+		updateWeightCache ();
 	}
 	
 	public void setArmor (int aUuid) {
@@ -330,7 +358,8 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 		equipmentParameters = null;
 		equipmentParameters = equipment.getAbilities ();
 		
-		handle.sendPacket (new UpdateAc (getAc ()).getRaw ());
+		updateWeightCache ();
+		//updateAc ()
 		handle.sendPacket (new ReportSpMr (getSp(), getMr()).getRaw ());
 	}
 	
@@ -362,6 +391,9 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 		return (type == TYPE_DARKELF);
 	}
 
+	public boolean isFaceTo (Location _loc) {
+		return false;
+	}
 	
 	@Override
 	public byte[] getPacket () {
@@ -405,7 +437,7 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	@Override
 	public void receiveAttack (NormalAttack attack) {
 		// TODO Auto-generated method stub
-		battleCounter = 30; //check for 30s
+		battleCounter = 0x20; //check for 32s
 	}
 
 	@Override
@@ -420,43 +452,35 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 		
 		map.setOccupied (x, y, false); //離開原本座標
 		switch (_heading) {
-		case 0:
-		case 73:
+		case 0: case 73:
 			heading = 0; y--;
 			break;
 			
-		case 1:
-		case 72:
+		case 1: case 72:
 			heading = 1; x++; y--;
 			break;
 			
-		case 2:
-		case 75:
+		case 2: case 75:
 			heading = 2; x++;
 			break;
 			
-		case 3:
-		case 74:
+		case 3: case 74:
 			heading = 3; x++; y++;
 			break;
 			
-		case 4:
-		case 77:
+		case 4: case 77:
 			heading = 4; y++;
 			break;	
 			
-		case 5:
-		case 76:
+		case 5: case 76:
 			heading = 5; x--; y++;
 			break;
 			
-		case 6:
-		case 79:
+		case 6: case 79:
 			heading = 6; x--;
 			break;
 			
-		case 7:
-		case 78:
+		case 7: case 78:
 			heading = 7; x--; y--;
 			break;
 
@@ -479,8 +503,7 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 		loc.p.y = y;
 		map.setOccupied (x, y, true);
 		
-		moveCounter = 30; //check for 30s
-		
+		moveCounter = 0x10; //check for 16s
 	}
 
 	@Override
@@ -654,6 +677,9 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 			
 			handle.sendPacket (new ItemInsert (item).getRaw ());
 		}
+		
+		//更新重量快取
+		updateWeightCache ();
 	}
 
 	@Override
@@ -680,6 +706,9 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 			
 			handle.sendPacket (new ItemInsert (item).getRaw ());
 		}
+		
+		//更新重量快取
+		updateWeightCache ();
 	}
 
 	public void removeItemById (int itemId, int amount) {
@@ -712,6 +741,8 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 				handle.sendPacket (new ItemRemove (item).getRaw ());
 			}
 			
+			//更新重量快取
+			updateWeightCache ();
 		}
 	}
 	

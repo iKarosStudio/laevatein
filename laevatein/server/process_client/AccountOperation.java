@@ -59,6 +59,8 @@ public class AccountOperation
 				handle.disconnect ();//bye
 			}
 			
+			handle.setThreadName ();
+			
 		} else if (loginResult == ACCOUNT_ALREADY_EXISTS) {
 			//帳號不存在, 建立新帳號
 			System.out.printf ("[CREATE ACCOUNT]");
@@ -89,7 +91,7 @@ public class AccountOperation
 		int characterAmount = 0;
 		Account account = handle.user;
 		
-		characterAmount = DatabaseCmds.getCharacterAmount (account.name) ;
+		characterAmount = DatabaseCmds.getCharacterAmount (account.name);
 		
 		return characterAmount;
 	}
@@ -103,14 +105,14 @@ public class AccountOperation
 		ResultSet rs = null;
 		try {	
 			//回報帳號腳色數量
-			characterAmount = getCharacterAmount (handle, data) ;
+			characterAmount = getCharacterAmount (handle, data);
 			
-			PacketBuilder packet = new PacketBuilder () ;
+			PacketBuilder packet = new PacketBuilder ();
 			packet.writeByte (ServerOpcodes.CHAR_AMOUNT) ;
-			packet.writeByte (characterAmount) ; //character amount
-			packet.writeDoubleWord (0x00000000) ;
-			packet.writeDoubleWord (0x00000000) ;
-			handle.sendPacket (packet.getPacket () ) ;
+			packet.writeByte (characterAmount); //character amount
+			packet.writeDoubleWord (0x00000000);
+			packet.writeDoubleWord (0x00000000);
+			handle.sendPacket (packet.getPacket ());
 
 			if (characterAmount > 0) {
 				rs = DatabaseCmds.getAccountCharacters (account.name);
@@ -122,10 +124,10 @@ public class AccountOperation
 					packet.writeString (rs.getString ("char_name"));
 					packet.writeString (rs.getString ("Clanname"));
 					
-					/* Type - 0:Royal 1:Knight 2:Elf 3:Mage 4:Darkelf */
+					// Type - 0:Royal 1:Knight 2:Elf 3:Mage 4:Darkelf
 					packet.writeByte (rs.getInt ("Type"));
 					
-					/* Sex - 0:male, 1:female */
+					// Sex - 0:male, 1:female
 					packet.writeByte (rs.getInt("Sex"));
 					packet.writeWord (rs.getInt ("Lawful")); //lawful
 					packet.writeWord (rs.getInt ("CurHP")); //hp

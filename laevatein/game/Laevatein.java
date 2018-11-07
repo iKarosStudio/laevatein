@@ -101,7 +101,6 @@ public class Laevatein extends Thread
 			
 			//load special system
 			
-			
 			/* Game boardcast message */
 			//sysMessage = BoardcastMessage.getInstance () ;
 			//KernelThreadPool.getInstance ().ScheduleAtFixedRate (sysMessage, 10000, 30000);
@@ -135,11 +134,13 @@ public class Laevatein extends Thread
 	}
 	
 	public synchronized void addPlayer (PcInstance p) {
+		System.out.printf ("0x%08X-%s enter laevatein\n", p.uuid, p.name);
 		maps.get (p.loc.mapId).addPlayer (p);
 		onlinePlayers++;
 	}
 	
 	public synchronized void removePlayer (PcInstance p) {
+		System.out.printf ("0x%08X-%s exit laevatein\n", p.uuid, p.name);
 		maps.get (p.loc.mapId).removePlayer (p.uuid);
 		onlinePlayers--;
 	}

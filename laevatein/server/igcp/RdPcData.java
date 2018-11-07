@@ -28,14 +28,14 @@ public class RdPcData
 		if (pc != null) {
 			StringBuffer console = new StringBuffer ();
 			
-			console.append (String.format ("  %s[UUID:%d]\n", pc.name, pc.uuid));
+			console.append (String.format ("  %s[UUID:0x%08X]\n", pc.name, pc.uuid));
 			console.append (String.format ("  location={mapid:%d, x:%d, y:%d, heading:%d}\n", pc.loc.mapId, pc.loc.p.x, pc.loc.p.y, pc.heading));
 			console.append (String.format ("  moveSpeed:%d, actId:%d\n", pc.moveSpeed, pc.actId));
 			console.append (String.format ("  status:0x%02X\n", pc.status));
 			console.append (String.format ("  力量:%3d, 體質:%3d, 敏捷:%3d\n", pc.getStr(), pc.getCon(), pc.getDex()));
 			console.append (String.format ("  精神:%3d, 魅力:%3d, 智力:%3d\n", pc.getWis(), pc.getCha(), pc.getIntel()));
 			console.append (String.format ("  魔法點數:%2d, 魔法防禦:%2d\n", pc.getSp(), pc.getMr()));
-			console.append (String.format ("  體力回復:%2d, 魔力回復:%2d\n", pc.basicParameters.hpR, pc.basicParameters.mpR));
+			console.append (String.format ("  體力回復:%2d, 魔力回復:%2d\n", pc.getHpR (), pc.getMpR ()));
 			/*
 			console.append (String.format ("  [skill effects]->\n"));
 			pc.skillBuffs.getEffects ().forEach ((Integer skillId, SkillEffect effect)->{

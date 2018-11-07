@@ -79,7 +79,7 @@ public class CharacterOperation {
 			
 		} else {
 			//沒有角色ID, 非正常登入現象
-			System.out.printf ("不正常角色登入 %s form ip:%s\n", charName, handle.getIP ());
+			System.out.printf ("error charName login intention:%s form ip:%s\n", charName, handle.getIP ());
 			handle.disconnect ();
 		}
 	}
@@ -148,7 +148,7 @@ public class CharacterOperation {
 			//Done, Write to Database
 			CharacterInitializer pcCreate = new CharacterInitializer (handle, charName, type, sex, str, dex, con, wis, cha, intel);
 			pcCreate.execute ();
-			System.out.printf ("Create Character:%s\t From Account:%s @ %s\n", charName, handle.user.name, handle.getIP ());
+			System.out.printf ("create character:%s\t From user:%s @ %s\n", charName, handle.user.name, handle.getIP ());
 			
 		} catch (Exception e) {
 			e.printStackTrace ();

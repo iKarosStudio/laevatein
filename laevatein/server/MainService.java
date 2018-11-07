@@ -14,8 +14,8 @@ public class MainService extends Thread
 	private ServerSocket serviceSocket;
 	private boolean loginEnable;
 	
-	/* 建立連接用session */
-	public void run () {		
+	//建立連接用session
+	public void run () {	
 		while (true) {
 			try {
 				if (loginEnable) {
@@ -32,6 +32,7 @@ public class MainService extends Thread
 					/* 開始遊戲服務進程 */
 					SessionHandler clientSession = new SessionHandler (clientSock);
 					ServiceThreadPool.getInstance().execute (clientSession);
+					
 				} else {
 					Thread.sleep (500);
 				}
@@ -68,6 +69,8 @@ public class MainService extends Thread
 			ps.execute ();
 			
 			loginEnable = false;
+			
+			setDaemon (true);
 			
 		} catch (BindException e) {
 			System.out.printf ("bind Port:%d fail\n", Configurations.SERVER_PORT);

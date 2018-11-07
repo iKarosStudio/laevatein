@@ -3,10 +3,10 @@ package laevatein.server.opcodes;
 public class ServerOpcodes
 {
 	public static final int OBJ_ACTION = 3; //指定uuid執行actid動作
-	public static final int MAP_USE = 5; //開地圖
+	public static final int USE_MAP = 5; //開地圖
 	public static final int ITEM_UPDATE_STATUS = 6; //更新uuid道具的各種屬性
 	public static final int SKILL_BUY_RESULT = 17; //回應購買的技能
-	public static final int HP_UPDATE = 19; //更新玩家HP/最大HP
+	public static final int UPDATE_HP = 19; //更新玩家HP/最大HP
 	public static final int NEW_CHARACTER_PACK = 22; //在選角色畫面新增一個角色
 	public static final int ITEM_INSERT = 24; //加入一個道具到角色背包
 	public static final int MAP_ID = 27; //要求更換地圖畫面
@@ -52,7 +52,7 @@ public class ServerOpcodes
 	public static final int SKILL_SHIELD = 114;
 	public static final int CHAR_AMOUNT = 117;
 	public static final int CHAR_LIST = 118;
-	public static final int MP_UPDATE = 119;
+	public static final int UPDATE_MP = 119;
 	public static final int ITEM_REMOVE = 120;
 	public static final int ITEM_UPDATE_BLESS = 121;
 	public static final int WEATHER = 122;

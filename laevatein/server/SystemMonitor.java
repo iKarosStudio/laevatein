@@ -67,6 +67,12 @@ public class SystemMonitor extends Thread implements Runnable
 			//
 		}
 		
+		/*
+		ManagementFactory.getRuntimeMXBean ().getSystemProperties ().forEach ((String k, String v)->{
+			System.out.println (k + ":" + v);
+		});
+		*/
+		
 		//Set thread name
 		this.setName ("SYSTEM MONITOR") ;
 	}

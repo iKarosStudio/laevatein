@@ -3,6 +3,8 @@ package laevatein.server.threadpool;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import laevatein.config.*;
+
 public class ServiceThreadPool
 {
 	private static ServiceThreadPool instance; 
@@ -30,11 +32,11 @@ public class ServiceThreadPool
 		        }*/
 		) ;
 		
-		/* 數量建議值=max_users / 20 */
+		/* 數量建議值= max_users / 20 */
 		servicePool = Executors.newScheduledThreadPool (
-				50, //Size
+				Configurations.MAX_PLAYER / 20, //Size
 				new PriorityThreadFactory ("user_service", Thread.NORM_PRIORITY) //ThreadFactory
-			) ;
+			);
 		
 		System.out.println ("success") ;
 	}

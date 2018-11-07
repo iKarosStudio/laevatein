@@ -17,7 +17,7 @@ public class ManageService extends Thread
 	/*
 	 * 建立連接用session
 	 */
-	public void run () {		
+	public void run () {
 		while (true) {
 			try {
 				if (remoteManageEnable) {
@@ -60,6 +60,8 @@ public class ManageService extends Thread
 			
 			remoteManageEnable = true;
 			this.setName ("MANAGEMENT SERVICE");
+			
+			setDaemon (true);
 			
 		} catch (Exception e) {
 			System.out.printf ("fail\n");

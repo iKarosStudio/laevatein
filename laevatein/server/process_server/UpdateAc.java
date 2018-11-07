@@ -2,7 +2,6 @@ package laevatein.server.process_server;
 
 import laevatein.server.packet.*;
 import laevatein.server.opcodes.*;
-import laevatein.game.model.player.*;
 
 public class UpdateAc
 {

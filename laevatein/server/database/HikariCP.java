@@ -13,7 +13,7 @@ public class HikariCP
 
 	public static HikariCP getInstance () {
 		if (instance == null) {
-			instance = new HikariCP () ;
+			instance = new HikariCP ();
 		}
 		return instance;
 	}

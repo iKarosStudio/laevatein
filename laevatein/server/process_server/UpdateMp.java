@@ -8,7 +8,7 @@ public class UpdateMp
 	PacketBuilder builder = new PacketBuilder ();
 	
 	public UpdateMp (int mp, int maxMp) {
-		builder.writeByte (ServerOpcodes.MP_UPDATE);
+		builder.writeByte (ServerOpcodes.UPDATE_MP);
 		builder.writeWord (mp);
 		builder.writeWord (maxMp);
 	}

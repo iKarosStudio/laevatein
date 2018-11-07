@@ -84,13 +84,13 @@ public class SessionHandler extends Thread implements Runnable
 		}
 	}
 	
-	/*
-	 * 使用者Session主要工作迴圈
-	 */
+	//user session主要工作迴圈
 	public void run () {
 
 		firstPacket ();
 		packetCodec.initKey ();
+		
+		System.out.printf ("thread-id:%d, priority:%d\n", getThreadId (), getThreadPriority ());
 		
 		while (true) {
 			try {
@@ -146,9 +146,27 @@ public class SessionHandler extends Thread implements Runnable
 			packetCodec = new PacketCodec ();
 			packetHandle = new PacketHandler (this);
 			
+			setName ("user_session:not login");
+			
 		} catch (Exception e) {
 			e.printStackTrace ();
 		}
+	}
+	
+	public void setThreadName () {
+		setThreadName ("user_session:" + user.name);
+	}
+	
+	public void setThreadName (String threadName) {
+		this.setName (threadName);
+	}
+	
+	public long getThreadId () {
+		return getId ();
+	}
+	
+	public int getThreadPriority () {
+		return getPriority ();
 	}
 	
 	public String getIP () {

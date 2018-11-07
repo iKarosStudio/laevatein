@@ -30,7 +30,7 @@ public class ModelStatus
 			packet.writeByte (p.getAc ()); //ac
 			packet.writeDoubleWord (serverTime.getTime ()); //time
 			packet.writeByte (p.satiation);
-			packet.writeByte (p.getWeightInScale30 ());//weight 0~30 = 0~100%, 1:3.4
+			packet.writeByte (p.weightScale30);//weight 0~30 = 0~100%, 1:3.4
 			packet.writeWord (p.lawful);
 			packet.writeByte (0);//fire
 			packet.writeByte (0);//water

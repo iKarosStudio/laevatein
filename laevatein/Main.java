@@ -12,7 +12,13 @@ import laevatein.game.*;
 /* JVM 啟動參數
 
 	-Xincgc -server
-
+命令	描述
+jdb	命令行调试工具
+jps	列出所有Java进程的PID
+jstack	列出虚拟机进程的所有线程运行状态
+jmap	列出堆内存上的对象状态
+jstat	记录虚拟机运行的状态，监控性能
+jconsole	虚拟机性能/状态检查可视化工具
  */
 
 public class Main
@@ -66,6 +72,12 @@ public class Main
 
 		/* 掛載關機程序 */
 		Runtime.getRuntime().addShutdownHook (new Shutdown ());
+		
+		int money = 30000;
+		for (int i = 0; i < 30; i++) {
+			money *= 1.015;
+		}
+		System.out.println (money);
 		
 		/* 本地控制台 */
 		while (true) {

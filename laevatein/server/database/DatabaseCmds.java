@@ -443,21 +443,22 @@ public class DatabaseCmds
 		PreparedStatement ps = null;
 		
 		try {
-			ps = con.prepareStatement ("UPDATE characters SET level=?, Exp=?, MaxHp=?, CurHp=?, MaxMp=?, CurMp=?, Ac=?, Status=?, LocX=?, LocY=?, Heading=?, MapID=? WHERE objid=?;");
+			ps = con.prepareStatement ("UPDATE characters SET level=?, Exp=?, Food=?, MaxHp=?, CurHp=?, MaxMp=?, CurMp=?, Ac=?, Status=?, LocX=?, LocY=?, Heading=?, MapID=? WHERE objid=?;");
 			ps.setInt (1, p.level);
 			ps.setInt (2, p.exp);
-			ps.setInt (3, p.basicParameters.maxHp);
-			ps.setInt (4, p.hp);
-			ps.setInt (5, p.basicParameters.maxMp);
-			ps.setInt (6, p.mp);
-			ps.setInt (7, p.basicParameters.ac + p.equipmentParameters.ac);
-			ps.setInt (8, p.status);
-			ps.setInt (9, p.loc.p.x);
-			ps.setInt (10, p.loc.p.y);
-			ps.setInt (11, p.heading);
-			ps.setInt (12, p.loc.mapId);
+			ps.setInt (3, p.satiation);
+			ps.setInt (4, p.basicParameters.maxHp);
+			ps.setInt (5, p.hp);
+			ps.setInt (6, p.basicParameters.maxMp);
+			ps.setInt (7, p.mp);
+			ps.setInt (8, p.basicParameters.ac + p.equipmentParameters.ac);
+			ps.setInt (9, p.status);
+			ps.setInt (10, p.loc.p.x);
+			ps.setInt (11, p.loc.p.y);
+			ps.setInt (12, p.heading);
+			ps.setInt (13, p.loc.mapId);
 			//補上 clanid, clanname
-			ps.setInt (13, p.uuid);
+			ps.setInt (14, p.uuid);
 			ps.execute ();
 			
 		} catch (Exception e) {

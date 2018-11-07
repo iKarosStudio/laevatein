@@ -74,12 +74,10 @@ public class LaeMap
 	
 	public synchronized void addPlayer (PcInstance p) {
 		pcs.putIfAbsent (p.uuid, p);
-		System.out.printf ("%s entered game\n", p.name);
 	}
 	
 	public synchronized void removePlayer (int uuid) {
 		pcs.remove (uuid);
-		System.out.printf ("%s exited game\n", uuid);
 	}
 	
 	//could be null
