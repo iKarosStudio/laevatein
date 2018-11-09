@@ -21,7 +21,9 @@ import laevatein.game.model.item.*;
 import laevatein.game.skill.*;
 import laevatein.game.routine_task.*;
 
-public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemProcessable
+public class PcInstance 
+	extends Objeto 
+	implements Moveable, ApAccessable, ItemProcessable, SkillAffect
 {
 	private SessionHandler handle;
 	public boolean isExit;
@@ -41,7 +43,7 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	/* 角色性別 */
 	public int sex;
 	
-	/* 飽食度 29=100%*/
+	/* 飽食度 0~29 29=100%*/
 	public int satiation;
 	
 	/* 開發人員設定 */
@@ -51,13 +53,17 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	/* 持有道具 */
 	public ConcurrentHashMap<Integer, ItemInstance> itemBag;
 	public int weight;
-	public int weightScale30; //for cache
+	public int weightScale30; //for cache 0-29
 	
 	/* 道具延遲效果 */
 	public ConcurrentHashMap<Integer, Long> itemDelay;
 	
 	/* 人物裝備 */
 	public Equipment equipment;
+	
+	/* 技能BUFF狀態 */
+	//public SkillEffectsContainer buffs;
+	private ConcurrentHashMap<Integer, SkillEffect> buffs;
 	
 	/* A.P. */
 	public AbilityParameter basicParameters;
@@ -183,6 +189,9 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 				basicParameters.maxHp = rs.getInt ("MaxHp");
 				basicParameters.maxMp = rs.getInt ("MaxMp");
 				
+				//buffs = new SkillEffectsContainer (this);
+				buffs = new ConcurrentHashMap<Integer, SkillEffect> ();
+				
 				rs.getInt ("PKcount");
 				
 				//routineTask = new (this);
@@ -285,10 +294,36 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 	
 	public void loadBuffs () {
 		System.out.println ("load buffs");
+		buffs.forEachKey (Configurations.PARALLELISM_THRESHOLD, (Integer skillId)->{
+			removeSkillEffect (skillId);
+		});
+		
+		ResultSet rs = null;
+		try {
+			rs = DatabaseCmds.loadSkillEffects (uuid);
+			while (rs.next ()) {
+				int skillId = rs.getInt ("skill_id");
+				int remainTime = rs.getInt ("remaining_time");
+				int polyGfx = rs.getInt ("poly_id");
+				
+				SkillEffect buff = new SkillEffect (skillId, remainTime, polyGfx);
+				
+				buff.setSkillEffect (this);
+				buffs.put (skillId, buff);
+			}
+		} catch (Exception e) {
+			e.printStackTrace ();
+		} finally {
+			DatabaseUtil.close (rs);
+		}
 	}
 	
 	public void saveBuffs () {
 		System.out.println ("save buffs");
+		DatabaseCmds.deleteSkillEffects (uuid);//清空全部記錄
+		buffs.forEach ((Integer skillId, SkillEffect buff)->{
+			DatabaseCmds.insertSkillEffect (uuid, skillId, buff.remainTime, buff.polyGfx);
+		});
 	}
 	
 	//檢查是否超過可負載重量
@@ -303,6 +338,7 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 		weightScale30 = getWeightInScale30 ();
 		
 		if (prevW30 != weightScale30) {
+			//TODO:改用s_op:62更新
 			handle.sendPacket (new ModelStatus (this).getRaw ());
 		}
 	}
@@ -754,6 +790,9 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 		}
 	}
 
+	/*
+		取得itemid上的時間跟stamp差多少時間(ms)
+	 */
 	@Override
 	public long getItemDelay (int itemId, long nowTime) {
 		long res;
@@ -765,10 +804,55 @@ public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemPr
 		return res;
 	}
 
+	/*
+		給itemid打上當前time stamp
+	 */
 	@Override
 	public void setItemDelay (int itemId, long nowTime) {
 		itemDelay.put (itemId, nowTime);
 	}
-
 	
+	//
+	//skill effect interface
+	//
+
+	@Override
+	public boolean hasSkillEffect (int skillId) {
+		return buffs.containsKey (skillId);
+	}
+
+	@Override
+	public void addSkillEffect (int skillId, int time) {
+		addSkillEffect (skillId, time, 0);
+	}
+
+	@Override
+	public void addSkillEffect (int skillId, int time, int polyGfx) {
+		SkillEffect buff = new SkillEffect (skillId, time, polyGfx);
+		buff.setSkillEffect (this); //套用技能效果
+		buffs.put (skillId, buff);
+	}
+	
+	@Override
+	public void removeSkillEffect (int skillId) {
+		if (buffs.containsKey (skillId)) {
+			buffs.get (skillId).unsetSkillEffect (this); //移除技能效果
+		}
+		buffs.remove (skillId);
+	}
+	
+	@Override
+	public void updateSkillTime () {//一定要1s interval執行
+		if (!buffs.isEmpty ()) {
+			buffs.forEach ((Integer skillId, SkillEffect buff)->{
+				if (buff.remainTime == 0xFFFF) { //永久技能效果
+					return;
+				} else if (buff.remainTime > 0) { //減少持續時間
+					buff.remainTime--;
+				} else { //持續時間為零, 停止技能效果
+					removeSkillEffect (skillId);
+				}
+			});
+		}
+	}
 }

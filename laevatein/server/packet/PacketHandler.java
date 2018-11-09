@@ -1,6 +1,7 @@
 package laevatein.server.packet;
 
-import laevatein.game.skill.NormalAttack;
+import laevatein.game.*;
+import laevatein.game.skill.*;
 import laevatein.server.*;
 import laevatein.server.opcodes.*;
 import laevatein.server.process_client.*;
@@ -48,7 +49,7 @@ public class PacketHandler
 			//new SkillUse (handle, packet);
 			break;
 			
-		case ClientOpcodes.CHANGE_HEADING: 
+		case ClientOpcodes.UPDATE_HEADING: 
 			new UpdateHeading (handle, packet);
 			break;
 			
@@ -69,6 +70,10 @@ public class PacketHandler
 			
 		case ClientOpcodes.TALK:
 			new Talk (handle, packet);
+			break;
+		
+		case ClientOpcodes.GLOBAL_TALK:
+			new GlobalTalk (handle, packet);
 			break;
 			
 		case ClientOpcodes.ACCESS_NPC:
@@ -138,7 +143,8 @@ public class PacketHandler
 			break;
 		
 		case ClientOpcodes.WHO:
-			handle.sendPacket (new SystemMessage ("WHO").getRaw ());
+			String count = String.format ("%d", Laevatein.getInstance ().getOnlinePlayers ());
+			handle.sendPacket (new GameMessage (81, count).getRaw ());
 			break;
 			
 		case ClientOpcodes.TS: //神秘後門服務(Text Service)

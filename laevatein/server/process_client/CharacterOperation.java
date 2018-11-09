@@ -32,7 +32,7 @@ public class CharacterOperation {
 			pc.equipment = new Equipment (handle);
 			pc.loadItemBag ();
 			pc.loadSkills ();
-			pc.loadBuffs ();
+			
 					
 			/* fix
 			byte[] config = new SendClientConfig (Handle).getRaw () ;
@@ -44,8 +44,10 @@ public class CharacterOperation {
 			handle.sendPacket (new GameTime().getRaw ());
 
 			handle.sendPacket (new MapId (pc.loc.mapId).getRaw ());
-			handle.sendPacket (new ModelStatus (pc).getRaw ());
 			handle.sendPacket (pc.getPacket ());
+			handle.sendPacket (new ModelStatus (pc).getRaw ());
+
+			pc.loadBuffs ();
 			
 			handle.sendPacket (new ReportSpMr (pc.getSp (), pc.getMr ()).getRaw ());
 			handle.sendPacket (new ReportTitle (handle).getRaw ());

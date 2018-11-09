@@ -2,10 +2,9 @@ package laevatein.server.process_client;
 
 import laevatein.server.*;
 import laevatein.server.packet.*;
-import laevatein.server.process_server.*;
 import laevatein.game.model.player.*;
+import laevatein.game.skill.SkillId;
 import laevatein.game.model.item.*;
-import static laevatein.game.template.ItemTypeTable.*;
 
 //無法使用 server_id=74
 //e.g. handle.sendPacket (new ServerMessage (74, new String[] {item.name}).getRaw ());
@@ -20,6 +19,14 @@ public class ItemUse
 		
 		handle = _handle;
 		pc = handle.user.activePc;
+		
+		if (pc.isFreeze ()) {
+			return;
+		}
+		
+		if (pc.hasSkillEffect (SkillId.STATUS_CURSE_PARALYZING) || pc.hasSkillEffect (SkillId.STATUS_POISON_PARALYZED)) {
+			return;
+		}
 		
 		int itemUuid = packetReader.readDoubleWord ();
 		

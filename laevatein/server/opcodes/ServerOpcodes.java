@@ -21,7 +21,7 @@ public class ServerOpcodes
 	public static final int MODEL_ACTION = 59;
 	public static final int ITEM_UPDATE_AMOUNT = 61;
 	public static final int PACKET_BOX = 62;
-	public static final int LOGIN_START = 62; //active spells
+	//public static final int LOGIN_START = 62; //active spells
 	public static final int FUNCTION_KEY = 62;
 	public static final int SKILL_ICON = 62;
 	public static final int UNKNOWN1 = 66;
@@ -37,7 +37,7 @@ public class ServerOpcodes
 	public static final int ITEM_LIST = 82;
 	public static final int UPDATE_MODEL_ACTID = 84;
 	public static final int UPDATE_MODEL_AC = 85;
-	public static final int DISCONNECT = 88; /*強制客戶端離線*/
+	public static final int DISCONNECT = 88; //強制客戶端離線
 	public static final int UPDATE_MODEL_STATUS = 89;
 	public static final int UPDATE_EXP = 91;
 	public static final int NPC_RESULT = 92;

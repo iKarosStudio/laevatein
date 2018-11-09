@@ -23,6 +23,8 @@ public class LsTask implements Runnable
 	}
 	
 	public void run () {//1s interval
+		pc.updateSkillTime ();
+		
 		resumeTrigger ();
 		
 		if (pc.battleCounter > 0) {
