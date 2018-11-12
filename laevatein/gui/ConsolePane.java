@@ -36,7 +36,7 @@ public class ConsolePane
 		
 		//系統導向
 		OutputStream textAreaStream = new OutputStream() {
-			StringBuffer buffer = new StringBuffer ();
+			//StringBuffer buffer = new StringBuffer ();
 			public void write(int b) throws IOException {
 				console.append(String.valueOf ((char) b));
 			}

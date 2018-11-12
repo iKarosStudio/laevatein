@@ -33,7 +33,10 @@ public class SightUpdate implements Runnable
 		// 注意:不會自己將自身視為端點
 		//
 		List<PcInstance> pcs = pc.map.getPcsInsight (pc.loc.p);
+		
 		pcs.forEach ((PcInstance eachPc)->{
+			//System.out.printf ("%s see %s\n", pc.name, eachPc.name);
+			
 			if (!pc.pcsInsight.containsKey (eachPc.uuid) && (eachPc.uuid != pc.uuid)  && !(eachPc.isInvisible ())) {
 				pc.pcsInsight.putIfAbsent (eachPc.uuid, eachPc);
 				handle.sendPacket (eachPc.getPacket ());
@@ -73,7 +76,7 @@ public class SightUpdate implements Runnable
 	}
 	
 	public void start () {
-		schedulor = KernelThreadPool.getInstance ().ScheduleAtFixedRate (this, 200, 500);
+		schedulor = KernelThreadPool.getInstance ().ScheduleAtFixedRate (this, 200, 600);
 	}
 	
 	public void stop () {

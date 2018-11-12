@@ -50,6 +50,15 @@ public class SkillEffect
 			//	pc.getHandle ().sendPacket (new GameMessage (347).getRaw ()); //從身體的深處感到熱血沸騰(客戶端自行產生)
 			//}
 			break;
+			
+		case SkillId.STATUS_BLUE_POTION:
+			pc.getHandle ().sendPacket (new SkillIcon (34, remainTime).getPacket ()); //skill_icon34
+			break;
+			
+		case SkillId.STATUS_WISDOM_POTION:
+			pc.skillParameters.sp += 2;
+			//pc.getHandle ().sendPacket (new SkillBrave (pc.uuid, 2, remainTime).getPacket ());
+			break;
 		
 		default:
 			break;
@@ -69,13 +78,24 @@ public class SkillEffect
 			pc.moveSpeed = 0;
 			pc.getHandle ().sendPacket (new SkillHaste (pc.uuid, 0, 0).getPacket ());
 			pc.getHandle ().sendPacket (new GameMessage (185).getRaw ()); //你感覺你自己減慢下來
+			pc.boardcastPcInsight (pc.getPacket ());
 			break;
 			
 		case SkillId.STATUS_BRAVE: //勇敢藥水
 			pc.status &= ~StatusId.STATUS_BRAVE;
 			pc.getHandle ().sendPacket (new SkillBrave (pc.uuid, 0, remainTime).getPacket ());
+			pc.boardcastPcInsight (pc.getPacket ());
 			//pc.getHandle ().sendPacket (pc.getPacket ()); //update status
 			//pc.getHandle ().sendPacket (new GameMessage (349).getRaw ()); //你的情緒回復到正常 (客戶端自動訊息)
+			break;
+		
+		case SkillId.STATUS_BLUE_POTION:
+			pc.getHandle ().sendPacket (new SkillIcon (34, 0).getPacket ()); //skill_icon34
+			break;
+			
+		case SkillId.STATUS_WISDOM_POTION:
+			pc.skillParameters.sp -= 2;
+			pc.getHandle ().sendPacket (new SkillBrave (pc.uuid, 2, 0).getPacket ());
 			break;
 		
 		default:

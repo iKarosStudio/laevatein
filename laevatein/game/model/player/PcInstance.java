@@ -357,7 +357,7 @@ public class PcInstance
 		
 		Iterator<ItemInstance> weights = itemBag.values ().iterator ();
 		while (weights.hasNext ()) {
-			totalWeight += ((ItemInstance) weights.next ()).weight;
+			totalWeight += ((ItemInstance) weights.next ()).getWeight ();
 		}
 		
 		return totalWeight;
@@ -366,11 +366,11 @@ public class PcInstance
 	//回報可負載重量
 	public int getMaxWeight () {
 		int maxWeight = 1500 + (((getStr () + getCon () - 18) >> 1) * 150);
-		//apply skill effect
-		//負重強化
+		//TODO:apply skill effect
+		//TODL:負重強化
 		
-		//apply equip effect
-		//多羅皮帶, 歐吉皮帶, 泰坦腰帶
+		//TODO:apply equip effect
+		//TODO:多羅皮帶, 歐吉皮帶, 泰坦腰帶
 		
 		//apply doll effect
 		
@@ -524,7 +524,7 @@ public class PcInstance
 		}
 		
 		//廣播移動訊息(x, y)
-		byte[] movePacket = new ModelMove (uuid, loc.p.x, loc.p.y, _heading).getRaw ();
+		byte[] movePacket = new ModelMove (uuid, loc.p.x, loc.p.y, heading).getRaw ();
 		boardcastPcInsight (movePacket);
 		
 		//檢查是不是在傳送位址
@@ -663,18 +663,24 @@ public class PcInstance
 				return;
 			}
 			
+			if (item.isUsing) {
+				handle.sendPacket (new GameMessage (125, item.getName ()).getRaw ());
+				return;
+			}
+			
 			ItemInstance dropItem = null;
 			
-			removeItem (itemUuid, count);
-			
 			if (item.count > count) { //丟出數量小於持有數量
+				removeItem (itemUuid, count);
 				dropItem = new ItemInstance (item.id, UuidGenerator.next(), 0, item.enchant, count, item.durability, item.chargeCount, false, false);
 				
 			} else { //丟出數量大於等於持有數量
+				removeItem (itemUuid, count);
 				dropItem = item;
 				dropItem.ownerUuid = 0;
 				
 			}
+			
 			//create instance on ground
 			DropInstance drop = new DropInstance (dropItem);
 			
@@ -682,9 +688,9 @@ public class PcInstance
 			drop.loc.p.x = x;
 			drop.loc.p.y = y;
 			
+			drop.boardcastPcInsight (drop.getPacket ());
 			map.addModel (drop);
 			
-			handle.sendPacket (new ModelStatus (this).getRaw ());
 		} //if contains item
 	}
 
@@ -706,8 +712,9 @@ public class PcInstance
 			ItemInstance i = itemBag.get (foundItems.get (0).uuid);
 			i.count += item.count;
 			
-			handle.sendPacket (new UpdateItemAmount (i).getRaw ());
-			handle.sendPacket (new UpdateItemName (i).getRaw ());
+			//handle.sendPacket (new UpdateItemAmount (i).getRaw ());
+			//handle.sendPacket (new UpdateItemName (i).getRaw ());
+			handle.sendPacket (new UpdateItemStatus (i).getRaw ());
 		} else {
 			itemBag.put (item.uuid, item);
 			
@@ -727,8 +734,9 @@ public class PcInstance
 			if (item.isStackable) {
 				item.count += amount;
 				
-				handle.sendPacket (new UpdateItemAmount (item).getRaw ());
-				handle.sendPacket (new UpdateItemName (item).getRaw ());
+				//handle.sendPacket (new UpdateItemAmount (item).getRaw ());
+				//handle.sendPacket (new UpdateItemName (item).getRaw ());
+				handle.sendPacket (new UpdateItemStatus (item).getRaw ());
 			} else {
 				ItemInstance newItem = new ItemInstance (itemId, UuidGenerator.next (), uuid, item.enchant, amount, item.durability, item.chargeCount, false, false);
 				itemBag.put (newItem.uuid, newItem);
@@ -766,9 +774,10 @@ public class PcInstance
 			if (item.count > amount) { //還有剩餘道具
 				item.count -= amount;
 				
+				//handle.sendPacket (new UpdateItemAmount (item).getRaw ());
+				//handle.sendPacket (new UpdateItemName (item).getRaw ());
 				DatabaseCmds.updateItem (item);
-				handle.sendPacket (new UpdateItemAmount (item).getRaw ());
-				handle.sendPacket (new UpdateItemName (item).getRaw ());
+				handle.sendPacket (new UpdateItemStatus (item).getRaw ());
 				
 			} else { //全數清除
 				itemBag.remove (item.uuid);
@@ -783,6 +792,11 @@ public class PcInstance
 	}
 	
 	public void deleteItem (ItemInstance i) {
+		if (i.id == 40308) {
+			handle.sendPacket (new GameMessage (992).getRaw ()); //金幣不可刪除
+			return;
+		}
+		
 		if (i.isUsing) {
 			handle.sendPacket (new GameMessage (GameMessageId.$125).getRaw ());
 		} else {

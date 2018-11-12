@@ -12,6 +12,7 @@ public class ClientOpcodes
 	public static final int LOGIN_PACKET = 23;
 	public static final int CLIENT_BEAT = 30; //KEEPALIVE
 	public static final int CREATE_CHARACTER = 31;
+	public static final int CLIENT_TICK = 35;
 	public static final int REMOTE_ATTACK = 41;
 	public static final int ITEM_DELETE = 49;
 	public static final int SKILL_BUY = 51;

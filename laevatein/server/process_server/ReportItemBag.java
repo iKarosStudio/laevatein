@@ -13,7 +13,7 @@ public class ReportItemBag
 	public ReportItemBag (ConcurrentHashMap<Integer, ItemInstance> itemBag) {
 		
 		packet.writeByte (ServerOpcodes.ITEM_LIST) ;
-		packet.writeByte (itemBag.size ());
+		packet.writeByte (itemBag.size ()); //道具項目數量
 		
 		itemBag.forEach ((Integer uuid, ItemInstance item)->{			
 			packet.writeDoubleWord (uuid);

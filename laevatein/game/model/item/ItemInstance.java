@@ -24,8 +24,8 @@ public class ItemInstance
 	public int minorType;
 	public int useType;
 	
+	private int weight;
 	public int count;
-	public int weight;
 	public int enchant;
 	
 	public boolean isIdentified;
@@ -77,7 +77,7 @@ public class ItemInstance
 	public int dmgReduction;
 	public int weightReduction;
 	
-	public byte[] detail;
+	//public byte[] detail;
 	
 	public ItemInstance (
 			int _id,
@@ -213,8 +213,6 @@ public class ItemInstance
 			isElfUsable   = template.isElfUsable;
 			isDarkelfUsable=template.isDarkelfUsable;
 		}
-		
-		updateDetail ();
 	}
 	
 	public String getName () {
@@ -272,8 +270,8 @@ public class ItemInstance
 		}
 		
 		packet.writeByte (material);
-		//packet.writeDoubleWord ((weight * count) / 1000);
-		packet.writeDoubleWord (weight / 1000);
+		packet.writeDoubleWord ((weight * count) / 1000);
+		//packet.writeDoubleWord (weight / 1000);
 		
 		return packet.getPacketNoPadding ();
 	}
@@ -285,7 +283,8 @@ public class ItemInstance
 		packet.writeByte (dmgSmall);
 		packet.writeByte (dmgLarge);
 		packet.writeByte (material);
-		packet.writeDoubleWord (weight / 1000);
+		//packet.writeDoubleWord (weight / 1000);
+		packet.writeDoubleWord (getWeight());
 		
 		//
 		packet.writeByte (2) ; //Enchant level
@@ -489,13 +488,8 @@ public class ItemInstance
 	}
 	
 	public byte[] getDetail () {
-		if (detail == null) {
-			updateDetail ();
-		}
-		return detail;
-	}
-	
-	public void updateDetail () {
+		byte[] detail = null;
+		
 		switch (majorType) {
 		case 0:
 			detail = getItemDetail ();
@@ -508,6 +502,12 @@ public class ItemInstance
 			break;
 		default: break;
 		}
+		
+		return detail;
+	}
+	
+	public int getWeight () {
+		return weight * count;
 	}
 	
 	public boolean isClassUsable (int type) {

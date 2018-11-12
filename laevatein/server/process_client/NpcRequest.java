@@ -99,7 +99,8 @@ public class NpcRequest
 				item.ownerUuid = pc.uuid;
 				item.count = TotalAmount;
 				totalPrice += item.count * i.sellingPrice;
-				totalWeight += item.count * item.weight;
+				//totalWeight += item.count * item.weight;
+				totalWeight += item.getWeight ();
 				orderedItems.add (item);
 				
 			} else {
@@ -109,7 +110,8 @@ public class NpcRequest
 						item.ownerUuid = pc.uuid;
 						item.count = 1;
 						totalPrice += item.count * i.sellingPrice;
-						totalWeight += item.count * item.weight;
+						//totalWeight += item.count * item.weight;
+						totalWeight += item.getWeight ();
 						orderedItems.add (item);
 					}
 				} else {
@@ -117,7 +119,8 @@ public class NpcRequest
 					item.ownerUuid = pc.uuid;
 					item.count = 1;
 					totalPrice += item.count * i.sellingPrice;
-					totalWeight += item.count * item.weight;
+					//totalWeight += item.count * item.weight;
+					totalWeight += item.getWeight ();
 					orderedItems.add (item);
 				}
 			}

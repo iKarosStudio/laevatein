@@ -6,11 +6,11 @@ import laevatein.server.*;
 import laevatein.server.packet.*;
 import laevatein.server.process_server.*;
 import laevatein.server.database.*;
+import laevatein.server.opcodes.ServerOpcodes;
 import laevatein.server.utility.*;
 import laevatein.game.*;
 import laevatein.game.model.player.*;
-import laevatein.game.routine_task.HsTask;
-import laevatein.game.routine_task.LsTask;
+import laevatein.game.routine_task.*;
 
 public class CharacterOperation {
 	
@@ -18,10 +18,10 @@ public class CharacterOperation {
 		PacketReader packetReader = new PacketReader (packet);
 		String charName = packetReader.readString ();
 		
-		/* 載入角色 */
+		//載入角色
 		PcInstance pc = new PcInstance (handle);
 		if (pc.load (charName)) {
-			/* 開始回報角色登入資料 */
+			//開始回報角色登入資料
 			handle.user.activePc = pc;
 			
 			new Unknown1 (handle);
@@ -32,9 +32,8 @@ public class CharacterOperation {
 			pc.equipment = new Equipment (handle);
 			pc.loadItemBag ();
 			pc.loadSkills ();
-			
 					
-			/* fix
+			/* FIXME
 			byte[] config = new SendClientConfig (Handle).getRaw () ;
 			if (config.length > 0) {
 				Handle.SendPacket (config) ;
@@ -42,10 +41,9 @@ public class CharacterOperation {
 			*/
 			
 			handle.sendPacket (new GameTime().getRaw ());
-
+			handle.sendPacket (new ModelStatus (pc).getRaw ());
 			handle.sendPacket (new MapId (pc.loc.mapId).getRaw ());
 			handle.sendPacket (pc.getPacket ());
-			handle.sendPacket (new ModelStatus (pc).getRaw ());
 
 			pc.loadBuffs ();
 			
@@ -56,12 +54,12 @@ public class CharacterOperation {
 			
 			//Set Emblem here
 
+			
 			handle.sendPacket (new ModelStatus (pc).getRaw ());
 			
-			/* 固定循環工作 */
+			//固定循環工作
 			pc.hsTask = new HsTask (pc);
 			pc.hsTask.start ();
-			
 			pc.lsTask = new LsTask (pc);
 			pc.lsTask.start ();
 			//pc.routineTasks.start ();
@@ -96,7 +94,7 @@ public class CharacterOperation {
 		 * 0: Royal
 		 * 1: Knight
 		 * 2: Elf
-		 * 3: Mage
+		 * 3: Wizard
 		 * 4: Darkelf
 		 */
 		int type = packetReader.readByte ();
@@ -165,8 +163,35 @@ public class CharacterOperation {
 		
 	}
 	
-	public void delete (SessionHandler handle, byte[] data) {
-		//刪除角色
+	public void delete (SessionHandler handle, byte[] packet) {
+		PacketReader packetReader = new PacketReader (packet);
+		
+		String charName = packetReader.readString ();
+		
+		System.out.printf ("delete %s...", charName);
+		PcInstance pc = new PcInstance (handle);
+		if (pc.load (charName)) {			
+			try {
+				DatabaseCmds.deleteSkillEffects (pc.uuid);
+				DatabaseCmds.deletePcItem (pc.uuid);
+				DatabaseCmds.deletePcSkill (pc.uuid);
+				DatabaseCmds.deleteCharacter (pc.uuid);
+				
+				PacketBuilder resultPacket = new PacketBuilder ();
+				resultPacket.writeByte (ServerOpcodes.CHAR_DELETE);
+				resultPacket.writeByte (0x05);
+				
+				handle.sendPacket (resultPacket.getPacket ());
+				
+				System.out.printf ("ok\n");
+				
+			} catch (Exception e) {
+				e.printStackTrace ();
+			}
+			
+		} else {
+			System.out.printf ("not found\n");
+		}
 	}
 }
 

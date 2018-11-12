@@ -6,6 +6,7 @@ import laevatein.server.*;
 import laevatein.server.threadpool.*;
 import laevatein.server.process_server.*;
 import laevatein.game.model.player.*;
+import laevatein.game.skill.*;
 
 //LS(Low Speed) task 1s interval
 //hp, mp resume
@@ -25,7 +26,11 @@ public class LsTask implements Runnable
 	public void run () {//1s interval
 		pc.updateSkillTime ();
 		
-		resumeTrigger ();
+		if ((pc.weightScale30 & 0x10) > 0) {
+			//負重過半
+		} else {
+			resumeTrigger ();
+		}
 		
 		if (pc.battleCounter > 0) {
 			pc.battleCounter --;
@@ -78,6 +83,20 @@ public class LsTask implements Runnable
 	private void mpResume () {
 		int mpr = pc.getMpR ();
 		int maxMp = pc.getMaxMp ();
+		
+		
+		if (pc.hasSkillEffect (SkillId.STATUS_BLUE_POTION)) {
+			int wis = pc.getWis ();
+			if (wis < 12) {
+				mpr += 1;
+			} else {
+				mpr += (wis - 10);
+			}
+		}
+		
+		if (pc.hasSkillEffect (SkillId.STATUS_WISDOM_POTION)) {
+			mpr += 2;
+		}
 		
 		if ((pc.mp + mpr) > maxMp) {
 			pc.mp = maxMp;

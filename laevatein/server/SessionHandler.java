@@ -52,22 +52,22 @@ public class SessionHandler extends Thread implements Runnable
 			int sizeLo = inStream.read ();
 			int size = ((sizeLo << 8) | sizeHi) - 2;
 			
-			byte[] data = new byte[size];	
+			byte[] packet = new byte[size];	
 			
-			inStream.read (data);
-			packetCodec.decode (data, size);
-			packetCodec.updateDecodeKey (data);
+			inStream.read (packet);
+			packetCodec.decode (packet, size);
+			packetCodec.updateDecodeKey (packet);
 			
-			return data;
+			return packet;
 		} catch (IOException e) {
 			throw e;
 		}
 	}
 	
-	public synchronized void sendPacket (byte[] data)  {
+	public synchronized void sendPacket (byte[] packet)  {
 		byte[] raw = null;
 		try {
-			raw = packetCodec.encode (data);
+			raw = packetCodec.encode (packet);
 			//Codec.UpdateEncodeKey (Data) ;
 			/*
 			System.out.printf ("[OUT:0x%08x, 0x%08x]:", Codec.EncodeKeyL[0], Codec.EncodeKeyL[1]) ;
@@ -78,6 +78,12 @@ public class SessionHandler extends Thread implements Runnable
 			*/
 			outStream.write (raw);
 			outStream.flush ();
+			
+		} catch (SocketException e) {
+			System.out.printf ("%s:%d-socket close\n", getIP (), getPort ());
+			if (user.activePc != null) {
+				user.activePc.save (); //offline
+			}
 			
 		} catch (Exception e) {	
 			e.printStackTrace ();
@@ -116,8 +122,10 @@ public class SessionHandler extends Thread implements Runnable
 		/* 斷線後該做的事  */
 		if (user != null) {
 			try {
-				if (!user.activePc.isExit) { //若不是客戶端主動離線
-					user.activePc.save ();
+				if (user.activePc != null) {
+					if (!user.activePc.isExit) { //若不是客戶端主動離線
+						user.activePc.save ();
+					}
 				}
 				
 				user.activePc = null;
@@ -128,6 +136,7 @@ public class SessionHandler extends Thread implements Runnable
 				System.out.printf ("[DISCONNECT]IP:%s [HOST:%s]\n", 
 						sock.getInetAddress().getHostAddress ().toString (),
 						sock.getInetAddress ().getHostName ());
+				
 			} catch (Exception e) {
 				e.printStackTrace ();
 			}

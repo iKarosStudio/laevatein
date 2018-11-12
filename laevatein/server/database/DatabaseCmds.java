@@ -116,6 +116,22 @@ public class DatabaseCmds
 		return rs;
 	}
 	
+	public static void deleteCharacter (int uuid) {
+		Connection con = HikariCP.getConnection ();
+		PreparedStatement ps = null;
+		
+		try {
+			ps = con.prepareStatement ("DELETE FROM characters WHERE objid=?;");
+			ps.setInt (1, uuid);
+			ps.execute ();
+		} catch (Exception e) {
+			e.printStackTrace ();
+		} finally {
+			DatabaseUtil.close (ps);
+			DatabaseUtil.close (con);
+		}
+	}
+	
 	public static void updateAccountLoginTime (String user_account, String ip, String hostname) {
 		Connection con = HikariCP.getConnection ();
 		PreparedStatement ps = null;
@@ -236,6 +252,22 @@ public class DatabaseCmds
 		} finally {
 			DatabaseUtil.close (ps) ;
 			DatabaseUtil.close (con) ;
+		}
+	}
+	
+	public static void deletePcSkill (int pcUuid) {
+		Connection con = HikariCP.getConnection ();
+		PreparedStatement ps = null;
+		
+		try {
+			ps = con.prepareStatement ("DELETE FROM character_skills WHERE char_obj_id=?;");
+			ps.setInt (1, pcUuid);
+			ps.execute ();
+		} catch (Exception e) {
+			e.printStackTrace ();
+		} finally {
+			DatabaseUtil.close (ps);
+			DatabaseUtil.close (con);
 		}
 	}
 	
@@ -429,6 +461,22 @@ public class DatabaseCmds
 		try {
 			ps = con.prepareStatement ("DELETE FROM character_items WHERE id=?;");
 			ps.setInt (1, item.uuid);
+			ps.execute ();
+		} catch (Exception e) {
+			e.printStackTrace ();
+		} finally {
+			DatabaseUtil.close (ps);
+			DatabaseUtil.close (con);
+		}
+	}
+	
+	public static void deletePcItem (int pcUuid) {
+		Connection con = HikariCP.getConnection ();
+		PreparedStatement ps = null;
+		
+		try {
+			ps = con.prepareStatement ("DELETE FROM character_items WHERE char_id=?;");
+			ps.setInt (1, pcUuid);
 			ps.execute ();
 		} catch (Exception e) {
 			e.printStackTrace ();

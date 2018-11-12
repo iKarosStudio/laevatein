@@ -10,6 +10,7 @@ public class ServerOpcodes
 	public static final int NEW_CHARACTER_PACK = 22; //在選角色畫面新增一個角色
 	public static final int ITEM_INSERT = 24; //加入一個道具到角色背包
 	public static final int MAP_ID = 27; //要求更換地圖畫面
+	public static final int CHAR_DELETE = 29; //刪除腳色結果
 	public static final int REMOVE_OBJECT = 34; //移除指定uuid的物件
 	public static final int SERVER_VERSION = 35;
 	public static final int LOGIN_WELCOME_MSG = 36;

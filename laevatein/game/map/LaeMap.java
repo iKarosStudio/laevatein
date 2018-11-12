@@ -93,11 +93,14 @@ public class LaeMap
 	
 	public List<PcInstance> getPcsInRange (Coordinate p, int range) {
 		List<PcInstance> result = new ArrayList<PcInstance> ();
+		
 		pcs.forEachValue (Configurations.PARALLELISM_THRESHOLD, (PcInstance pc)->{
+		//pcs.forEach ((Integer uuid, PcInstance pc)->{
 			if (pc.getDistance (p) < range) {
 				result.add (pc);
 			}
 		});
+		
 		return result;
 	}
 	

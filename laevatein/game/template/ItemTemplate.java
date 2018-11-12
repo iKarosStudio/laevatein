@@ -169,38 +169,41 @@ public class ItemTemplate
 		}
 	}
 	
+	
 	public byte[] ParseItemDetail () {
 		return ParseItemDetail (1) ;
 	}
 	
 	public byte[] ParseItemDetail (int count) {
-		PacketBuilder builder = new PacketBuilder () ;
+		PacketBuilder detail = new PacketBuilder () ;
+		
+		detail.writeByte (material) ;
+		detail.writeDoubleWord (weight / 1000);
 		
 		switch (typeName) {
 		case "light" :
-			builder.writeByte (22) ;
-			builder.writeWord (10) ; //light range
+			detail.writeByte (22) ;
+			detail.writeWord (10) ; //light range
 			break;
 			
 		case "food" :
-			builder.writeByte (21) ;
-			builder.writeWord (foodValue) ;
+			detail.writeByte (21) ;
+			detail.writeWord (foodValue) ;
 			break;
 		
 		case "arrow" :
 		case "sting" :
-			builder.writeByte (1) ;
-			builder.writeByte (dmgSmall) ;
-			builder.writeByte (dmgLarge) ;
+			detail.writeByte (1) ;
+			detail.writeByte (dmgSmall) ;
+			detail.writeByte (dmgLarge) ;
 			
 		default :
-			builder.writeByte (23) ;
+			detail.writeByte (23) ;
 			break;
 		}
 		
-		builder.writeByte (material) ;
-		builder.writeDoubleWord ((weight * count) / 1000);
 		
-		return builder.getPacketNoPadding () ;
+		
+		return detail.getPacketNoPadding () ;
 	}
 }

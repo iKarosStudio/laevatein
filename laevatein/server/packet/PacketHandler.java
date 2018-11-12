@@ -103,7 +103,8 @@ public class PacketHandler
 			break;
 			
 		case ClientOpcodes.CLIENT_BEAT: //keep alive
-			//new GameTime (handle) ;
+		case ClientOpcodes.CLIENT_TICK:
+			handle.sendPacket (new GameTime ().getRaw ());
 			break;
 		
 		case ClientOpcodes.CLIENT_VERSION : //1.進入輸入帳號密碼畫面(客戶端回報版本)
@@ -131,7 +132,7 @@ public class PacketHandler
 			break;
 			
 		case ClientOpcodes.DELETE_CHARACTER:
-			//new CharacterOperation ().delete (handle, packet);
+			new CharacterOperation ().delete (handle, packet);
 			break;
 			
 		case ClientOpcodes.LOGIN_TO_SERVER_DONE: 

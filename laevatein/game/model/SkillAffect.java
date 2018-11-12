@@ -1,5 +1,8 @@
 package laevatein.game.model;
 
+/*
+	可以被技能影響的地圖物件必須實做這個介面
+*/
 public interface SkillAffect
 {
 	public boolean hasSkillEffect (int skillId);

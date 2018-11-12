@@ -67,12 +67,15 @@ public class UsePotion
 			break;
 		
 		case 40015: //藍色藥水
+			useBluePotion (600);
 			break;
 			
 		case 40016: //慎重藥水
+			useWisdomPotion (300);
 			break;
 			
 		case 40017: //解毒藥水
+			//TODO
 			break;
 			
 		case 40013: //綠水
@@ -93,7 +96,7 @@ public class UsePotion
 			break;
 			
 		default:
-			System.out.printf ("%s 還沒處理的藥水\n", _item.name);
+			handle.sendPacket (new GameMessage (74, _item.getName ()).getRaw ()); // ${name}無法使用
 			break;
 		}
 		
@@ -106,9 +109,10 @@ public class UsePotion
 	}
 	
 	public void useBravePotion (int time) {
-		//C_ItemUse.java : 4006
-		//TODO
-		//chech type => $79
+		if (!pc.isKnight ()) {
+			handle.sendPacket (new GameMessage (79).getRaw ()); //沒有任何事情發生
+			return;
+		}
 		
 		//產生特效
 		byte[] visualPacket = new VisualEffect (pc.uuid, 751).getRaw ();
@@ -121,7 +125,18 @@ public class UsePotion
 	}
 	
 	public void useElfCookie (int time) {
-		//TODO
+		if (!pc.isElf ()) {
+			handle.sendPacket (new GameMessage (79).getRaw ()); //沒有任何事情發生
+			return;
+		}
+		
+		//產生特效
+		byte[] visualPacket = new VisualEffect (pc.uuid, 751).getRaw ();
+		handle.sendPacket (visualPacket);
+		pc.boardcastPcInsight (visualPacket);
+		
+		//套用效果
+		pc.addSkillEffect (SkillId.STATUS_BRAVE, time);
 	}
 	
 	public void useHastePotion (int time) {
@@ -134,6 +149,55 @@ public class UsePotion
 		
 		//套用加速效果
 		pc.addSkillEffect (SkillId.STATUS_HASTE, time);
+	}
+	
+	public void useBluePotion (int time) {
+		handle.sendPacket (new GameMessage (1007).getRaw ()); //你感覺到魔力恢復速度加快
+		
+		//產生特效
+		byte[] visualPacket = new VisualEffect (pc.uuid, 190).getRaw ();
+		handle.sendPacket (visualPacket);
+		pc.boardcastPcInsight (visualPacket);
+		
+		//套用藍水效果
+		pc.addSkillEffect (SkillId.STATUS_BLUE_POTION, time);
+	}
+	
+	public void useWisdomPotion (int time) {
+		if (!pc.isWizard ()) {
+			handle.sendPacket (new GameMessage (79).getRaw ()); //沒有任何事情發生
+			return;
+		}
+		
+		handle.sendPacket (new GameMessage (348).getRaw ()); //你的精神力變強
+		
+		//產生特效
+		byte[] visualPacket = new VisualEffect (pc.uuid, 750).getRaw ();
+		handle.sendPacket (visualPacket);
+		pc.boardcastPcInsight (visualPacket);
+		
+		//套用慎重效果
+		pc.addSkillEffect (SkillId.STATUS_WISDOM_POTION, time);
+	}
+	
+	public void useCurePotion () {
+		//產生特效
+		byte[] visualPacket = new VisualEffect (pc.uuid, 192).getRaw ();
+		handle.sendPacket (visualPacket);
+		pc.boardcastPcInsight (visualPacket);
+		
+		
+		if (pc.hasSkillEffect (SkillId.STATUS_CHAT_PROHIBITED)) { //沉默狀態
+		}
+		
+		if (pc.hasSkillEffect (SkillId.STATUS_POISON)) { //中毒
+		}
+		
+		if (pc.hasSkillEffect (SkillId.STATUS_CURSE_PARALYZING)) { //詛咒麻痺
+		}
+		
+		if (pc.hasSkillEffect (SkillId.STATUS_POISON_PARALYZING)) { //中毒麻痺
+		}
 	}
 	
 	public void useHealPotion (int _healHp, int _delay, int gfx) {

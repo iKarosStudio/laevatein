@@ -43,7 +43,7 @@ public class RdPcData
 			});*/
 			
 			
-			console.append (String.format ("  [item bag]->\n"));
+			console.append (String.format ("  [item bag weight:%d/%d]->\n", pc.getWeight (), pc.getMaxWeight ()));
 			pc.itemBag.forEach ((Integer iid, ItemInstance item)->{
 				console.append (String.format ("    0x%08X-%s\n", iid, item.getName ()));
 			});
