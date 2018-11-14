@@ -1,7 +1,7 @@
 package laevatein.game.model.item;
 
 import laevatein.game.model.player.*;
-
+import laevatein.game.skill.SkillId;
 import laevatein.server.*;
 import laevatein.server.packet.*;
 import laevatein.server.process_server.*;
@@ -22,13 +22,25 @@ public class ItemUseParser
 		
 		System.out.printf ("item-parser:%s 使用道具-%s,major[%d],minor[%d],useType[%d]\n", pc.name, item.name, item.majorType, item.minorType, item.useType);
 		
+		//麻痺時不能使用
+		if (pc.hasSkillEffect (SkillId.CURSE_PARALYZE) ||
+			pc.hasSkillEffect (SkillId.STATUS_CURSE_PARALYZED) ||
+			pc.hasSkillEffect (SkillId.STATUS_POISON_PARALYZED)) {
+			return;
+		}
+		
+		//冷凍時不能使用
+		if (pc.isFreeze ()) {
+			return;
+		}
+		
 		switch (item.minorType) {
 		case TYPE_POTION:
 			new UsePotion (_pc, item);
 			break;
 			
 		case TYPE_SCROLL:
-			//TODO
+			new UseScroll (_pc, item, packetReader);
 			break;
 			
 		case TYPE_ARROW:

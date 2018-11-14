@@ -60,6 +60,9 @@ public class SkillEffect
 			//pc.getHandle ().sendPacket (new SkillBrave (pc.uuid, 2, remainTime).getPacket ());
 			break;
 		
+		case SkillId.SHAPE_CHANGE:
+			break;
+			
 		default:
 			break;
 		} //end of switch
@@ -98,6 +101,9 @@ public class SkillEffect
 			pc.getHandle ().sendPacket (new SkillBrave (pc.uuid, 2, 0).getPacket ());
 			break;
 		
+		case SkillId.SHAPE_CHANGE:
+			break;
+			
 		default:
 			break;
 		} //end of switch

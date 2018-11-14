@@ -24,9 +24,8 @@ public class ManageService extends Thread
 					Socket sock = ServiceSocket.accept ();
 					//String ClientIp = Sock.getInetAddress ().getHostAddress ();
 					
-					/*
-					 * 開始管理服務程式
-					 */
+					//開始管理服務程式
+					//TODO
 				} else {
 					//
 				}

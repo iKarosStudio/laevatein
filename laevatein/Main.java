@@ -55,6 +55,7 @@ public class Main
 		//ManageService manageService = ManageService.getInstance ();
 		//manageService.start ();
 		
+		/* 系統功能監控 */
 		SystemMonitor systemMonitor = SystemMonitor.getInstance ();
 		KernelThreadPool.getInstance ().ScheduleAtFixedRate (systemMonitor, 500, 1000);
 			

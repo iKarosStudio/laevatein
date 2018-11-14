@@ -4,17 +4,26 @@ import laevatein.types.*;
 import laevatein.server.*;
 import laevatein.server.packet.*;
 import laevatein.server.process_server.*;
+
 import laevatein.game.model.player.*;
 import laevatein.game.model.item.*;
+import laevatein.game.skill.*;
+import laevatein.game.template.*;
+import laevatein.game.*;
+
 import static laevatein.game.template.ItemTypeTable.*;
 
 public class UseScroll
 {
 	PcInstance pc;
 	SessionHandler handle;
-	public UseScroll (PacketReader packetReader, PcInstance _pc, ItemInstance scroll) {
+	public UseScroll (PcInstance _pc, ItemInstance scroll, PacketReader packetReader) {
 		pc = _pc;
 		handle = _pc.getHandle ();
+		
+		if (isCoolingDown (scroll)) {
+			return;
+		}		
 		
 		switch (scroll.useType) {
 		case TYPE_USE_NTELE:
@@ -22,6 +31,7 @@ public class UseScroll
 			break;
 			
 		case TYPE_USE_SOSC:
+			PolyScroll (scroll, packetReader);
 			//變形類道具
 			/* 參考l1j
 			public static void doPoly(L1PcInstance pc, int polyId, int timeSecs) {
@@ -50,10 +60,9 @@ public class UseScroll
 		pc.sendPackets(new S_SkillIconGFX(35, timeSecs));
 	}
 			 */
-			String s = packetReader.readString ();
 			break;
 		case TYPE_USE_BLANK: //空的魔法卷軸
-			int skill = packetReader.readByte ();
+			//int skill = packetReader.readByte ();
 			break;
 			
 		case TYPE_USE_IDENTIFY:
@@ -77,39 +86,38 @@ public class UseScroll
 		}
 	}
 	
-	public boolean checkScrollDelay (ItemInstance i) {
-		boolean res;
-		long nowTime = System.currentTimeMillis ();
-		
-		if (pc.getItemDelay (i.id, nowTime) > i.delayTime) {
-			pc.setItemDelay (i.id, nowTime);
-			res = true;
-		} else {
-			res = false;
-		}
-		
-		return res;
+	public boolean isCoolingDown (ItemInstance i) {
+		return !(pc.getItemDelay (i.id, System.currentTimeMillis ()) > i.delayTime);
 	}
 	
-	/* 順移卷軸 */
+	//順移卷軸
 	private void TeleportScroll (ItemInstance scroll) {
-		//麻痺時不能順移
-		//
-		
-		//冷凍時不能順移
-		if (pc.isFreeze ()) {
-		}
-		
-		while (!checkScrollDelay (scroll) ) {
-			try {
-				Thread.sleep (500);
-			} catch (Exception e) {
-				e.printStackTrace ();
-			} 
+	
+		try {
+			Thread.sleep (500);
+		} catch (Exception e) {
+			e.printStackTrace ();
 		}
 		
 		Location dest;
 		dest = pc.map.getRandomLocation ();		
 		new Teleport (pc, dest, true);
+	}
+	
+	//變形卷軸
+	private void PolyScroll (ItemInstance scroll, PacketReader packetReader) {
+		String polyName = packetReader.readString ();
+		
+		if (polyName.equals ("")) {
+			System.out.println ("回原狀");
+			//pc.removeSkillEffect
+		} else {
+			System.out.printf ("變形:%s\n", polyName);
+			
+			PolyTemplate p = CacheData.polies.get (polyName);
+			pc.addSkillEffect (SkillId.SHAPE_CHANGE, 1800, p.polyId);
+		}
+		
+		//pc.addSkillEffect (SkillId.SHAPE_CHANGE, 1800, polyId);
 	}
 }

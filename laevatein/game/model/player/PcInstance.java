@@ -869,4 +869,16 @@ public class PcInstance
 			});
 		}
 	}
+
+	@Override
+	public void receiveSkillAttack (SkillAttack sAtk) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void receiveSkillBuff (SkillBuff sBuff) {
+		// TODO Auto-generated method stub
+		
+	}
 }

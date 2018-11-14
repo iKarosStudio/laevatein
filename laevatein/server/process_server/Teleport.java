@@ -14,13 +14,20 @@ public class Teleport
 			pc.map.removePlayer (pc.uuid);
 			pc.loc.mapId = dest.mapId;
 			
-			pc.pcsInsight.clear ();
-			pc.modelsInsight.clear ();
+			try{
+				pc.sight.wait ();
+				pc.pcsInsight.clear ();
+				pc.modelsInsight.clear ();
+				pc.sight.notify ();
+			} catch (Exception e) {
+				e.printStackTrace ();
+			}
 			
 			//update map
 			pc.map = Laevatein.getInstance ().getMap (pc.loc.mapId);
 			pc.map.addPlayer (pc);
-			//pc.saveSkillEffects ();
+			
+			pc.saveBuffs ();
 		}
 		
 		//update coordinate
@@ -35,8 +42,8 @@ public class Teleport
 			handle.sendPacket (effectPacket);
 			pc.boardcastPcInsight (effectPacket);
 			
-			try {
-				Thread.sleep (700); //0.7s delay
+			try { //0.7s delay
+				Thread.sleep (700); 
 			} catch (Exception e) {
 				e.printStackTrace (); 
 			}
@@ -46,7 +53,7 @@ public class Teleport
 		pc.modelsInsight.clear ();
 		
 		//update Skills
-		//pc.skillBuffs.updateSkillEffects ();
+		pc.loadBuffs ();
 		
 		handle.sendPacket (mapPacket);
 		handle.sendPacket (pcPacket);

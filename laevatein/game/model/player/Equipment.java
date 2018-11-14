@@ -5,6 +5,7 @@ import java.util.concurrent.*;
 
 import laevatein.game.model.*;
 import laevatein.game.model.item.*;
+import laevatein.game.template.*;
 import laevatein.server.*;
 import laevatein.server.process_server.*;
 
@@ -541,6 +542,10 @@ public class Equipment implements ApAccessable
 			result += e.ac;
 		}
 		return result;
+	}
+	
+	public void fitPoly (PolyTemplate poly) {
+		//
 	}
 
 }

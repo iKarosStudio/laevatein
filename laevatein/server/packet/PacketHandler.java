@@ -34,7 +34,8 @@ public class PacketHandler
 			break;
 			
 		case ClientOpcodes.ATTACK:
-			new NormalAttack (handle, packet);
+			new Attack (handle, packet);
+			//new NormalAttack (handle, packet);
 			break;
 			
 		case ClientOpcodes.REMOTE_ATTACK:

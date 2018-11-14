@@ -20,6 +20,7 @@ public class CacheData
 	public static ConcurrentHashMap<Integer, ArmorTemplate> armor;
 	public static ConcurrentHashMap<Integer, SkillTemplate> skill;
 	public static ConcurrentHashMap<Integer, NpcShop> npcShop;
+	public static ConcurrentHashMap<String, PolyTemplate> polies;
 	
 	public static CacheData getInstance () {
 		if (instance == null) {
@@ -54,6 +55,9 @@ public class CacheData
 		
 		System.out.print ("\t-> Load armor cache data...");
 		loadArmorCache ();
+		
+		System.out.print ("\t-> Load poly cache data...");
+		loadPolyCache ();
 		
 		System.out.println ();
 		//cache pets types
@@ -160,14 +164,14 @@ public class CacheData
 	
 	public static void loadNpcActionCache () {
 		npcAction = new ConcurrentHashMap<String, Document> ();
-		long t_starts = System.currentTimeMillis ();
+		long timeStart = System.currentTimeMillis ();
 		
 		NpcActionXmlLoader xmlActionFileLoader = new NpcActionXmlLoader ();
 		xmlActionFileLoader.load (npcAction);
 		
-		long t_ends = System.currentTimeMillis ();
-		float used_time = (float) (t_ends - t_starts) / 1000;
-		System.out.printf ("\tnpc xml cached in\t%.3f s\n", used_time);
+		long timeEnd = System.currentTimeMillis ();
+		float usedTime = (float) (timeEnd - timeStart) / 1000;
+		System.out.printf ("\tnpc xml cached in\t%.3f s\n", usedTime);
 	}
 	
 	public void loadNpcTalkDataCache () {
@@ -218,7 +222,7 @@ public class CacheData
 			ps = con.prepareStatement ("SELECT * FROM etcitem;");
 			rs = ps.executeQuery ();
 			
-			int Counter = 0;
+			int counter = 0;
 			long timeStarts = System.currentTimeMillis ();
 			while (rs.next ()) {
 				ItemTemplate i = new ItemTemplate (
@@ -247,11 +251,11 @@ public class CacheData
 				
 				item.put (rs.getInt ("item_id"), i);
 				
-				Counter ++;
+				counter ++;
 			}
 			long timeEnds = System.currentTimeMillis () ;
 			float usedTime = (float) (timeEnds - timeStarts) / 1000;
-			System.out.printf ("\t\t" + Counter + " items cached in\t%.3f s\n", usedTime);
+			System.out.printf ("\t\t" + counter + " items cached in\t%.3f s\n", usedTime);
 		} catch (Exception e) {
 			e.printStackTrace ();
 		} finally {
@@ -272,7 +276,7 @@ public class CacheData
 			ps = con.prepareStatement ("SELECT * FROM skills;");
 			rs = ps.executeQuery (); 
 					
-			int Counter = 0;
+			int counter = 0;
 			long timeStarts = System.currentTimeMillis ();
 			while (rs.next ()) {
 				SkillTemplate template = new SkillTemplate (
@@ -312,11 +316,11 @@ public class CacheData
 				if (template.type == 128) {
 					//System.out.printf ("\nskill[%2d]%s:\t\t target:%02d type:%02d", template.skillId, template.name, template.targetTo, template.type);
 				}
-				Counter++;
+				counter++;
 			}
 			long timeEnds = System.currentTimeMillis ();
 			float usedTime = (float) (timeEnds - timeStarts) / 1000;
-			System.out.printf ("\t\t" + Counter + " skills cached in\t%.3f s\n", usedTime);
+			System.out.printf ("\t\t" + counter + " skills cached in\t%.3f s\n", usedTime);
 		} catch (Exception e) {
 			e.printStackTrace ();
 		} finally {
@@ -337,7 +341,7 @@ public class CacheData
 			ps = con.prepareStatement ("SELECT * FROM shop;");
 			rs = ps.executeQuery ();
 			
-			int Counter = 0;
+			int counter = 0;
 			long timeStarts = System.currentTimeMillis ();
 			while (rs.next ()) {
 				int npcId = rs.getInt ("npc_id");
@@ -362,11 +366,11 @@ public class CacheData
 				//}
 				//System.out.println (_i.Name) ;
 				
-				Counter ++;
+				counter ++;
 			}
 			long timeEnds = System.currentTimeMillis () ;
 			float usedTime = (float) (timeEnds - timeStarts) / 1000;
-			System.out.printf ("\t\t" + Counter + " shop cached in\t%.3f s\n", usedTime) ;
+			System.out.printf ("\t\t" + counter + " shop cached in\t%.3f s\n", usedTime) ;
 			
 		} catch (Exception e) {
 			e.printStackTrace ();
@@ -388,7 +392,7 @@ public class CacheData
 			ps = con.prepareStatement ("SELECT * FROM weapon;");
 			rs = ps.executeQuery ();
 			
-			int Counter = 0;
+			int counter = 0;
 			long timeStarts = System.currentTimeMillis () ;
 			while (rs.next ()) {
 				int itemId = rs.getInt ("item_id");
@@ -434,11 +438,11 @@ public class CacheData
 					rs.getBoolean ("mana_item") ) ;
 				
 				weapon.putIfAbsent (itemId, w) ;
-				Counter ++;
+				counter ++;
 			}
 			long timeEnds = System.currentTimeMillis ();
 			float usedTime = (float) (timeEnds - timeStarts) / 1000;
-			System.out.printf ("\t\t" + Counter + " weapons cached in\t%.3f s\n", usedTime);
+			System.out.printf ("\t\t" + counter + " weapons cached in\t%.3f s\n", usedTime);
 		} catch (Exception e) {
 			e.printStackTrace ();
 			
@@ -461,7 +465,7 @@ public class CacheData
 			ps = con.prepareStatement ("SELECT * FROM armor;");
 			rs = ps.executeQuery ();
 			
-			int Counter = 0;
+			int counter = 0;
 			long timeStarts = System.currentTimeMillis ();
 			while (rs.next ()) {
 				int itemId = rs.getInt ("item_id");
@@ -513,11 +517,11 @@ public class CacheData
 					rs.getInt ("regist_freeze"));
 				
 				armor.putIfAbsent (itemId, a);
-				Counter ++;
+				counter ++;
 			}
 			long timeEnds = System.currentTimeMillis ();
 			float usedTime = (float) (timeEnds - timeStarts) / 1000;
-			System.out.printf ("\t\t" + Counter + " armors cached in \t%.3f s\n", usedTime);
+			System.out.printf ("\t\t" + counter + " armors cached in \t%.3f s\n", usedTime);
 		} catch (Exception e) {
 			e.printStackTrace ();
 			
@@ -525,7 +529,46 @@ public class CacheData
 			DatabaseUtil.close (rs);
 			DatabaseUtil.close (ps);
 			DatabaseUtil.close (con);
-			
 		}
 	}
+	
+	public void loadPolyCache () {
+		polies = new ConcurrentHashMap<String, PolyTemplate> ();
+		
+		Connection con = HikariCP.getConnection ();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			ps = con.prepareStatement ("SELECT * FROM polymorphs;");
+			rs = ps.executeQuery ();
+			
+			int counter = 0;
+			long timeStarts = System.currentTimeMillis ();
+			while (rs.next ()) {
+				PolyTemplate p = new PolyTemplate (
+						rs.getInt ("id"),
+						rs.getString ("name"),
+						rs.getInt ("polyid"),
+						rs.getInt ("minlevel"),
+						rs.getInt ("weaponequip"),
+						rs.getInt ("armorequip"),
+						rs.getBoolean ("isSkillUse"));
+				
+				polies.putIfAbsent (p.name, p);
+				counter ++;
+			}
+			long timeEnds = System.currentTimeMillis ();
+			float usedTime = (float) (timeEnds - timeStarts) / 1000;
+			System.out.printf ("\t\t" + counter + " poly cached in \t%.3f s\n", usedTime);
+		} catch (Exception e) {
+			e.printStackTrace ();
+			
+		} finally {
+			DatabaseUtil.close (rs);
+			DatabaseUtil.close (ps);
+			DatabaseUtil.close (con);
+		}
+	}
+	
 }
