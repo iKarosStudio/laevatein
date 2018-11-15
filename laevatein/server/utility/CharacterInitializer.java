@@ -37,11 +37,11 @@ public class CharacterInitializer
 		pc.type = type;
 		pc.sex = sex;
 		if (pc.sex == 0) { //Male
-			pc.gfx = MALE_LIST[pc.type];
-			pc.originGfx = pc.gfx;
+			pc.originGfx = MALE_LIST[pc.type];
+			pc.gfx = pc.originGfx;
 		} else { //Female
-			pc.gfx = FEMALE_LIST[pc.type];
-			pc.originGfx = pc.gfx;
+			pc.originGfx = FEMALE_LIST[pc.type];
+			pc.gfx = pc.originGfx;
 		}
 		//pc.gfxTemp = pc.gfx;
 		pc.lawful = 0;

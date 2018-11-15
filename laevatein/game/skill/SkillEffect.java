@@ -61,6 +61,7 @@ public class SkillEffect
 			break;
 		
 		case SkillId.SHAPE_CHANGE:
+			new Polymorph (pc, polyGfx, remainTime);
 			break;
 			
 		default:
@@ -102,10 +103,21 @@ public class SkillEffect
 			break;
 		
 		case SkillId.SHAPE_CHANGE:
+			new Polymorph (pc);
 			break;
 			
 		default:
 			break;
 		} //end of switch
+	}
+	
+	public void updateSkillEffect (PcInstance pc, SkillEffect buff) {
+		//update time, poly
+		if (remainTime < buff.remainTime) {
+			remainTime = buff.remainTime;
+		}
+		polyGfx = buff.polyGfx;
+		
+		setSkillEffect (pc);
 	}
 }

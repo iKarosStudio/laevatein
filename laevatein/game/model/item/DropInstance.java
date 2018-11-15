@@ -85,4 +85,9 @@ public class DropInstance extends Objeto
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void die () {
+		//
+	}
 }

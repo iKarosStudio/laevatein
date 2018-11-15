@@ -15,7 +15,7 @@ public abstract class Objeto
 	public int uuid;
 	
 	/* 外型敘述 */
-	public int originGfx = 0;
+	public int originGfx;
 	public int gfx = 0;
 	public int actId = 0;
 	
@@ -127,4 +127,5 @@ public abstract class Objeto
 	public abstract byte[] getPacket ();
 	public abstract void boardcastPcInsight (byte[] packet);
 	public abstract void receiveAttack (NormalAttack attack); //通用接受攻擊介面
+	public abstract void die ();//通用死亡表現
 }

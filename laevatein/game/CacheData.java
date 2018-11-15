@@ -20,7 +20,8 @@ public class CacheData
 	public static ConcurrentHashMap<Integer, ArmorTemplate> armor;
 	public static ConcurrentHashMap<Integer, SkillTemplate> skill;
 	public static ConcurrentHashMap<Integer, NpcShop> npcShop;
-	public static ConcurrentHashMap<String, PolyTemplate> polies;
+	public static ConcurrentHashMap<Integer, PolyTemplate> poly;
+	public static ConcurrentHashMap<String, Integer> polyIds;
 	
 	public static CacheData getInstance () {
 		if (instance == null) {
@@ -533,7 +534,8 @@ public class CacheData
 	}
 	
 	public void loadPolyCache () {
-		polies = new ConcurrentHashMap<String, PolyTemplate> ();
+		poly = new ConcurrentHashMap<Integer, PolyTemplate> ();
+		polyIds = new ConcurrentHashMap <String, Integer> ();
 		
 		Connection con = HikariCP.getConnection ();
 		PreparedStatement ps = null;
@@ -555,7 +557,9 @@ public class CacheData
 						rs.getInt ("armorequip"),
 						rs.getBoolean ("isSkillUse"));
 				
-				polies.putIfAbsent (p.name, p);
+				poly.putIfAbsent (p.id, p);
+				polyIds.put (p.name, p.id);
+				
 				counter ++;
 			}
 			long timeEnds = System.currentTimeMillis ();

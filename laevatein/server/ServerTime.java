@@ -1,9 +1,8 @@
 package laevatein.server;
 
-import java.lang.Thread;
 import java.util.Calendar;
 
-public class ServerTime extends Thread implements Runnable
+public class ServerTime implements Runnable
 {
 	private static ServerTime instance; 
 	private static Calendar cal = null;
@@ -17,19 +16,25 @@ public class ServerTime extends Thread implements Runnable
 	public void run () {
 		//System.out.println ("\t-> System time : " + cal.getTime ().toString () ) ;
 		try {
-			//while (true) {
-				//cal = Calendar.getInstance () ;
-				time = cal.getTimeInMillis () ;
-				date = cal.get (Calendar.DATE) ;
-				
-				int t = (cal.get (Calendar.HOUR) * 3600) + (cal.get (Calendar.MINUTE) * 60) + cal.get (Calendar.SECOND) ;
-				
-				t *= 6; //遊戲與現實時間比例
-				hour = t / 3600 % 24;
-				minute  = t / 60 % 60;
-				second  = t % 60;
-				//sleep (1000) ; //1s
-			//}
+			cal = Calendar.getInstance ();
+			time = cal.getTimeInMillis ();
+			//time=System.currentTimeMillis ();
+			date = cal.get (Calendar.DATE);
+			
+			int t = (cal.get (Calendar.HOUR) * 3600) + (cal.get (Calendar.MINUTE) * 60) + cal.get (Calendar.SECOND) ;
+			
+			t *= 6; //遊戲與現實時間比例
+			hour = t / 3600 % 24;
+			minute  = t / 60 % 60;
+			second  = t % 60;
+			
+			/*
+			System.out.printf ("time in game:%02d:%02d:%02d\n", hour, minute, second);
+			System.out.printf ("time in real:%02d:%02d:%02d\n", 
+					cal.get (Calendar.HOUR),
+					cal.get (Calendar.MINUTE),
+					cal.get (Calendar.SECOND));*/
+			
 		} catch (Exception e) {
 			e.printStackTrace ();
 		}
@@ -37,8 +42,6 @@ public class ServerTime extends Thread implements Runnable
 	
 	public ServerTime () {
 		cal = Calendar.getInstance ();
-		//System.out.println ("Server Time start") ;
-		this.setName ("SERVER TIME") ;
 	}
 	
 	public static ServerTime getInstance () {

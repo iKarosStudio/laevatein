@@ -89,12 +89,12 @@ public class Laevatein extends Thread
 			
 			/* Generate Element Stone */
 			if (maps.containsKey (4)) {
-				System.out.println ("元素石生產引擎...") ;
+				System.out.println ("元素石生產引擎...");
 				//TODO: element stone gen
 			}
 			
 			/* Start server time */
-			time = ServerTime.getInstance () ;
+			time = ServerTime.getInstance ();
 			KernelThreadPool.getInstance ().ScheduleAtFixedRate (time, 0, 1000);
 			
 			//load boss

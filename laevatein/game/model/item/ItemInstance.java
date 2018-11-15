@@ -213,6 +213,14 @@ public class ItemInstance
 			isElfUsable   = template.isElfUsable;
 			isDarkelfUsable=template.isDarkelfUsable;
 		}
+		
+		if (isWeapon () || isArmor ()) {
+			if (isRoyalUsable) usableClass   |= 0x01;
+			if (isKnightUsable) usableClass  |= 0x02;
+			if (isElfUsable) usableClass     |= 0x04;
+			if (isWizardUsable) usableClass  |= 0x08;
+			if (isDarkelfUsable) usableClass |= 0x10;
+		}
 	}
 	
 	public String getName () {
@@ -309,11 +317,6 @@ public class ItemInstance
 			packet.writeByte (dmgModify) ;
 		}
 		
-		if (isRoyalUsable) usableClass   |= 0x01;
-		if (isKnightUsable) usableClass  |= 0x02;
-		if (isElfUsable) usableClass     |= 0x04;
-		if (isWizardUsable) usableClass  |= 0x08;
-		if (isDarkelfUsable) usableClass |= 0x10;
 		packet.writeByte (7) ; //use class
 		packet.writeByte (usableClass);
 		
@@ -395,12 +398,6 @@ public class ItemInstance
 			packet.writeByte (durability) ;
 		}
 		
-		byte usableClass = 0;
-		if (isRoyalUsable) usableClass   |= 0x01;
-		if (isKnightUsable) usableClass  |= 0x02;
-		if (isElfUsable) usableClass     |= 0x04;
-		if (isWizardUsable) usableClass  |= 0x08;
-		if (isDarkelfUsable) usableClass |= 0x10;
 		packet.writeByte (7) ; //use class
 		packet.writeByte (usableClass);
 

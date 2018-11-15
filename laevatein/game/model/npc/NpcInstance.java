@@ -70,6 +70,11 @@ public class NpcInstance extends Objeto
 	@Override
 	public void receiveAttack (NormalAttack attack) {
 		// TODO Auto-generated method stub
-		
 	}
+	
+	@Override
+	public void die () {
+		//
+	}
+	
 }

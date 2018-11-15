@@ -20,6 +20,7 @@ import laevatein.game.model.*;
 import laevatein.game.model.item.*;
 import laevatein.game.skill.*;
 import laevatein.game.routine_task.*;
+import laevatein.game.template.*;
 
 public class PcInstance 
 	extends Objeto 
@@ -163,7 +164,8 @@ public class PcInstance
 				
 				sex = rs.getInt ("Sex");
 				type = rs.getInt ("Type");
-				gfx = rs.getInt ("Class");
+				originGfx = rs.getInt ("Class");
+				gfx = originGfx;
 				
 				basicParameters = new AbilityParameter ();
 				skillParameters = new AbilityParameter ();
@@ -382,7 +384,18 @@ public class PcInstance
 	}
 	
 	public void setWeapon (int wUuid) {
-		equipment.setWeapon (itemBag.get (wUuid));
+		ItemInstance w = itemBag.get (wUuid);
+		
+		//檢查變身時不能用的武器
+		if (hasSkillEffect (SkillId.SHAPE_CHANGE)) {
+			int polyId = buffs.get (SkillId.SHAPE_CHANGE).polyGfx;
+			PolyTemplate poly = CacheData.poly.get (polyId);
+			if (!poly.weaponType.get (w.minorType)) {
+				return; //變身時不能用的武器
+			}
+		}
+		
+		equipment.setWeapon (w);
 		equipmentParameters = null;
 		equipmentParameters = equipment.getAbilities ();
 		
@@ -390,7 +403,18 @@ public class PcInstance
 	}
 	
 	public void setArmor (int aUuid) {
-		equipment.setEquipment (itemBag.get (aUuid));
+		ItemInstance a = itemBag.get (aUuid);
+		
+		//檢查變身時不能用的裝備
+		if (hasSkillEffect (SkillId.SHAPE_CHANGE)) {
+			int polyId = buffs.get (SkillId.SHAPE_CHANGE).polyGfx;
+			PolyTemplate poly = CacheData.poly.get (polyId);
+			if (!poly.armorType.get (a.minorType)) {
+				return; //變身時不能用的裝備
+			}
+		}
+		
+		equipment.setEquipment (a);
 		equipmentParameters = null;
 		equipmentParameters = equipment.getAbilities ();
 		
@@ -476,6 +500,11 @@ public class PcInstance
 		battleCounter = 0x20; //check for 32s
 	}
 
+	@Override
+	public void die () {
+		//TODO
+	}
+	
 	@Override
 	public void move (int x, int y, int _heading) {
 		moveToHeading (_heading);
@@ -843,8 +872,13 @@ public class PcInstance
 	@Override
 	public void addSkillEffect (int skillId, int time, int polyGfx) {
 		SkillEffect buff = new SkillEffect (skillId, time, polyGfx);
-		buff.setSkillEffect (this); //套用技能效果
-		buffs.put (skillId, buff);
+		
+		if (hasSkillEffect (skillId)) { //現有BUFF更新
+			buffs.get (skillId).updateSkillEffect (this, buff);
+		} else { //加入新BUFF
+			buff.setSkillEffect (this); //套用技能效果
+			buffs.put (skillId, buff);
+		}
 	}
 	
 	@Override
@@ -852,6 +886,7 @@ public class PcInstance
 		if (buffs.containsKey (skillId)) {
 			buffs.get (skillId).unsetSkillEffect (this); //移除技能效果
 		}
+		
 		buffs.remove (skillId);
 	}
 	
@@ -881,4 +916,5 @@ public class PcInstance
 		// TODO Auto-generated method stub
 		
 	}
+
 }

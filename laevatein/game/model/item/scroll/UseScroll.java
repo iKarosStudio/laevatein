@@ -102,6 +102,8 @@ public class UseScroll
 		Location dest;
 		dest = pc.map.getRandomLocation ();		
 		new Teleport (pc, dest, true);
+		
+		pc.removeItem (scroll.uuid, 1);
 	}
 	
 	//變形卷軸
@@ -109,15 +111,21 @@ public class UseScroll
 		String polyName = packetReader.readString ();
 		
 		if (polyName.equals ("")) {
-			System.out.println ("回原狀");
-			//pc.removeSkillEffect
-		} else {
-			System.out.printf ("變形:%s\n", polyName);
+			pc.removeSkillEffect (SkillId.SHAPE_CHANGE);
+			pc.removeItem (scroll.uuid, 1);
 			
-			PolyTemplate p = CacheData.polies.get (polyName);
-			pc.addSkillEffect (SkillId.SHAPE_CHANGE, 1800, p.polyId);
-		}
+		} else {
+			int polyId = CacheData.polyIds.get (polyName);
+			PolyTemplate poly = CacheData.poly.get (polyId);
+			
+			//if (pc.level < poly.minLevel) {
+				//handle.sendPacket (new GameMessage (181).getRaw ());
+			//} else {
+				pc.addSkillEffect (SkillId.SHAPE_CHANGE, 1800, polyId);
+				pc.removeItem (scroll.uuid, 1);
+			//}
+			
+		} //end of polyName
 		
-		//pc.addSkillEffect (SkillId.SHAPE_CHANGE, 1800, polyId);
 	}
 }

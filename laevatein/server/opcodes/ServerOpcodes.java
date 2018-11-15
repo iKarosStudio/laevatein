@@ -36,7 +36,7 @@ public class ServerOpcodes
 	public static final int VISUAL_EFFECT = 80;
 	public static final int DOOR_DETAIL = 81;
 	public static final int ITEM_LIST = 82;
-	public static final int UPDATE_MODEL_ACTID = 84;
+	public static final int UPDATE_MODEL_ACTID = 84; //更新UUID物件閒置ACTID
 	public static final int UPDATE_MODEL_AC = 85;
 	public static final int DISCONNECT = 88; //強制客戶端離線
 	public static final int UPDATE_MODEL_STATUS = 89;
@@ -49,7 +49,7 @@ public class ServerOpcodes
 	public static final int UNKNOWN2 = 105;
 	public static final int SET_HEADING = 105;
 	public static final int CHAR_TITLE = 109;
-	public static final int UPDATE_MODEL_GFX = 112;
+	public static final int UPDATE_MODEL_GFX = 112; //更新UUID物件外觀為GFX
 	public static final int SKILL_SHIELD = 114;
 	public static final int CHAR_AMOUNT = 117;
 	public static final int CHAR_LIST = 118;

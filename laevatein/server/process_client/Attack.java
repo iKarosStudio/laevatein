@@ -6,6 +6,7 @@ import laevatein.server.process_server.*;
 import laevatein.game.model.player.*;
 
 /* 攻擊驗算參考 model/L1Attack.java */
+@Deprecated
 public class Attack
 {
 	public Attack (SessionHandler handle, byte[] data) {

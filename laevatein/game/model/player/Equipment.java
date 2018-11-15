@@ -3,6 +3,7 @@ package laevatein.game.model.player;
 import java.util.*;
 import java.util.concurrent.*;
 
+import laevatein.game.skill.*;
 import laevatein.game.model.*;
 import laevatein.game.model.item.*;
 import laevatein.game.template.*;
@@ -150,12 +151,20 @@ public class Equipment implements ApAccessable
 		e.isUsing = true;
 		equipment.put (index, e);
 		handle.sendPacket (new UpdateItemName (e).getRaw ());
+		
+		if (e.isHasteEffect) {
+			pc.addSkillEffect (SkillId.STATUS_HASTE, 0xFFFF);
+		}
 	}
 	
 	private void takeOff (int index, ItemInstance e) {
 		e.isUsing = false;
 		equipment.remove (index);
 		handle.sendPacket (new UpdateItemName (e).getRaw ());
+		
+		if (e.isHasteEffect) {
+			pc.removeSkillEffect (SkillId.STATUS_HASTE);
+		}
 	}
 	
 	private void swapTo (int index, ItemInstance e) {
@@ -167,11 +176,14 @@ public class Equipment implements ApAccessable
 		equipment.replace (index, e);
 		handle.sendPacket (new UpdateItemName (e).getRaw ());
 		
+		if (e.isHasteEffect) {
+			pc.addSkillEffect (SkillId.STATUS_HASTE, 0xFFFF);
+		}
 	}
 	
 	public void setWeapon (ItemInstance weapon) {
 		int prevActId = pc.actId;
-		
+		System.out.printf ("prev:%d\n", prevActId);
 		//職業可用性檢查
 		if (!weapon.isClassUsable (pc.type)) {
 			handle.sendPacket (new GameMessage (264).getRaw ());
@@ -210,6 +222,8 @@ public class Equipment implements ApAccessable
 			putOn (INDEX_WEAPON, weapon);
 			pc.actId = weapon.actId;
 		}
+		
+		System.out.printf ("paid:%d, aid:%d\n", prevActId, pc.actId);
 		
 		//改變角色外型(若需要)
 		if (prevActId != pc.actId) {
@@ -545,7 +559,18 @@ public class Equipment implements ApAccessable
 	}
 	
 	public void fitPoly (PolyTemplate poly) {
-		//
+		equipment.forEachValue (1, (ItemInstance e)->{
+			if (e.isWeapon ()) {
+				if (poly.weaponType.get (e.minorType) == false) {
+					System.out.printf ("不能用的武器類型%d:%s\n", e.minorType, e.name);
+					setWeapon (e); //take off
+				}
+			} else if (e.isArmor ()) {
+				if (poly.armorType.get (e.minorType) == false) {
+					takeOff (e.minorType, e);
+				}
+			}
+		});
 	}
 
 }

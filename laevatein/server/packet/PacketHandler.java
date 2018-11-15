@@ -34,12 +34,12 @@ public class PacketHandler
 			break;
 			
 		case ClientOpcodes.ATTACK:
-			new Attack (handle, packet);
-			//new NormalAttack (handle, packet);
+			//new Attack (handle, packet);
+			new NormalAttack (handle, packet);
 			break;
 			
 		case ClientOpcodes.REMOTE_ATTACK:
-			//new AttackLongRange (handle, packet);
+			new NormalAttackLongRange (handle, packet);
 			break;	
 			
 		case ClientOpcodes.MOVE:

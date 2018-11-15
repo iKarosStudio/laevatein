@@ -27,8 +27,10 @@ public class Teleport
 			pc.map = Laevatein.getInstance ().getMap (pc.loc.mapId);
 			pc.map.addPlayer (pc);
 			
-			pc.saveBuffs ();
+			
 		}
+		
+		pc.saveBuffs ();
 		
 		//update coordinate
 		pc.loc.p.x = dest.p.x;
@@ -42,8 +44,8 @@ public class Teleport
 			handle.sendPacket (effectPacket);
 			pc.boardcastPcInsight (effectPacket);
 			
-			try { //0.7s delay
-				Thread.sleep (700); 
+			try { //TODO:0.7s delay改成config檔案可以設定
+				Thread.sleep (10); 
 			} catch (Exception e) {
 				e.printStackTrace (); 
 			}
