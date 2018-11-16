@@ -40,6 +40,8 @@ public class RdCreateItem
 		
 		if (cmdFormatValid) {
 			ItemInstance i = new ItemInstance (itemId, UuidGenerator.next (), rd.uuid, 0, itemAmount, 0, 0, false, true);
+			//ItemInstance i = new ItemInstance (itemId, UuidGenerator.next (), rd.uuid, 0, 1, 0, 0, false, true);
+			//i.count = itemAmount;
 			rd.addItem (i);
 			
 			handle.sendPacket (new SystemMessage (String.format ("新增%d個%s", i.count, i.name)).getRaw ());

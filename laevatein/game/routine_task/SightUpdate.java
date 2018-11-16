@@ -12,7 +12,7 @@ import laevatein.game.model.player.*;
 
 public class SightUpdate implements Runnable
 {
-	ScheduledFuture<?> schedulor;
+	private ScheduledFuture<?> schedulor;
 	private PcInstance pc;
 	private SessionHandler handle;
 
@@ -55,24 +55,25 @@ public class SightUpdate implements Runnable
 	}
 	
 	private void updateModels () {
-		List<Objeto> models = pc.map.getModelsInsight (pc.loc.p);
-		models.forEach ((Objeto m)->{
-			if (!pc.modelsInsight.containsKey (m.uuid)) {
-				pc.modelsInsight.put (m.uuid, m);
-				handle.sendPacket (m.getPacket ());
+		List<Objeto> objects = pc.map.getModelsInsight (pc.loc.p);
+		objects.forEach ((Objeto obj)->{
+			if (!pc.objectsInsight.containsKey (obj.uuid)) { //還沒有快取
+				pc.objectsInsight.put (obj.uuid, obj);
+				handle.sendPacket (obj.getPacket ());
 			}
 		});
 		
-		pc.modelsInsight.forEachValue (Configurations.PARALLELISM_THRESHOLD, (Objeto m)->{
-			if (!pc.isInsight (m.loc) || !models.contains (m)) {
-				pc.modelsInsight.remove (m.uuid);
-				handle.sendPacket (new RemoveModel (m.uuid).getRaw ());
-			} else {
-				if (m instanceof AiControllable) {
-					((AiControllable) m).toggleAi ();
+		pc.objectsInsight.forEachValue (Configurations.PARALLELISM_THRESHOLD, (Objeto obj)->{
+			if (!pc.isInsight (obj.loc) || !objects.contains (obj)) {//需要移出視線
+				pc.objectsInsight.remove (obj.uuid);
+				handle.sendPacket (new RemoveModel (obj.uuid).getRaw ());
+			} else { //觸發AI
+				if (obj instanceof AiControllable) {
+					((AiControllable) obj).toggleAi ();
 				}
 			}
 		});
+		
 	}
 	
 	public void start () {

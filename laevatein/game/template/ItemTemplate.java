@@ -201,9 +201,7 @@ public class ItemTemplate
 			detail.writeByte (23) ;
 			break;
 		}
-		
-		
-		
+
 		return detail.getPacketNoPadding () ;
 	}
 }

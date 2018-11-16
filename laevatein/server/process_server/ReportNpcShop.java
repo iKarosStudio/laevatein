@@ -12,7 +12,7 @@ import laevatein.game.template.*;
 
 public class ReportNpcShop
 {
-	PacketBuilder packet = new PacketBuilder () ;
+	PacketBuilder packet = new PacketBuilder ();
 	public int npcId;
 	
 	public ReportNpcShop (int _npcId) {

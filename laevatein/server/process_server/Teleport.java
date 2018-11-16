@@ -17,7 +17,7 @@ public class Teleport
 			try{
 				pc.sight.wait ();
 				pc.pcsInsight.clear ();
-				pc.modelsInsight.clear ();
+				pc.objectsInsight.clear ();
 				pc.sight.notify ();
 			} catch (Exception e) {
 				e.printStackTrace ();
@@ -52,7 +52,7 @@ public class Teleport
 		}
 		
 		pc.pcsInsight.clear ();
-		pc.modelsInsight.clear ();
+		pc.objectsInsight.clear ();
 		
 		//update Skills
 		pc.loadBuffs ();

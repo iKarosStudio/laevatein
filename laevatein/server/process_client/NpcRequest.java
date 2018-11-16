@@ -146,7 +146,7 @@ public class NpcRequest
 		/* PAY TAX */
 		
 		//更新角色狀況
-		handle.sendPacket (new ModelStatus (pc).getRaw ());
+		pc.updateWeightCache ();
 	}
 	
 	void parseSellList (int npcId, int size, byte[] data) {

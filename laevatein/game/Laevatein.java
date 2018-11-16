@@ -80,6 +80,9 @@ public class Laevatein extends Thread
 			
 			/* Generate monster */
 			System.out.printf ("Monster generator initialize interval:%.1f Sec...", (float) Configurations.MONSTER_GENERATOR_UPDATE_RATE / 1000);
+			maps.forEach ((Integer mapId, LaeMap map)->{
+				System.out.printf ("map:%d\n", mapId);
+			});
 			//maps.forEach ((Integer map_id, VidarMap map)->{
 			//	map.monsterGenerator = new MonsterGenerator (map) ;
 			//	KernelThreadPool.getInstance ().ScheduleAtFixedRate (map.monsterGenerator, 1000, Configurations.MONSTER_GENERATOR_UPDATE_RATE) ;

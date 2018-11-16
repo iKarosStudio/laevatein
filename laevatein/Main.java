@@ -74,15 +74,9 @@ public class Main
 		/* 掛載關機程序 */
 		Runtime.getRuntime().addShutdownHook (new Shutdown ());
 		
-		int money = 30000;
-		for (int i = 0; i < 30; i++) {
-			money *= 1.015;
-		}
-		System.out.println (money);
-		
 		/* 本地控制台 */
 		while (true) {
-			Thread.sleep (Long.MAX_VALUE); //120S
+			Thread.sleep (Long.MAX_VALUE); //HALT
 		}
 	}	
 }

@@ -96,7 +96,7 @@ public class LaeMap
 		
 		pcs.forEachValue (Configurations.PARALLELISM_THRESHOLD, (PcInstance pc)->{
 		//pcs.forEach ((Integer uuid, PcInstance pc)->{
-			if (pc.getDistance (p) < range) {
+			if (pc.getDistanceTo (p) < range) {
 				result.add (pc);
 			}
 		});
@@ -124,9 +124,9 @@ public class LaeMap
 	
 	public List<Objeto> getModelsInRange (Coordinate p, int range) {
 		List<Objeto> result = new ArrayList<Objeto> ();
-		models.forEachValue (Configurations.PARALLELISM_THRESHOLD, (Objeto m)->{
-			if (m.getDistance (p) < range) {
-				result.add (m);
+		models.forEachValue (Configurations.PARALLELISM_THRESHOLD, (Objeto obj)->{
+			if (obj.getDistanceTo (p) < range) {
+				result.add (obj);
 			}
 		});
 		return result;

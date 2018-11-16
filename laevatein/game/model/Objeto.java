@@ -109,7 +109,7 @@ public abstract class Objeto
 		return directionFace & 0x0FF;
 	}
 	
-	public int getDistance (Coordinate p) {
+	public int getDistanceTo (Coordinate p) {
 		int dx = Math.abs (p.x - loc.p.x);
 		int dy = Math.abs (p.y - loc.p.y);
 		
@@ -120,7 +120,7 @@ public abstract class Objeto
 		if (loc.mapId != _loc.mapId) {
 			return false;
 		} else {
-			return (getDistance (_loc.p) < Configurations.SIGHT_RAGNE);
+			return (getDistanceTo (_loc.p) < Configurations.SIGHT_RAGNE);
 		}
 	}
 	

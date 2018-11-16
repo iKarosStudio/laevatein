@@ -73,7 +73,7 @@ public class PcInstance
 	
 	/* 視線內物件 <K, V> = <UUID, 實體> */
 	public ConcurrentHashMap<Integer, PcInstance> pcsInsight;
-	public ConcurrentHashMap<Integer, Objeto> modelsInsight;
+	public ConcurrentHashMap<Integer, Objeto> objectsInsight;
 	
 	/* 戰鬥狀態&移動狀態剩餘秒數 */
 	public int battleCounter;
@@ -94,7 +94,7 @@ public class PcInstance
 		//skillBuffs
 		
 		pcsInsight = new ConcurrentHashMap<Integer, PcInstance> ();
-		modelsInsight = new ConcurrentHashMap<Integer, Objeto> ();
+		objectsInsight = new ConcurrentHashMap<Integer, Objeto> ();
 	}
 	
 	public void setHandle (SessionHandler _handle) {

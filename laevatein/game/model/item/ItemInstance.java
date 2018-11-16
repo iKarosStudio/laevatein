@@ -106,7 +106,7 @@ public class ItemInstance
 			majorType = 0;
 			minorType = template.minorType;
 			useType = template.useType;
-			weight = template.weight * count;
+			weight = template.weight;
 			gfxInBag = template.gfxInBag;
 			gfx = template.gfxOnGround;
 			name = template.name;
