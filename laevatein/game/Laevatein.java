@@ -81,7 +81,9 @@ public class Laevatein extends Thread
 			/* Generate monster */
 			System.out.printf ("Monster generator initialize interval:%.1f Sec...", (float) Configurations.MONSTER_GENERATOR_UPDATE_RATE / 1000);
 			maps.forEach ((Integer mapId, LaeMap map)->{
-				System.out.printf ("map:%d\n", mapId);
+				
+				
+				//System.out.printf ("map:%d\n", mapId);
 			});
 			//maps.forEach ((Integer map_id, VidarMap map)->{
 			//	map.monsterGenerator = new MonsterGenerator (map) ;
@@ -180,7 +182,8 @@ public class Laevatein extends Thread
 		List<PcInstance> result = new ArrayList <PcInstance> ();
 		
 		maps.forEachValue (Configurations.PARALLELISM_THRESHOLD, (LaeMap map)->{
-			map.getPlayers ().forEachValue (Configurations.PARALLELISM_THRESHOLD, (PcInstance p)->result.add (p));
+			map.getPlayers ().forEach ((PcInstance p)->{result.add (p);});
+			//map.getPlayers ().forEachValue (Configurations.PARALLELISM_THRESHOLD, (PcInstance p)->result.add (p));
 		});
 		
 		return result;
@@ -191,7 +194,7 @@ public class Laevatein extends Thread
 		
 		LaeMap map = maps.get (mapId);
 		if (map != null) {
-			map.getPlayers ().forEachValue (Configurations.PARALLELISM_THRESHOLD, (PcInstance p)->result.add (p));
+			map.getPlayers ().forEach ((PcInstance p)->result.add (p));
 		}
 		
 		return result;

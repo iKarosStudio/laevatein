@@ -2,6 +2,7 @@ package laevatein.game.model;
 
 import laevatein.config.*;
 import laevatein.types.*;
+import laevatein.server.utility.*;
 import laevatein.game.skill.*;
 
 public abstract class Objeto
@@ -50,6 +51,7 @@ public abstract class Objeto
 	public int levelScale = (byte) 0;
 	
 	//model packet non-essetial data
+	public boolean isDead = false;
 	public volatile int hp;
 	public volatile int mp;
 	public int level;
@@ -110,10 +112,11 @@ public abstract class Objeto
 	}
 	
 	public int getDistanceTo (Coordinate p) {
-		int dx = Math.abs (p.x - loc.p.x);
-		int dy = Math.abs (p.y - loc.p.y);
+		int dx = LaeMath.abs (p.x - loc.p.x); //Math.abs (p.x - loc.p.x);
+		int dy = LaeMath.abs (p.x - loc.p.x); //Math.abs (p.y - loc.p.y);
 		
-		return (int) Math.sqrt (Math.pow (dx, 2) + Math.pow (dy, 2));		
+		//return (int) Math.sqrt (Math.pow (dx, 2) + Math.pow (dy, 2));	
+		return LaeMath.sqrt ((dx * dx) + (dy * dy));
 	}
 	
 	public boolean isInsight (Location _loc) {

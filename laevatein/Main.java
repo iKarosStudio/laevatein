@@ -28,6 +28,14 @@ public class Main
 		//System.out.printf ("KERNEL AUTHOR:%s\n", Configurations.AUTHOR);
 		//System.out.printf ("SERVER OS:%s-%s\n", System.getProperty ("os.name"), System.getProperty ("os.arch"));
 		
+		/* 系統功能監控 */
+		SystemMonitor systemMonitor = SystemMonitor.getInstance ();
+		
+		/* Server platform info */
+		System.out.printf ("cpu core  :%d\n", SystemMonitor.getInstance ().cpuCount);
+		System.out.printf ("system_pid:%s\n", SystemMonitor.getInstance ().pid);
+		System.out.printf ("run on:%s\n", System.getProperty("java.vm.name"));
+		
 		/* 載入參數設定 */
 		ConfigurationLoader.getInstance ();
 		
@@ -54,10 +62,6 @@ public class Main
 		/* 建立管理用TCP/IP端口 */
 		//ManageService manageService = ManageService.getInstance ();
 		//manageService.start ();
-		
-		/* 系統功能監控 */
-		SystemMonitor systemMonitor = SystemMonitor.getInstance ();
-		KernelThreadPool.getInstance ().ScheduleAtFixedRate (systemMonitor, 500, 1000);
 			
 		
 		/* 實作賭場系統 */
@@ -65,14 +69,11 @@ public class Main
 		if (Configurations.CASINO) {
 			//
 		}
-		
-		/* Server platform info */
-		System.out.printf ("cpu core  :%d\n", SystemMonitor.getInstance ().cpuCount);
-		System.out.printf ("system_pid:%s\n", SystemMonitor.getInstance ().pid);
-		System.out.printf ("run on:%s\n", System.getProperty("java.vm.name"));
 
 		/* 掛載關機程序 */
 		Runtime.getRuntime().addShutdownHook (new Shutdown ());
+		
+		KernelThreadPool.getInstance ().ScheduleAtFixedRate (systemMonitor, 500, 1000);
 		
 		/* 本地控制台 */
 		while (true) {

@@ -16,6 +16,7 @@ public class ServerOpcodes
 	public static final int LOGIN_WELCOME_MSG = 36;
 	public static final int ITEM_UPDATE_NAME = 38;
 	public static final int ITEM_IDENTIFY = 42;
+	public static final int POISON = 45; //0:正常顏色 1:綠色 2:灰色
 	public static final int BOOKMARK = 49;
 	public static final int MOVE_NODE = 55;
 	public static final int NPC_BUY_LIST = 57;

@@ -35,13 +35,13 @@ public class LaeMap
 	//public MonsterGenerator monsterGenerator = null;
 	
 	/* 傳送點列表 */
-	public ConcurrentHashMap<Integer, Location> tpLocation;
+	public ConcurrentHashMap<Integer, Location> tpEntry;
 	
 	/* 線上使用者實體 */
-	private ConcurrentHashMap<Integer, PcInstance> pcs;
+	//private ConcurrentHashMap<Integer, PcInstance> pcs;
 	
 	/* 地圖物件實體 */
-	private ConcurrentHashMap<Integer, Objeto> models;
+	private ConcurrentHashMap<Integer, Objeto> objs;
 	
 	public LaeMap (int _mapId, int _startX, int _endX, int _startY, int _endY) {
 		id = (short) _mapId;
@@ -59,30 +59,45 @@ public class LaeMap
 			}
 		}
 		
-		tpLocation = new ConcurrentHashMap<Integer, Location> () ;
+		tpEntry = new ConcurrentHashMap<Integer, Location> () ;
 		
-		pcs = new ConcurrentHashMap<Integer, PcInstance> ();
-		models = new ConcurrentHashMap<Integer, Objeto> ();
+		//pcs = new ConcurrentHashMap<Integer, PcInstance> ();
+		objs = new ConcurrentHashMap<Integer, Objeto> ();
 		
 		//aiDistributor = new MonsterAiDistributor (this);
 		//aiDistributor.start ();
 	}
 	
-	public ConcurrentHashMap<Integer, PcInstance> getPlayers () {
-		return pcs;
+	public List<PcInstance> getPlayers () {
+		List<PcInstance> result = new ArrayList<PcInstance> ();
+		
+		objs.forEach ((Integer uuid, Objeto obj)->{
+			if (obj.isPc ()) {
+				result.add ((PcInstance) obj);
+			}
+		});
+		
+		return result;
 	}
 	
 	public synchronized void addPlayer (PcInstance p) {
-		pcs.putIfAbsent (p.uuid, p);
+		//pcs.putIfAbsent (p.uuid, p);
+		objs.putIfAbsent (p.uuid, p);
 	}
 	
 	public synchronized void removePlayer (int uuid) {
-		pcs.remove (uuid);
+		//pcs.remove (uuid);
+		objs.remove (uuid);
 	}
 	
 	//could be null
 	public PcInstance getPlayer (int uuid) {
-		return pcs.get (uuid);
+		PcInstance result = null;
+		if (objs.containsKey (uuid)) {
+			result = (PcInstance) objs.get (uuid);
+		}
+		
+		return result;
 	}
 	
 	public List<PcInstance> getPcsInsight (Coordinate p) {
@@ -94,10 +109,9 @@ public class LaeMap
 	public List<PcInstance> getPcsInRange (Coordinate p, int range) {
 		List<PcInstance> result = new ArrayList<PcInstance> ();
 		
-		pcs.forEachValue (Configurations.PARALLELISM_THRESHOLD, (PcInstance pc)->{
-		//pcs.forEach ((Integer uuid, PcInstance pc)->{
-			if (pc.getDistanceTo (p) < range) {
-				result.add (pc);
+		objs.forEach ((Integer uuid, Objeto obj)->{
+			if ((obj.getDistanceTo (p) < range) && (obj.isPc ())) {
+				result.add ((PcInstance) obj);
 			}
 		});
 		
@@ -105,26 +119,25 @@ public class LaeMap
 	}
 	
 	public synchronized void addModel (Objeto m) {
-		models.put (m.uuid, m);
+		objs.put (m.uuid, m);
 	}
 	
 	public synchronized void removeModel (int uuid) {
-		models.remove (uuid);
+		objs.remove (uuid);
 	}
 	
 	public Objeto getModel (int uuid) {
-		return models.get (uuid);
+		return objs.get (uuid);
 	}
 	
-	public List<Objeto> getModelsInsight (Coordinate p) {
-		List<Objeto> result = getModelsInRange (p, Configurations.SIGHT_RAGNE);
-		
+	public List<Objeto> getObjsInsight (Coordinate p) {
+		List<Objeto> result = getObjsInRange (p, Configurations.SIGHT_RAGNE);
 		return result;
 	}
 	
-	public List<Objeto> getModelsInRange (Coordinate p, int range) {
+	public List<Objeto> getObjsInRange (Coordinate p, int range) {
 		List<Objeto> result = new ArrayList<Objeto> ();
-		models.forEachValue (Configurations.PARALLELISM_THRESHOLD, (Objeto obj)->{
+		objs.forEachValue (Configurations.PARALLELISM_THRESHOLD, (Objeto obj)->{
 			if (obj.getDistanceTo (p) < range) {
 				result.add (obj);
 			}
@@ -252,16 +265,16 @@ public class LaeMap
 	
 	public boolean isTpEntrance (int x, int y) {
 		int pos = (x << 16) | y;
-		return tpLocation.containsKey (pos);	
+		return tpEntry.containsKey (pos);	
 	}
 	
 	public Location getTpDestination (int srcX, int srcY) {
 		int src = (srcX << 16) | srcY;
-		return tpLocation.get (src);
+		return tpEntry.get (src);
 	}
 	
 	public void addTpLocation (int srcX, int srcY, Location dest) {
 		int src = (srcX << 16) | srcY;
-		tpLocation.put (src, dest);
+		tpEntry.put (src, dest);
 	}
 }

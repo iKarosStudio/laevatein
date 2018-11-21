@@ -17,6 +17,7 @@ public class NpcInstance extends Objeto
 	public String nameId;
 	
 	public NpcInstance (NpcTemplate _template) {
+		hp = _template.basicParameters.maxHp;
 		uuid = _template.uuid;
 		gfx = _template.gfx;
 		name = _template.name;

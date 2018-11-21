@@ -9,7 +9,12 @@ import laevatein.server.threadpool.*;
 import laevatein.server.process_server.*;
 import laevatein.game.model.*;
 import laevatein.game.model.player.*;
+import laevatein.game.skill.*;
 
+/*
+ * 這個class他媽的就只用來做更新視線物件
+ * 別他媽的給我搞其他事 注意
+ */
 public class SightUpdate implements Runnable
 {
 	private ScheduledFuture<?> schedulor;
@@ -22,62 +27,76 @@ public class SightUpdate implements Runnable
 	}
 	
 	public void run () {
-		/* 更新視界各類物件 */
-		updatePcs ();
-		updateModels ();
-	}
-	
-	private void updatePcs () {
-		//
-		// 加入/移出不在清單內卻在視距內的物件
-		// 注意:不會自己將自身視為端點
-		//
-		List<PcInstance> pcs = pc.map.getPcsInsight (pc.loc.p);
+		//當下視線範圍內所有物件
+		List<Objeto> objsInRange = pc.map.getObjsInsight (pc.loc.p);
 		
-		pcs.forEach ((PcInstance eachPc)->{
-			//System.out.printf ("%s see %s\n", pc.name, eachPc.name);
+		//移出不在視線內物件
+		pc.objectsInsight.forEach ((Integer uuid, Objeto obj)->{
+			//if (!objsInRange.contains (obj)) {
+			if (obj.getDistanceTo (pc.loc.p) > Configurations.SIGHT_RAGNE) {
+				pc.objectsInsight.remove (uuid);
+				handle.sendPacket (new RemoveModel (uuid).getRaw ());
+				System.out.printf ("0x%08X %s 離開視線範圍\n", uuid, obj.name);
+			}
+		});
+		
+		pc.pcsInsight.forEach ((Integer uuid, PcInstance obj)->{
+			//if (!objsInRange.contains (obj)) {
+			if (obj.getDistanceTo (pc.loc.p) > Configurations.SIGHT_RAGNE) {
+				pc.pcsInsight.remove (uuid);
+				handle.sendPacket (new RemoveModel (uuid).getRaw ());
+				System.out.printf ("0x%08X %s 離開視線範圍\n", uuid, obj.name);
+			}
+		});
+		
+		for (Objeto obj : objsInRange) {
+			if (obj.isInvisible ()) {
+				continue;
+			}
 			
-			if (!pc.pcsInsight.containsKey (eachPc.uuid) && (eachPc.uuid != pc.uuid)  && !(eachPc.isInvisible ())) {
-				pc.pcsInsight.putIfAbsent (eachPc.uuid, eachPc);
-				handle.sendPacket (eachPc.getPacket ());
+			if (obj.isPc ()) {
+				if (obj.uuid == pc.uuid) {
+					continue;
+				}
+				
+				if (!pc.pcsInsight.containsKey (obj.uuid) && (obj.uuid != pc.uuid)) {
+					pc.pcsInsight.put (obj.uuid, (PcInstance) obj);
+					handle.sendPacket (obj.getPacket ());
+					System.out.printf ("0x%08X %s 進入視線範圍\n", obj.uuid, obj.name);
+				}
+				
+				
+			} else {
+				if (!pc.objectsInsight.containsKey (obj.uuid)) {
+					pc.objectsInsight.put (obj.uuid, obj);
+					handle.sendPacket (obj.getPacket ());
+					System.out.printf ("0x%08X %s 進入視線範圍\n", obj.uuid, obj.name);
+				}				
+			} //End of if obj is pc
+			
+			if (obj.isDead) {
+				handle.sendPacket (new ModelAction (ActionId.DIE, obj.uuid, obj.heading).getRaw ());
 			}
-		});
-		
-		//
-		//玩家必須額外注意是否已經離線, 檢查socket close or thread is Alive
-		//
-		pc.pcsInsight.forEachValue (Configurations.PARALLELISM_THRESHOLD, (PcInstance p)->{
-			if (!pc.isInsight (p.loc) || !pcs.contains (p) || pc.isInvisible ()) {
-				pc.pcsInsight.remove (p.uuid);
-				handle.sendPacket (new RemoveModel (p.uuid).getRaw ());
-			}
-		});
-	}
-	
-	private void updateModels () {
-		List<Objeto> objects = pc.map.getModelsInsight (pc.loc.p);
-		objects.forEach ((Objeto obj)->{
-			if (!pc.objectsInsight.containsKey (obj.uuid)) { //還沒有快取
-				pc.objectsInsight.put (obj.uuid, obj);
-				handle.sendPacket (obj.getPacket ());
-			}
-		});
-		
-		pc.objectsInsight.forEachValue (Configurations.PARALLELISM_THRESHOLD, (Objeto obj)->{
-			if (!pc.isInsight (obj.loc) || !objects.contains (obj)) {//需要移出視線
-				pc.objectsInsight.remove (obj.uuid);
-				handle.sendPacket (new RemoveModel (obj.uuid).getRaw ());
-			} else { //觸發AI
-				if (obj instanceof AiControllable) {
-					((AiControllable) obj).toggleAi ();
+			
+			if (obj instanceof SkillAffect) {
+				if (obj.isPoison () || ((SkillAffect) obj).hasSkillEffect (SkillId.STATUS_POISON)) {
+					handle.sendPacket (new Poison (obj.uuid, Poison.COLOR_POISON).getPacket ());
+				}
+				
+				if (((SkillAffect) obj).hasSkillEffect (SkillId.STATUS_CURSE_PARALYZING) || 
+					((SkillAffect) obj).hasSkillEffect (SkillId.STATUS_CURSE_PARALYZED) ||
+					((SkillAffect) obj).hasSkillEffect (SkillId.STATUS_POISON_PARALYZING) ||
+					((SkillAffect) obj).hasSkillEffect (SkillId.STATUS_POISON_PARALYZED)) {
+					handle.sendPacket (new Poison (obj.uuid, Poison.COLOR_PARALYZE).getPacket ());
 				}
 			}
-		});
-		
+			
+			
+		} //End of objsInRange		
 	}
 	
 	public void start () {
-		schedulor = KernelThreadPool.getInstance ().ScheduleAtFixedRate (this, 200, 600);
+		schedulor = KernelThreadPool.getInstance ().ScheduleAtFixedRate (this, 200, 300);
 	}
 	
 	public void stop () {
