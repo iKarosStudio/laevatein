@@ -12,4 +12,9 @@ public class LaeMath
 		//java 1.5以前環境建置必須重寫這個method
 		return (int) Math.sqrt ((double) s);
 	}
+	
+	//
+	//
+	//
+	
 }

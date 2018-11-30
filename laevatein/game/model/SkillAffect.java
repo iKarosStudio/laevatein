@@ -13,7 +13,7 @@ public interface SkillAffect
 	public void addSkillEffect (int skillId, int time, int polyGfx);
 	public void removeSkillEffect (int skillId);
 	
-	public void updateSkillTime (); //routine task
+	public void updateBuffTime (); //routine task
 	
 	//攻擊技能接受介面
 	public void receiveSkillAttack (SkillAttack sAtk);

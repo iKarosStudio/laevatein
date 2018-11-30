@@ -9,14 +9,13 @@ import laevatein.server.process_server.*;
 
 public class PacketHandler
 {	
-	SessionHandler handle;
+	private SessionHandler handle;
 	
 	public PacketHandler (SessionHandler session) {
 		handle = session;
 	}
 	
-	public void process (byte[] packet)
-	{
+	public void process (byte[] packet) {
 		int opcode = packet[0] & 0x0FF;
 		
 		/*
@@ -28,13 +27,11 @@ public class PacketHandler
 		*/
 		
 		switch (opcode) {
-		
 		case ClientOpcodes.ITEM_USE: 
 			new ItemUse (handle, packet);
 			break;
 			
 		case ClientOpcodes.ATTACK:
-			//new Attack (handle, packet);
 			new NormalAttack (handle, packet);
 			break;
 			
@@ -47,7 +44,7 @@ public class PacketHandler
 			break;
 		
 		case ClientOpcodes.SKILL_USE:
-			//new SkillUse (handle, packet);
+			new SkillUse (handle, packet);
 			break;
 			
 		case ClientOpcodes.UPDATE_HEADING: 
@@ -91,12 +88,12 @@ public class PacketHandler
 		
 		case ClientOpcodes.SKILL_BUY:
 			System.out.println ("要求技能商店清單");
-			//new SkillBuy (handle, packet);
+			new SkillBuy (handle, packet);
 			break;
 		
 		case ClientOpcodes.SKILL_BUY_ORDER:
 			System.out.println ("要求買技能");
-			//new SkillBuyOrder (handle, packet);
+			new SkillBuyOrder (handle, packet);
 			break;
 		
 		case ClientOpcodes.DOOR_TOUCH:
@@ -159,7 +156,7 @@ public class PacketHandler
 			}
 			break;
 			
-		case ClientOpcodes.EXIT_GAME:
+		case ClientOpcodes.EXIT_GAME: //離開遊戲
 			new ExitGame (handle, packet);
 			break;
 			

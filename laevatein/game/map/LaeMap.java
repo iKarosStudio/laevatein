@@ -137,7 +137,8 @@ public class LaeMap
 	
 	public List<Objeto> getObjsInRange (Coordinate p, int range) {
 		List<Objeto> result = new ArrayList<Objeto> ();
-		objs.forEachValue (Configurations.PARALLELISM_THRESHOLD, (Objeto obj)->{
+		//objs.forEachValue (Configurations.PARALLELISM_THRESHOLD, (Objeto obj)->{
+		objs.forEach ((Integer uuid, Objeto obj)->{
 			if (obj.getDistanceTo (p) < range) {
 				result.add (obj);
 			}

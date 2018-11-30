@@ -105,6 +105,10 @@ public class PcInstance
 		return handle;
 	}
 	
+	public void sendPacket (byte[] packet) {
+		handle.sendPacket (packet);
+	}
+	
 	public void updateOnlineStatus (boolean isOnline) {
 		Connection con = HikariCP.getConnection ();
 		PreparedStatement ps = null;
@@ -213,13 +217,7 @@ public class PcInstance
 		return result;
 	}
 	
-	public void save () {
-		//save skill effect
-		
-		//save item bag
-		
-		//save pc basic
-		
+	public void save () {		
 		sight.stop ();
 		hsTask.stop ();
 		lsTask.stop ();
@@ -234,7 +232,7 @@ public class PcInstance
 	}
 	
 	public void loadItemBag () {
-		System.out.println ("load item bag");
+		//System.out.println ("load item bag");
 		itemBag = new ConcurrentHashMap<Integer, ItemInstance> ();
 		ResultSet rs = null;
 		try {
@@ -282,7 +280,7 @@ public class PcInstance
 	}
 	
 	public void saveItemBag () {
-		System.out.println ("save item bag");
+		//System.out.println ("save item bag");
 		DatabaseCmds.savePcItems (uuid, itemBag);
 	}
 	
@@ -296,9 +294,11 @@ public class PcInstance
 	
 	public void loadBuffs () {
 		System.out.println ("load buffs");
+		/*
 		buffs.forEachKey (Configurations.PARALLELISM_THRESHOLD, (Integer skillId)->{
 			removeSkillEffect (skillId);
-		});
+		});*/
+		//buffs.clear ();
 		
 		ResultSet rs = null;
 		try {
@@ -308,10 +308,7 @@ public class PcInstance
 				int remainTime = rs.getInt ("remaining_time");
 				int polyGfx = rs.getInt ("poly_id");
 				
-				SkillEffect buff = new SkillEffect (skillId, remainTime, polyGfx);
-				
-				buff.setSkillEffect (this);
-				buffs.put (skillId, buff);
+				addSkillEffect (skillId, remainTime, polyGfx);
 			}
 		} catch (Exception e) {
 			e.printStackTrace ();
@@ -343,6 +340,10 @@ public class PcInstance
 			//TODO:改用s_op:62更新
 			handle.sendPacket (new ModelStatus (this).getRaw ());
 		}
+	}
+	
+	public void updateSpMr () {
+		handle.sendPacket (new ReportSpMr (getSp (), getMr ()).getRaw ());
 	}
 	
 	public void updateAc () {
@@ -501,8 +502,21 @@ public class PcInstance
 	}
 
 	@Override
+	public void receiveSkillAttack (SkillAttack sAtk) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void receiveSkillBuff (SkillBuff sBuff) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
 	public void die () {
 		//TODO
+		isDead = true;
 	}
 	
 	@Override
@@ -871,12 +885,16 @@ public class PcInstance
 
 	@Override
 	public void addSkillEffect (int skillId, int time, int polyGfx) {
-		SkillEffect buff = new SkillEffect (skillId, time, polyGfx);
-		
-		if (hasSkillEffect (skillId)) { //現有BUFF更新
-			buffs.get (skillId).updateSkillEffect (this, buff);
-		} else { //加入新BUFF
-			buff.setSkillEffect (this); //套用技能效果
+		//TODO:更新變身
+		if (buffs.containsKey (skillId)) {//updates
+			SkillEffect buff = buffs.get (skillId);
+			buff.remainTime = time;
+			buff.polyGfx = polyGfx;
+			//buff.addSkillEffect (this);
+			buff.sendSkillIcon (this);
+		} else { //add new
+			SkillEffect buff = new SkillEffect (skillId, time, polyGfx);
+			buff.addSkillEffect (this);
 			buffs.put (skillId, buff);
 		}
 	}
@@ -884,37 +902,25 @@ public class PcInstance
 	@Override
 	public void removeSkillEffect (int skillId) {
 		if (buffs.containsKey (skillId)) {
-			buffs.get (skillId).unsetSkillEffect (this); //移除技能效果
+			buffs.get (skillId).removeSkillEffect (this);
+			buffs.remove (skillId);
 		}
-		
-		buffs.remove (skillId);
 	}
 	
 	@Override
-	public void updateSkillTime () {//一定要1s interval執行
-		if (!buffs.isEmpty ()) {
-			buffs.forEach ((Integer skillId, SkillEffect buff)->{
-				if (buff.remainTime == 0xFFFF) { //永久技能效果
-					return;
-				} else if (buff.remainTime > 0) { //減少持續時間
-					buff.remainTime--;
-				} else { //持續時間為零, 停止技能效果
-					removeSkillEffect (skillId);
-				}
-			});
-		}
-	}
-
-	@Override
-	public void receiveSkillAttack (SkillAttack sAtk) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void receiveSkillBuff (SkillBuff sBuff) {
-		// TODO Auto-generated method stub
-		
+	public void updateBuffTime () {//一定要1s interval執行
+		buffs.forEach ((Integer skillId, SkillEffect buff)->{
+			if (buff.remainTime == 0xFFFF) { //永久技能效果
+				return;
+				
+			} else if (buff.remainTime > 0) { //減少持續時間
+				buff.remainTime--;
+				
+			} else { //持續時間為零, 停止技能效果
+				removeSkillEffect (skillId);
+				
+			}
+		});
 	}
 
 }

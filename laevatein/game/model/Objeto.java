@@ -130,5 +130,7 @@ public abstract class Objeto
 	public abstract byte[] getPacket ();
 	public abstract void boardcastPcInsight (byte[] packet);
 	public abstract void receiveAttack (NormalAttack attack); //通用接受攻擊介面
+	//public abstract void receiveSkillAttack (SkillAttack sAttack);
+	//public abstract void receiveSkillBuff (SkillBuff sBuff);
 	public abstract void die ();//通用死亡表現
 }

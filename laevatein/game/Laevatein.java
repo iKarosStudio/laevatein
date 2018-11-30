@@ -152,9 +152,9 @@ public class Laevatein extends Thread
 	
 	public PcInstance getPlayer (int uuid) {
 		PcInstance result = null;
-		Iterator<PcInstance> pcs = getAllPlayer ().iterator ();
-		while (pcs.hasNext ()){
-			PcInstance p = pcs.next ();
+		
+		List<PcInstance> pcs = getAllPlayer ();
+		for (PcInstance p : pcs) {
 			if (p.uuid == uuid) {
 				result = p;
 				break;
@@ -166,9 +166,9 @@ public class Laevatein extends Thread
 	
 	public PcInstance getPlayerByName (String _name) {
 		PcInstance result = null;
-		Iterator<PcInstance> pcs = getAllPlayer ().iterator ();
-		while (pcs.hasNext ()){
-			PcInstance p = pcs.next ();
+
+		List<PcInstance> pcs = getAllPlayer ();
+		for (PcInstance p : pcs) {
 			if (p.name == _name) {
 				result = p;
 				break;

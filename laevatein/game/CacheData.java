@@ -59,11 +59,11 @@ public class CacheData
 		
 		System.out.print ("\t-> Load poly cache data...");
 		loadPolyCache ();
+				
+		//cache pets types
 		
 		System.out.println ();
-		//cache pets types
-		//cache monster types
-		//cache npc types
+
 	}
 	
 	public void loadNpcCache () {

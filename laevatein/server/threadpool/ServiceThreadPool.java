@@ -9,18 +9,18 @@ public class ServiceThreadPool
 {
 	private static ServiceThreadPool instance; 
 	
-	private Executor pool;
-	private ScheduledExecutorService servicePool;
+	private static Executor pool;
+	private static ScheduledExecutorService servicePool;
 	
 	public static ServiceThreadPool getInstance () {
 		if (instance == null) {
-			instance = new ServiceThreadPool () ;
+			instance = new ServiceThreadPool ();
 		}
 		return instance;
 	}
 	
 	private ServiceThreadPool () {
-		System.out.print ("Service thread pool initializing...") ;
+		System.out.print ("Service thread pool initializing...");
 		
 		pool = Executors.newCachedThreadPool (
 				/*new ThreadFactory() {
@@ -38,15 +38,15 @@ public class ServiceThreadPool
 				new PriorityThreadFactory ("user_service", Thread.NORM_PRIORITY) //ThreadFactory
 			);
 		
-		System.out.println ("success") ;
+		System.out.println ("success");
 	}
 	
-	public void execute (Runnable Foo) {
+	public void execute (Runnable foo) {
 		if (pool != null) {
-			pool.execute (Foo);
+			pool.execute (foo);
 			
 		} else {
-			Thread thread = new Thread (Foo);
+			Thread thread = new Thread (foo);
 			thread.start ();
 		}
 	}
@@ -84,14 +84,14 @@ public ScheduledFuture<?> pcSchedule(L1PcMonitor r, long delay) {
 		public PriorityThreadFactory (String name, int _priority) {
 			priority = _priority;
 			groupName = name;
-			group = new ThreadGroup (groupName) ;
+			group = new ThreadGroup (groupName);
 		}
 		
 		//interface
 		public Thread newThread (Runnable Foo) {
 			Thread thread = new Thread (group, Foo);
 			thread.setName (groupName + "-" + threadNumber.getAndIncrement ());
-			thread.setPriority (priority) ;
+			thread.setPriority (priority);
 			return thread;
 		}
 		/*

@@ -19,9 +19,9 @@ public class Polymorph extends _PacketFrame
 			byte[] updateGfxPacket = new UpdateModelGfx (pc.uuid, poly.polyId, false).getPacket ();
 			byte[] updateActIdPacket = new UpdateModelActId (pc.uuid, pc.actId).getRaw ();
 			
-			pc.getHandle ().sendPacket (updateGfxPacket);
-			pc.getHandle ().sendPacket (updateActIdPacket);
-			pc.getHandle ().sendPacket (new SkillIcon (35, time).getPacket ());
+			pc.sendPacket (updateGfxPacket);
+			pc.sendPacket (updateActIdPacket);
+			pc.sendPacket (new SkillIcon (35, time).getPacket ());
 			if (!pc.isInvisible ()) {
 				pc.boardcastPcInsight (updateGfxPacket);
 				pc.boardcastPcInsight (updateActIdPacket);
@@ -36,9 +36,9 @@ public class Polymorph extends _PacketFrame
 		byte[] updateGfxPacket = new UpdateModelGfx (pc.uuid, pc.gfx, false).getPacket ();
 		byte[] updateActIdPacket = new UpdateModelActId (pc.uuid, pc.actId).getRaw ();
 		
-		pc.getHandle ().sendPacket (updateGfxPacket);
-		pc.getHandle ().sendPacket (updateActIdPacket);
-		pc.getHandle ().sendPacket (new SkillIcon (35, 0).getPacket ());
+		pc.sendPacket (updateGfxPacket);
+		pc.sendPacket (updateActIdPacket);
+		pc.sendPacket (new SkillIcon (35, 0).getPacket ());
 		if (!pc.isInvisible ()) {
 			pc.boardcastPcInsight (updateGfxPacket);
 			pc.boardcastPcInsight (updateActIdPacket);

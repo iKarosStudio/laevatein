@@ -6,7 +6,6 @@ import laevatein.server.igcp.*;
 import laevatein.server.opcodes.*;
 import laevatein.server.packet.*;
 import laevatein.server.process_server.*;
-import laevatein.game.model.*;
 import laevatein.game.model.player.*;
 
 public class Talk

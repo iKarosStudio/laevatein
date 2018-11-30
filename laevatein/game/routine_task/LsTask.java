@@ -24,7 +24,7 @@ public class LsTask implements Runnable
 	}
 	
 	public void run () {//1s interval
-		pc.updateSkillTime ();
+		pc.updateBuffTime ();
 		
 		if ((pc.weightScale30 & 0x10) > 0) {
 			//負重過半

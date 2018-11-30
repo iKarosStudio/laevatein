@@ -118,10 +118,11 @@ public class UseScroll
 			int polyId = CacheData.polyIds.get (polyName);
 			PolyTemplate poly = CacheData.poly.get (polyId);
 			
+			//level check
 			//if (pc.level < poly.minLevel) {
 				//handle.sendPacket (new GameMessage (181).getRaw ());
 			//} else {
-				pc.addSkillEffect (SkillId.SHAPE_CHANGE, 1800, polyId);
+				pc.addSkillEffect (SkillId.SHAPE_CHANGE, 10, polyId);
 				pc.removeItem (scroll.uuid, 1);
 			//}
 			

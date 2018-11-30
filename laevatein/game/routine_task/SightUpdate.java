@@ -54,9 +54,10 @@ public class SightUpdate implements Runnable
 				continue;
 			}
 			
-			if (obj.isPc ()) {
-				if (obj.uuid == pc.uuid) {
-					continue;
+			if (obj.isPc ()) { //檢查pc物件
+				//if (obj.uuid == pc.uuid) {
+				if (obj.equals (pc)) {
+					continue; //你自己!
 				}
 				
 				if (!pc.pcsInsight.containsKey (obj.uuid) && (obj.uuid != pc.uuid)) {
@@ -66,11 +67,15 @@ public class SightUpdate implements Runnable
 				}
 				
 				
-			} else {
+			} else { //檢查一般地圖物件
 				if (!pc.objectsInsight.containsKey (obj.uuid)) {
 					pc.objectsInsight.put (obj.uuid, obj);
 					handle.sendPacket (obj.getPacket ());
 					System.out.printf ("0x%08X %s 進入視線範圍\n", obj.uuid, obj.name);
+					
+					if (obj instanceof AiControllable) {
+						((AiControllable) obj).toggleAi ();
+					}
 				}				
 			} //End of if obj is pc
 			
@@ -89,8 +94,7 @@ public class SightUpdate implements Runnable
 					((SkillAffect) obj).hasSkillEffect (SkillId.STATUS_POISON_PARALYZED)) {
 					handle.sendPacket (new Poison (obj.uuid, Poison.COLOR_PARALYZE).getPacket ());
 				}
-			}
-			
+			} //End of skillaffect
 			
 		} //End of objsInRange		
 	}

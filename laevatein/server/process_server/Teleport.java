@@ -44,23 +44,23 @@ public class Teleport
 			handle.sendPacket (effectPacket);
 			pc.boardcastPcInsight (effectPacket);
 			
-			try { //TODO:0.7s delay改成config檔案可以設定
-				Thread.sleep (10); 
+			try { //TODO:0.5s delay改成config檔案可以設定
+				Thread.sleep (500); 
 			} catch (Exception e) {
 				e.printStackTrace (); 
 			}
 		}
 		
 		pc.pcsInsight.clear ();
-		pc.objectsInsight.clear ();
-		
-		//update Skills
-		pc.loadBuffs ();
+		pc.objectsInsight.clear ();		
 		
 		handle.sendPacket (mapPacket);
 		handle.sendPacket (pcPacket);
 		handle.sendPacket (new UpdateModelActId (pc.uuid, pc.actId).getRaw ());
-	
+		
+		//update Skills
+		pc.loadBuffs ();
+		
 		pc.boardcastPcInsight (pcPacket);
 	}
 }

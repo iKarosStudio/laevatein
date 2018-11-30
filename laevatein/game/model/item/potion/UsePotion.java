@@ -4,7 +4,6 @@ import java.util.Random;
 
 import laevatein.server.*;
 import laevatein.server.process_server.*;
-import  laevatein.game.model.*;
 import laevatein.game.model.player.*;
 import laevatein.game.model.item.*;
 import laevatein.game.skill.*;
@@ -75,7 +74,7 @@ public class UsePotion
 			break;
 			
 		case 40017: //解毒藥水
-			//TODO
+			useCurePotion ();
 			break;
 			
 		case 40013: //綠水
@@ -121,7 +120,6 @@ public class UsePotion
 		
 		//套用效果
 		pc.addSkillEffect (SkillId.STATUS_BRAVE, time);
-		
 	}
 	
 	public void useElfCookie (int time) {
@@ -140,13 +138,18 @@ public class UsePotion
 	}
 	
 	public void useHastePotion (int time) {
-		//TODO:加入緩速狀態檢查
-		
 		//產生特效
 		byte[] visualPacket = new VisualEffect (pc.uuid, 191).getRaw ();
 		handle.sendPacket (visualPacket);
 		pc.boardcastPcInsight (visualPacket);
 		
+		//TODO:加入緩速狀態檢查
+		if (pc.hasSkillEffect (SkillId.SLOW)) {
+			pc.removeSkillEffect (SkillId.SLOW);
+			
+			return;
+		}
+
 		//套用加速效果
 		pc.addSkillEffect (SkillId.STATUS_HASTE, time);
 	}

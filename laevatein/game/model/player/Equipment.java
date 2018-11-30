@@ -183,7 +183,6 @@ public class Equipment implements ApAccessable
 	
 	public void setWeapon (ItemInstance weapon) {
 		int prevActId = pc.actId;
-		System.out.printf ("prev:%d\n", prevActId);
 		//職業可用性檢查
 		if (!weapon.isClassUsable (pc.type)) {
 			handle.sendPacket (new GameMessage (264).getRaw ());
@@ -222,8 +221,6 @@ public class Equipment implements ApAccessable
 			putOn (INDEX_WEAPON, weapon);
 			pc.actId = weapon.actId;
 		}
-		
-		System.out.printf ("paid:%d, aid:%d\n", prevActId, pc.actId);
 		
 		//改變角色外型(若需要)
 		if (prevActId != pc.actId) {

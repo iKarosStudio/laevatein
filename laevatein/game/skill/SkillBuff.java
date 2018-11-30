@@ -1,6 +1,6 @@
 package laevatein.game.skill;
 
-public class SkillBuff
+public abstract class SkillBuff
 {
 
 }
