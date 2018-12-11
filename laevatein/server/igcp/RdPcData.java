@@ -53,10 +53,10 @@ public class RdPcData
 				console.append (String.format ("    0x%08X-%s\n", e.uuid, e.getName ()));
 			});
 			
-			handle.sendPacket (new SystemMessage (console.toString ()).getRaw ());
+			handle.sendPacket (new SystemMessage (console.toString ()).getPacket ());
 			
 		} else {
-			handle.sendPacket (new SystemMessage (String.format ("UUID:%d NOT FOUND\n", pcUuid)).getRaw ());
+			handle.sendPacket (new SystemMessage (String.format ("UUID:%d NOT FOUND\n", pcUuid)).getPacket ());
 			
 		}		
 	}

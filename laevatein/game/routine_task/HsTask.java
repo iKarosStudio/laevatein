@@ -49,8 +49,8 @@ public class HsTask implements Runnable
 			
 			//升級事件處理
 			if (toggleSave) {
-				handle.sendPacket (new ModelStatus (pc).getRaw ());
-				handle.sendPacket (new UpdateExp(pc).getRaw ());
+				handle.sendPacket (new ModelStatus (pc).getPacketNoPadding ());
+				handle.sendPacket (new UpdateExp(pc).getPacket ());
 				DatabaseCmds.savePc (pc);
 				toggleSave = false;
 			}

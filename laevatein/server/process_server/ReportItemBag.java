@@ -3,13 +3,10 @@ package laevatein.server.process_server;
 import java.util.concurrent.*;
 
 import laevatein.server.opcodes.*;
-import laevatein.server.packet.*;
 import laevatein.game.model.item.*;
 
-public class ReportItemBag
+public class ReportItemBag extends _PacketFrame
 {
-	PacketBuilder packet = new PacketBuilder () ;
-	
 	public ReportItemBag (ConcurrentHashMap<Integer, ItemInstance> itemBag) {
 		
 		packet.writeByte (ServerOpcodes.ITEM_LIST) ;
@@ -35,9 +32,5 @@ public class ReportItemBag
 				packet.writeByte (0);
 			}
 		}) ;
-	}
-	
-	public byte[] getRaw () {
-		return packet.getPacket ();
 	}
 }

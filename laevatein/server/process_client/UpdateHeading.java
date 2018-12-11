@@ -15,6 +15,6 @@ public class UpdateHeading
 		pc.heading = heading;
 		
 		//Pc.BoardcastPcInsightExceptSelf (new NodeHeading (Pc.Uuid, Pc.location.Heading).getRaw () ) ;
-		pc.boardcastPcInsight (new ModelHeading (pc.uuid, pc.heading).getRaw ());
+		pc.boardcastPcInsight (new ModelHeading (pc.uuid, pc.heading).getPacket ());
 	}
 }

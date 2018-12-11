@@ -3,7 +3,7 @@ package laevatein.server.process_server;
 /**
  * string-c字串編號 SystemMessage
  */
-public class GameMessageId {
+abstract public class GameMessageId {
 	/** 王子 */
 	public static final int $0 = 0;
 	/** 公主 */

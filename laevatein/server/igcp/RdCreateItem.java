@@ -44,10 +44,10 @@ public class RdCreateItem
 			//i.count = itemAmount;
 			rd.addItem (i);
 			
-			handle.sendPacket (new SystemMessage (String.format ("新增%d個%s", i.count, i.name)).getRaw ());
+			handle.sendPacket (new SystemMessage (String.format ("新增%d個%s", i.count, i.name)).getPacket ());
 			
 		} else {
-			handle.sendPacket (new SystemMessage ("無效命令或itemId不存在 -> .create itemId amount").getRaw ());
+			handle.sendPacket (new SystemMessage ("無效命令或itemId不存在 -> .create itemId amount").getPacket ());
 		}		
 	}
 }

@@ -19,11 +19,11 @@ public class NormalAttackLongRange
 		int y = packetReader.readWord ();
 		
 		if (pc.getWeightInScale30 () > 24) { //太重
-			_handle.sendPacket (new GameMessage (110).getRaw ());
+			_handle.sendPacket (new GameMessage (110).getPacket ());
 			return;
 		}
 		
 		pc.heading = pc.getDirection (x, y);
-		_handle.sendPacket (new ModelAction (ActionId.ATTACK, pc.uuid, pc.heading).getRaw ());
+		_handle.sendPacket (new ModelAction (ActionId.ATTACK, pc.uuid, pc.heading).getPacket ());
 	}
 }

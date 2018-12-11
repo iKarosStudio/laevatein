@@ -1,13 +1,10 @@
 package laevatein.server.process_server;
 
-import laevatein.server.packet.*;
 import laevatein.server.opcodes.*;
 import laevatein.game.model.player.*;
 
-public class NewCharacterPack
+public class NewCharacterPack extends _PacketFrame
 {
-	PacketBuilder packet = new PacketBuilder () ;
-	
 	public NewCharacterPack (PcInstance pc) {
 		packet.writeByte (ServerOpcodes.NEW_CHARACTER_PACK) ;
 		packet.writeString (pc.name);
@@ -26,9 +23,5 @@ public class NewCharacterPack
 		packet.writeByte (pc.basicParameters.cha);
 		packet.writeByte (pc.basicParameters.intel);
 		packet.writeByte (0) ;	
-	}
-	
-	public byte[] getRaw () {
-		return packet.getPacket ();
 	}
 }

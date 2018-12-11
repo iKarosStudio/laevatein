@@ -25,7 +25,7 @@ public class InGameCommandParser
 		
 		if (text.startsWith (".rdoff")) {
 			pc.isRd = false;
-			handle.sendPacket (new SystemMessage ("關閉RD命令解析").getRaw ());
+			handle.sendPacket (new SystemMessage ("關閉RD命令解析").getPacket ());
 			
 		} else if (text.startsWith (".tp")) { //傳送自己
 			new RdTeleport (pc, text);
@@ -39,7 +39,10 @@ public class InGameCommandParser
 		} else if (text.startsWith (".status")) { //改變status參數
 			new RdPcStatus (pc, text);
 			
-		} else if (text.startsWith (".weather")) {
+		} else if (text.startsWith (".skill")) { //開啟全部技能
+			new RdPcSkill (pc, text);
+			
+		} else if (text.startsWith (".weather")) { //更新世界天氣
 			new RdWeather (pc, text);
 			
 		} else if (text.startsWith (".server")) { //顯示伺服器資料

@@ -75,6 +75,9 @@ public class Main
 		
 		KernelThreadPool.getInstance ().ScheduleAtFixedRate (systemMonitor, 500, 1000);
 		
+		String todo = "接下來開始處理技能使用部分+RD指令學習技能 11/29";
+		System.out.println (todo);
+		
 		/* 本地控制台 */
 		while (true) {
 			Thread.sleep (Long.MAX_VALUE); //HALT

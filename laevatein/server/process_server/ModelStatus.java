@@ -2,14 +2,11 @@ package laevatein.server.process_server;
 
 import laevatein.server.*;
 import laevatein.server.opcodes.*;
-import laevatein.server.packet.*;
 import laevatein.game.model.player.*;
 
 /* 報告玩家角色各項數值 */
-public class ModelStatus
+public class ModelStatus extends _PacketFrame
 {
-	PacketBuilder packet = new PacketBuilder ();
-	
 	public ModelStatus (PcInstance p) {
 		ServerTime serverTime = ServerTime.getInstance ();
 		try {
@@ -40,9 +37,5 @@ public class ModelStatus
 		} catch (Exception e) {
 			e.printStackTrace ();
 		}
-	}
-	
-	public byte[] getRaw () {
-		return packet.getPacketNoPadding ();
 	}
 }

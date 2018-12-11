@@ -18,7 +18,7 @@ public class Attack
 		int y = packetReader.readWord ();
 		
 		if (pc.getWeightInScale30 () > 24) { //太重
-			handle.sendPacket (new GameMessage (110).getRaw ());
+			handle.sendPacket (new GameMessage (110).getPacket ());
 			return;
 		}
 		

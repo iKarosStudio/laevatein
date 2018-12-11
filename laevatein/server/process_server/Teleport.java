@@ -36,11 +36,11 @@ public class Teleport
 		pc.loc.p.x = dest.p.x;
 		pc.loc.p.y = dest.p.y;
 		
-		byte[] mapPacket = new MapId (pc.loc.mapId).getRaw ();
+		byte[] mapPacket = new MapId (pc.loc.mapId).getPacket ();
 		byte[] pcPacket = pc.getPacket ();
 		
 		if (useVirtualEffect) {
-			byte[] effectPacket = new VisualEffect (pc.uuid, 169).getRaw ();
+			byte[] effectPacket = new VisualEffect (pc.uuid, 169).getPacket ();
 			handle.sendPacket (effectPacket);
 			pc.boardcastPcInsight (effectPacket);
 			
@@ -51,12 +51,13 @@ public class Teleport
 			}
 		}
 		
+		//重置視野內物件
 		pc.pcsInsight.clear ();
-		pc.objectsInsight.clear ();		
+		pc.objectsInsight.clear ();
 		
 		handle.sendPacket (mapPacket);
 		handle.sendPacket (pcPacket);
-		handle.sendPacket (new UpdateModelActId (pc.uuid, pc.actId).getRaw ());
+		handle.sendPacket (new UpdateModelActId (pc.uuid, pc.actId).getPacket ());
 		
 		//update Skills
 		pc.loadBuffs ();

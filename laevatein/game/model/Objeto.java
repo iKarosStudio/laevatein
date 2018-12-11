@@ -112,10 +112,9 @@ public abstract class Objeto
 	}
 	
 	public int getDistanceTo (Coordinate p) {
-		int dx = LaeMath.abs (p.x - loc.p.x); //Math.abs (p.x - loc.p.x);
-		int dy = LaeMath.abs (p.x - loc.p.x); //Math.abs (p.y - loc.p.y);
+		int dx = LaeMath.abs (p.x - loc.p.x);
+		int dy = LaeMath.abs (p.x - loc.p.x);
 		
-		//return (int) Math.sqrt (Math.pow (dx, 2) + Math.pow (dy, 2));	
 		return LaeMath.sqrt ((dx * dx) + (dy * dy));
 	}
 	
@@ -127,10 +126,21 @@ public abstract class Objeto
 		}
 	}
 	
+	//回報敘述封包
 	public abstract byte[] getPacket ();
+	
+	//廣播封包給視距內玩家
 	public abstract void boardcastPcInsight (byte[] packet);
+	
+	//接收攻擊動作
 	public abstract void receiveAttack (NormalAttack attack); //通用接受攻擊介面
+	
+	//接受攻擊技能動作
 	//public abstract void receiveSkillAttack (SkillAttack sAttack);
+	
+	//接受技能施放動作
 	//public abstract void receiveSkillBuff (SkillBuff sBuff);
+	
+	//死亡表現
 	public abstract void die ();//通用死亡表現
 }

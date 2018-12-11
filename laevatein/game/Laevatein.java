@@ -118,7 +118,7 @@ public class Laevatein extends Thread
 	public void setWeather (int mapId, int _weather) {
 		weather = _weather & 0x0FF;
 		getAllPlayer ().forEach ((PcInstance p)->{
-			p.getHandle ().sendPacket (new ReportWeather (weather).getRaw ());
+			p.getHandle ().sendPacket (new ReportWeather (weather).getPacket ());
 		});
 	}
 	

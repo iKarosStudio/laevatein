@@ -1,6 +1,5 @@
 package laevatein.server.process_server;
 
-import laevatein.server.packet.*;
 import laevatein.server.opcodes.*;
 
 public class UseMap extends _PacketFrame
@@ -52,6 +51,6 @@ public class UseMap extends _PacketFrame
 			mapValue = 1; break;
 		}
 		
-		packet.writeDoubleWord (mapValue) ;
+		packet.writeDoubleWord (mapValue);
 	}
 }

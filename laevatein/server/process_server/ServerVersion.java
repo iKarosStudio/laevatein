@@ -6,7 +6,7 @@ import laevatein.server.opcodes.*;
 
 public class ServerVersion
 {
-	public ServerVersion (SessionHandler Handle) {
+	public ServerVersion (SessionHandler handle) {
 		PacketBuilder packet = new PacketBuilder ();
 		ServerTime serverTime = ServerTime.getInstance ();
 		
@@ -22,6 +22,6 @@ public class ServerVersion
 		packet.writeByte (0x00);
 		packet.writeByte (0x03); //3:繁體中文
 		
-		Handle.sendPacket (packet.getPacket ());
+		handle.sendPacket (packet.getPacket ());
 	}
 }

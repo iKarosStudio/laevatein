@@ -9,4 +9,8 @@ public abstract class _PacketFrame
 	public byte[] getPacket () {
 		return packet.getPacket ();
 	}
+	
+	public byte[] getPacketNoPadding () {
+		return packet.getPacketNoPadding ();
+	}
 }

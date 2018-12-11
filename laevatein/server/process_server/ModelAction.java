@@ -1,15 +1,12 @@
 package laevatein.server.process_server;
 
-import laevatein.server.packet.*;
 import laevatein.server.opcodes.*;
 
 /*
  * 指定uuid執行一個action code
  */
-public class ModelAction
+public class ModelAction extends _PacketFrame
 {
-	PacketBuilder packet = new PacketBuilder ();
-	
 	public ModelAction (int actionCode, int uuid, int heading) {
 		packet.writeByte (ServerOpcodes.MODEL_ACTION) ;
 		packet.writeByte (actionCode);
@@ -20,9 +17,5 @@ public class ModelAction
 		packet.writeWord (0x00);
 		packet.writeWord (0x00);
 		packet.writeByte (0x00);
-	}
-	
-	public byte[] getRaw () {
-		return packet.getPacket ();
 	}
 }

@@ -103,7 +103,7 @@ public class SkillBuyOrder
 		price = L1Cost + L2Cost + L3Cost;
 		if (pc.getMoney () < price) {
 			/* 錢不夠 */
-			handle.sendPacket (new GameMessage (189).getRaw ());
+			handle.sendPacket (new GameMessage (189).getPacket ());
 		} else {
 			HashMap<Integer, Integer> s = new HashMap<Integer, Integer> () ;
 			for (int level = 1; level <= 24; level++) {
@@ -150,7 +150,7 @@ public class SkillBuyOrder
 			}
 			
 			/* show virtual effect */
-			handle.sendPacket (new VisualEffect (pc.uuid, 224).getRaw ());
+			handle.sendPacket (new VisualEffect (pc.uuid, 224).getPacket ());
 			handle.sendPacket (new SkillTable (pc.type, s).getPacket ());
 			
 			/* 扣錢  */

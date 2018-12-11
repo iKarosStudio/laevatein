@@ -13,13 +13,13 @@ public class NpcActionCodeHandler
 		case "buy" :
 			shopResult = new ReportNpcShop (npcId);
 			shopResult.buyList ();
-			handle.sendPacket (shopResult.getRaw ());
+			handle.sendPacket (shopResult.getPacket ());
 			break;
 			
 		case "sell" :
 			shopResult = new ReportNpcShop (npcId);
 			shopResult.sellList (handle.user.activePc); 
-			handle.sendPacket (shopResult.getRaw ());
+			handle.sendPacket (shopResult.getPacket ());
 			break;
 			
 		case "retrieve" :

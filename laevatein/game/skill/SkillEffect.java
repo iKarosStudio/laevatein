@@ -73,7 +73,7 @@ public class SkillEffect
 					messageId = 184; //你的動作突然變快。
 				}
 				
-				pc.getHandle ().sendPacket (new GameMessage (messageId).getRaw ());
+				pc.getHandle ().sendPacket (new GameMessage (messageId).getPacket ());
 				
 				break;
 				
@@ -114,7 +114,7 @@ public class SkillEffect
 			
 			case STATUS_HASTE:
 				pc.moveSpeed = 0;
-				pc.sendPacket (new GameMessage (185).getRaw ()); //你感覺你自己減慢下來
+				pc.sendPacket (new GameMessage (185).getPacket ()); //你感覺你自己減慢下來
 				packet = pc.getPacket ();
 				pc.sendPacket (packet);
 				pc.boardcastPcInsight (packet);

@@ -38,7 +38,7 @@ public class NpcAccess
 				htmlKey = "gunterde1"; break;
 			}
 			
-			byte[] packet = new NpcAccessResult (npcUuid, htmlKey).getRaw ();
+			byte[] packet = new NpcAccessResult (npcUuid, htmlKey).getPacket ();
 			handle.sendPacket (packet) ;
 			return ;
 		}
@@ -60,7 +60,7 @@ public class NpcAccess
 				break;
 			}
 			
-			byte[] packet = new NpcAccessResult (npcUuid, htmlKey).getRaw () ;
+			byte[] packet = new NpcAccessResult (npcUuid, htmlKey).getPacket () ;
 			handle.sendPacket (packet) ;
 			return ;
 		}
@@ -75,7 +75,7 @@ public class NpcAccess
 				result = new NpcAccessResult (npcUuid, talkData.normalAction);
 			}
 			
-			handle.sendPacket (result.getRaw ());
+			handle.sendPacket (result.getPacket ());
 			
 		} else {
 			System.out.printf ("找不到NPCID\n") ;

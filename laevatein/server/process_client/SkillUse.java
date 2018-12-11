@@ -19,7 +19,7 @@ public class SkillUse
 		handle = _handle;
 		pc = handle.user.activePc;
 		
-		int row = packetReader.readByte ();
+		int row    = packetReader.readByte ();
 		int column = packetReader.readByte ();
 		
 		int skillId = ((row << 3) | column) + 1;

@@ -35,7 +35,7 @@ public class SightUpdate implements Runnable
 			//if (!objsInRange.contains (obj)) {
 			if (obj.getDistanceTo (pc.loc.p) > Configurations.SIGHT_RAGNE) {
 				pc.objectsInsight.remove (uuid);
-				handle.sendPacket (new RemoveModel (uuid).getRaw ());
+				handle.sendPacket (new RemoveModel (uuid).getPacket ());
 				System.out.printf ("0x%08X %s 離開視線範圍\n", uuid, obj.name);
 			}
 		});
@@ -44,7 +44,7 @@ public class SightUpdate implements Runnable
 			//if (!objsInRange.contains (obj)) {
 			if (obj.getDistanceTo (pc.loc.p) > Configurations.SIGHT_RAGNE) {
 				pc.pcsInsight.remove (uuid);
-				handle.sendPacket (new RemoveModel (uuid).getRaw ());
+				handle.sendPacket (new RemoveModel (uuid).getPacket ());
 				System.out.printf ("0x%08X %s 離開視線範圍\n", uuid, obj.name);
 			}
 		});
@@ -80,7 +80,7 @@ public class SightUpdate implements Runnable
 			} //End of if obj is pc
 			
 			if (obj.isDead) {
-				handle.sendPacket (new ModelAction (ActionId.DIE, obj.uuid, obj.heading).getRaw ());
+				handle.sendPacket (new ModelAction (ActionId.DIE, obj.uuid, obj.heading).getPacket ());
 			}
 			
 			if (obj instanceof SkillAffect) {

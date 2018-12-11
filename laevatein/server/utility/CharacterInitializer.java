@@ -166,7 +166,7 @@ public class CharacterInitializer
 		/*
 		 * 更新客戶端角色顯示		
 		 */
-		pc.getHandle().sendPacket (new CharCreateResult (CharCreateResult.OK).getRaw ());
-		pc.getHandle().sendPacket (new NewCharacterPack (pc).getRaw ());
+		pc.getHandle().sendPacket (new CharCreateResult (CharCreateResult.OK).getPacket ());
+		pc.getHandle().sendPacket (new NewCharacterPack (pc).getPacket ());
 	}
 }

@@ -272,7 +272,7 @@ public class PcInstance
 			
 			updateWeightCache ();
 			
-			handle.sendPacket (new ReportItemBag (itemBag).getRaw ());
+			handle.sendPacket (new ReportItemBag (itemBag).getPacket ());
 			
 		} catch (Exception e) {
 			e.printStackTrace ();
@@ -338,20 +338,20 @@ public class PcInstance
 		
 		if (prevW30 != weightScale30) {
 			//TODO:改用s_op:62更新
-			handle.sendPacket (new ModelStatus (this).getRaw ());
+			handle.sendPacket (new ModelStatus (this).getPacketNoPadding ());
 		}
 	}
 	
 	public void updateSpMr () {
-		handle.sendPacket (new ReportSpMr (getSp (), getMr ()).getRaw ());
+		handle.sendPacket (new ReportSpMr (getSp (), getMr ()).getPacket ());
 	}
 	
 	public void updateAc () {
-		handle.sendPacket (new UpdateAc (getAc ()).getRaw ());
+		handle.sendPacket (new UpdateAc (getAc ()).getPacket ());
 	}
 	
 	public void updateLevelExp () {
-		handle.sendPacket (new UpdateExp (this).getRaw ());
+		handle.sendPacket (new UpdateExp (this).getPacket ());
 	}
 	
 	//回報全部道具重量
@@ -421,7 +421,7 @@ public class PcInstance
 		
 		updateWeightCache ();
 		//updateAc ()
-		handle.sendPacket (new ReportSpMr (getSp(), getMr()).getRaw ());
+		handle.sendPacket (new ReportSpMr (getSp(), getMr()).getPacket ());
 	}
 	
 	public void setArrow (int aUuid) {
@@ -567,7 +567,7 @@ public class PcInstance
 		}
 		
 		//廣播移動訊息(x, y)
-		byte[] movePacket = new ModelMove (uuid, loc.p.x, loc.p.y, heading).getRaw ();
+		byte[] movePacket = new ModelMove (uuid, loc.p.x, loc.p.y, heading).getPacket ();
 		boardcastPcInsight (movePacket);
 		
 		//檢查是不是在傳送位址
@@ -681,8 +681,8 @@ public class PcInstance
 		if (pick != null) {
 			heading = getDirection (x, y);
 			
-			byte[] actionPacket = new ModelAction (ActionId.PICK_UP, uuid, heading).getRaw ();
-			byte[] removeObjPacket = new RemoveModel (pick.uuid).getRaw ();
+			byte[] actionPacket = new ModelAction (ActionId.PICK_UP, uuid, heading).getPacket ();
+			byte[] removeObjPacket = new RemoveModel (pick.uuid).getPacket ();
 			
 			handle.sendPacket (actionPacket);
 			handle.sendPacket (removeObjPacket);
@@ -702,12 +702,12 @@ public class PcInstance
 			ItemInstance item = itemBag.get (itemUuid);
 			
 			if (!item.isTradeable) { //不可轉移
-				handle.sendPacket (new GameMessage (210, item.getName ()).getRaw ());
+				handle.sendPacket (new GameMessage (210, item.getName ()).getPacket ());
 				return;
 			}
 			
 			if (item.isUsing) {
-				handle.sendPacket (new GameMessage (125, item.getName ()).getRaw ());
+				handle.sendPacket (new GameMessage (125, item.getName ()).getPacket ());
 				return;
 			}
 			
@@ -757,11 +757,11 @@ public class PcInstance
 			
 			//handle.sendPacket (new UpdateItemAmount (i).getRaw ());
 			//handle.sendPacket (new UpdateItemName (i).getRaw ());
-			handle.sendPacket (new UpdateItemStatus (i).getRaw ());
+			handle.sendPacket (new UpdateItemStatus (i).getPacket ());
 		} else {
 			itemBag.put (item.uuid, item);
 			
-			handle.sendPacket (new ItemInsert (item).getRaw ());
+			handle.sendPacket (new ItemInsert (item).getPacket ());
 		}
 		
 		//更新重量快取
@@ -779,19 +779,19 @@ public class PcInstance
 				
 				//handle.sendPacket (new UpdateItemAmount (item).getRaw ());
 				//handle.sendPacket (new UpdateItemName (item).getRaw ());
-				handle.sendPacket (new UpdateItemStatus (item).getRaw ());
+				handle.sendPacket (new UpdateItemStatus (item).getPacket ());
 			} else {
 				ItemInstance newItem = new ItemInstance (itemId, UuidGenerator.next (), uuid, item.enchant, amount, item.durability, item.chargeCount, false, false);
 				itemBag.put (newItem.uuid, newItem);
 				
-				handle.sendPacket (new ItemInsert (newItem).getRaw ());
+				handle.sendPacket (new ItemInsert (newItem).getPacket ());
 			}
 			
 		} else { //not found, create new
 			ItemInstance item = new ItemInstance (40308, UuidGenerator.next(), uuid, 0, amount, 0, 0, false, true);
 			itemBag.put (item.uuid, item);
 			
-			handle.sendPacket (new ItemInsert (item).getRaw ());
+			handle.sendPacket (new ItemInsert (item).getPacket ());
 		}
 		
 		//更新重量快取
@@ -820,13 +820,13 @@ public class PcInstance
 				//handle.sendPacket (new UpdateItemAmount (item).getRaw ());
 				//handle.sendPacket (new UpdateItemName (item).getRaw ());
 				DatabaseCmds.updateItem (item);
-				handle.sendPacket (new UpdateItemStatus (item).getRaw ());
+				handle.sendPacket (new UpdateItemStatus (item).getPacket ());
 				
 			} else { //全數清除
 				itemBag.remove (item.uuid);
 				
 				DatabaseCmds.deleteItem (item);
-				handle.sendPacket (new ItemRemove (item).getRaw ());
+				handle.sendPacket (new ItemRemove (item).getPacket ());
 			}
 			
 			//更新重量快取
@@ -836,12 +836,12 @@ public class PcInstance
 	
 	public void deleteItem (ItemInstance i) {
 		if (i.id == 40308) {
-			handle.sendPacket (new GameMessage (992).getRaw ()); //金幣不可刪除
+			handle.sendPacket (new GameMessage (992).getPacket ()); //金幣不可刪除
 			return;
 		}
 		
 		if (i.isUsing) {
-			handle.sendPacket (new GameMessage (GameMessageId.$125).getRaw ());
+			handle.sendPacket (new GameMessage (GameMessageId.$125).getPacket ());
 		} else {
 			removeItem (i);
 		}

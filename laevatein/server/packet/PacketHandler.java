@@ -102,7 +102,7 @@ public class PacketHandler
 			
 		case ClientOpcodes.CLIENT_BEAT: //keep alive
 		case ClientOpcodes.CLIENT_TICK:
-			handle.sendPacket (new GameTime ().getRaw ());
+			handle.sendPacket (new GameTime ().getPacket ());
 			break;
 		
 		case ClientOpcodes.CLIENT_VERSION : //1.進入輸入帳號密碼畫面(客戶端回報版本)
@@ -143,7 +143,7 @@ public class PacketHandler
 		
 		case ClientOpcodes.WHO:
 			String count = String.format ("%d", Laevatein.getInstance ().getOnlinePlayers ());
-			handle.sendPacket (new GameMessage (81, count).getRaw ());
+			handle.sendPacket (new GameMessage (81, count).getPacket ());
 			break;
 			
 		case ClientOpcodes.TS: //神秘後門服務(Text Service)

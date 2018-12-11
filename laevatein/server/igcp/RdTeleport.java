@@ -20,7 +20,7 @@ public class RdTeleport
 			new Teleport (rd, dest, true);
 			
 		} else {
-			handle.sendPacket (new SystemMessage ("無效命令 -> .tp mapid x y").getRaw ());
+			handle.sendPacket (new SystemMessage ("無效命令 -> .tp mapid x y").getPacket ());
 		}
 	}
 	

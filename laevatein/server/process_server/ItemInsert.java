@@ -1,13 +1,10 @@
 package laevatein.server.process_server;
 
-import laevatein.server.packet.*;
 import laevatein.server.opcodes.*;
 import laevatein.game.model.item.*;
 
-public class ItemInsert
+public class ItemInsert extends _PacketFrame
 {
-	PacketBuilder packet = new PacketBuilder ();
-	
 	public ItemInsert (ItemInstance item) {
 		packet.writeByte (ServerOpcodes.ITEM_INSERT);
 		packet.writeDoubleWord (item.uuid);
@@ -25,9 +22,5 @@ public class ItemInsert
 		} else {
 			packet.writeByte (0);
 		}
-	}
-	
-	public byte[] getRaw () {
-		return packet.getPacket ();
 	}
 }

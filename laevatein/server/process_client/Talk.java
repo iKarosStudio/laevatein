@@ -34,14 +34,14 @@ public class Talk
 		} else {
 			if (talkText.contains (".rdon")) {
 				pc.isRd = true;
-				handle.sendPacket (new SystemMessage ("啟動RD命令解析").getRaw ());
+				handle.sendPacket (new SystemMessage ("啟動RD命令解析").getPacket ());
 				return;
 			}
 		}
 
 		ModelTalks chat = new ModelTalks (pc.uuid, pc.name, talkText, ServerOpcodes.NORMAL_TALKS, talkType);
 		chat.withName ();
-		byte[] chatPacket = chat.getRaw ();  
+		byte[] chatPacket = chat.getPacket ();  
 		
 		if (talkType == 0x00) { //普通對話
 			handle.sendPacket (chatPacket);

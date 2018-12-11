@@ -79,7 +79,7 @@ public class ItemUseParser
 		case TYPE_TOTEM:
 		case TYPE_QUEST_ITEM:
 		case TYPE_MATERIAL:
-			handle.sendPacket (new GameMessage (74, item.getName ()).getRaw ()); // ${name}無法使用
+			handle.sendPacket (new GameMessage (74, item.getName ()).getPacket ()); // ${name}無法使用
 			break;
 			
 		default:

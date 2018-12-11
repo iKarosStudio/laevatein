@@ -2,7 +2,6 @@ package laevatein.server.process_server;
 
 import java.util.*;
 
-import laevatein.server.packet.*;
 import laevatein.server.opcodes.*;
 import laevatein.game.*;
 import laevatein.game.model.player.*;
@@ -10,9 +9,8 @@ import laevatein.game.model.npc.*;
 import laevatein.game.model.item.*;
 import laevatein.game.template.*;
 
-public class ReportNpcShop
+public class ReportNpcShop extends _PacketFrame
 {
-	PacketBuilder packet = new PacketBuilder ();
 	public int npcId;
 	
 	public ReportNpcShop (int _npcId) {
@@ -94,7 +92,7 @@ public class ReportNpcShop
 		});
 		
 		if (sellList.size () < 1) {
-			packet.writeByte (new NpcNothingForSell (npcId).getRaw());
+			packet.writeByte (new NpcNothingForSell (npcId).getPacket());
 			
 		} else {
 			packet.writeByte (ServerOpcodes.NPC_BUY_LIST);
@@ -105,9 +103,5 @@ public class ReportNpcShop
 				packet.writeDoubleWord (shop.itemPrice.get (sellList.get (index).id) >>> 1); //顯示售價
 			}
 		}
-	}
-	
-	public byte[] getRaw () {
-		return packet.getPacket ();
 	}
 }

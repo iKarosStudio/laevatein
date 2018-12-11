@@ -104,7 +104,7 @@ public class LsTask implements Runnable
 			pc.mp += mpr;
 		}
 		
-		handle.sendPacket (new UpdateMp (pc.mp, maxMp).getRaw ());
+		handle.sendPacket (new UpdateMp (pc.mp, maxMp).getPacket ());
 	}
 	
 	public void start () {

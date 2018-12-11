@@ -127,13 +127,13 @@ public class NpcRequest
 		} //for each order
 		
 		if ((pc.getWeight () + totalWeight) > pc.getMaxWeight ()) {
-			handle.sendPacket (new GameMessage (82).getRaw ()); //超過最大負重
+			handle.sendPacket (new GameMessage (82).getPacket ()); //超過最大負重
 			return;
 		}
 		
 		/* 扣錢 */
 		if (pc.getMoney () < totalPrice) {
-			handle.sendPacket (new GameMessage (189).getRaw () ) ; //金幣不足
+			handle.sendPacket (new GameMessage (189).getPacket () ) ; //金幣不足
 			return;
 		}
 		pc.removeItemById (40308, totalPrice);
@@ -207,6 +207,6 @@ public class NpcRequest
 		}
 		
 		//更新角色狀況
-		handle.sendPacket (new ModelStatus (pc).getRaw ());
+		handle.sendPacket (new ModelStatus (pc).getPacketNoPadding ());
 	}
 }

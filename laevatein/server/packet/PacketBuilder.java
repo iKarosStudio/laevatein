@@ -52,7 +52,7 @@ public class PacketBuilder
 			try {
 				packet.write (string.getBytes ("BIG5"));
 			} catch (Exception e) {
-				System.out.println (e.toString ());
+				e.printStackTrace ();
 			}
 		}
 		packet.write (0); //結束字元

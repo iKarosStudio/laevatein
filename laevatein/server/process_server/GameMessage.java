@@ -1,14 +1,11 @@
 package laevatein.server.process_server;
 
 import laevatein.server.opcodes.*;
-import laevatein.server.packet.*;
 
 //參考
 //https://github.com/tpai/docker-l1jtw-server/blob/master/L1J-TW_3.50c/src/l1j/server/server/model/identity/L1SystemMessageId.java
-public class GameMessage
+public class GameMessage extends _PacketFrame
 {
-	PacketBuilder packet = new PacketBuilder ();
-	
 	public GameMessage (int _messageId) {
 		this (_messageId, (String[]) null);
 	}
@@ -26,9 +23,5 @@ public class GameMessage
 				packet.writeString (_messageArg);
 			}
 		}
-	}
-	
-	public byte[] getRaw () {
-		return packet.getPacket ();
 	}
 }

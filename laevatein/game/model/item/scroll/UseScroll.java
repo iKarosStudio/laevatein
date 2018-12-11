@@ -80,7 +80,7 @@ public class UseScroll
 			break;
 			
 		default:
-			handle.sendPacket (new GameMessage (74).getRaw ());
+			handle.sendPacket (new GameMessage (74).getPacket ());
 			System.out.printf ("未知種類的捲軸或還沒有處理:%d %s\n", scroll.id, scroll.name);
 			break;
 		}

@@ -1,9 +1,7 @@
 package laevatein.server.process_server;
 
-import laevatein.server.packet.*;
-
-public class ModelTalks {
-	PacketBuilder packet = new PacketBuilder () ;
+public class ModelTalks extends _PacketFrame
+{
 	String name;
 	int uuid;
 	int opcode;
@@ -31,10 +29,5 @@ public class ModelTalks {
 		packet.writeByte (talkType);
 		packet.writeDoubleWord (uuid);
 		packet.writeString (text);
-	}
-	
-	
-	public byte[] getRaw () {
-		return packet.getPacket () ;
 	}
 }

@@ -41,22 +41,22 @@ public class CharacterOperation {
 			}
 			*/
 			
-			handle.sendPacket (new GameTime().getRaw ());
-			handle.sendPacket (new ModelStatus (pc).getRaw ());
-			handle.sendPacket (new MapId (pc.loc.mapId).getRaw ());
+			handle.sendPacket (new GameTime().getPacket ());
+			handle.sendPacket (new ModelStatus (pc).getPacketNoPadding ());
+			handle.sendPacket (new MapId (pc.loc.mapId).getPacket ());
 			handle.sendPacket (pc.getPacket ());
 
 			pc.loadBuffs ();
 			pc.updateSpMr ();
 			
-			handle.sendPacket (new ReportTitle (handle).getRaw ());
+			handle.sendPacket (new ReportTitle (handle).getPacket ());
 			
-			handle.sendPacket (new ReportWeather (Laevatein.getInstance ().getWeather (pc.loc.mapId)).getRaw ());
+			handle.sendPacket (new ReportWeather (Laevatein.getInstance ().getWeather (pc.loc.mapId)).getPacket ());
 			
 			//Set Emblem here
 
 			
-			handle.sendPacket (new ModelStatus (pc).getRaw ());
+			handle.sendPacket (new ModelStatus (pc).getPacketNoPadding ());
 			
 			//固定循環工作
 			pc.hsTask = new HsTask (pc);
@@ -119,7 +119,7 @@ public class CharacterOperation {
 			rsAmount = ps1.executeQuery ();
 			if (rsAmount.next ()) {
 				if (rsAmount.getInt ("cnt") > 4) {
-					handle.sendPacket (new CharCreateResult (CharCreateResult.WRONG_AMOUNT).getRaw ());
+					handle.sendPacket (new CharCreateResult (CharCreateResult.WRONG_AMOUNT).getPacket ());
 					return;
 				}
 			}
@@ -129,13 +129,13 @@ public class CharacterOperation {
 			ps2.setString (1, charName);
 			rsIdRepeat = ps2.executeQuery ();
 			if (rsIdRepeat.next ()) {
-				handle.sendPacket (new CharCreateResult (CharCreateResult.ALREADY_EXIST).getRaw ());
+				handle.sendPacket (new CharCreateResult (CharCreateResult.ALREADY_EXIST).getPacket ());
 				return;
 			}
 			
 			//檢查數值總和
 			if ((str + dex + con + wis + cha + intel) != 75) {
-				handle.sendPacket (new CharCreateResult (CharCreateResult.WRONG_AMOUNT).getRaw ());
+				handle.sendPacket (new CharCreateResult (CharCreateResult.WRONG_AMOUNT).getPacket ());
 				return;
 			}
 			

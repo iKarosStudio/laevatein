@@ -150,7 +150,7 @@ public class Equipment implements ApAccessable
 	private void putOn (int index, ItemInstance e) {
 		e.isUsing = true;
 		equipment.put (index, e);
-		handle.sendPacket (new UpdateItemName (e).getRaw ());
+		handle.sendPacket (new UpdateItemName (e).getPacket ());
 		
 		if (e.isHasteEffect) {
 			pc.addSkillEffect (SkillId.STATUS_HASTE, 0xFFFF);
@@ -160,7 +160,7 @@ public class Equipment implements ApAccessable
 	private void takeOff (int index, ItemInstance e) {
 		e.isUsing = false;
 		equipment.remove (index);
-		handle.sendPacket (new UpdateItemName (e).getRaw ());
+		handle.sendPacket (new UpdateItemName (e).getPacket ());
 		
 		if (e.isHasteEffect) {
 			pc.removeSkillEffect (SkillId.STATUS_HASTE);
@@ -170,11 +170,11 @@ public class Equipment implements ApAccessable
 	private void swapTo (int index, ItemInstance e) {
 		ItemInstance prevE = equipment.get (index);
 		prevE.isUsing = false;
-		handle.sendPacket (new UpdateItemName (prevE).getRaw ());
+		handle.sendPacket (new UpdateItemName (prevE).getPacket ());
 		
 		e.isUsing = true;
 		equipment.replace (index, e);
-		handle.sendPacket (new UpdateItemName (e).getRaw ());
+		handle.sendPacket (new UpdateItemName (e).getPacket ());
 		
 		if (e.isHasteEffect) {
 			pc.addSkillEffect (SkillId.STATUS_HASTE, 0xFFFF);
@@ -185,19 +185,19 @@ public class Equipment implements ApAccessable
 		int prevActId = pc.actId;
 		//職業可用性檢查
 		if (!weapon.isClassUsable (pc.type)) {
-			handle.sendPacket (new GameMessage (264).getRaw ());
+			handle.sendPacket (new GameMessage (264).getPacket ());
 			return;
 		}
 		
 		//持有盾牌檢查
 		if (weapon.isTwoHanded && equipment.containsKey (INDEX_SHIELD)) {
-			handle.sendPacket (new GameMessage (128).getRaw ());
+			handle.sendPacket (new GameMessage (128).getPacket ());
 			return;			
 		}
 		
 		//最低等級使用檢查
 		if (pc.level < weapon.minLevel) {
-			handle.sendPacket (new GameMessage (318, String.format ("%s", weapon.minLevel)).getRaw ());
+			handle.sendPacket (new GameMessage (318, String.format ("%s", weapon.minLevel)).getPacket ());
 			return;	
 		}
 		
@@ -224,7 +224,7 @@ public class Equipment implements ApAccessable
 		
 		//改變角色外型(若需要)
 		if (prevActId != pc.actId) {
-			byte[] packet = new UpdateModelActId (pc.uuid, pc.actId).getRaw ();
+			byte[] packet = new UpdateModelActId (pc.uuid, pc.actId).getPacket ();
 			handle.sendPacket (packet);
 			pc.boardcastPcInsight (packet);
 		}
@@ -293,20 +293,20 @@ public class Equipment implements ApAccessable
 			if (equipment.get (INDEX_ARMOR).uuid == e.uuid) {
 				//take off
 				if (equipment.containsKey (INDEX_CLOAK)) {
-					handle.sendPacket (new GameMessage (127).getRaw ());
+					handle.sendPacket (new GameMessage (127).getPacket ());
 				} else {
 					takeOff (INDEX_ARMOR, e);
 				}
 				
 			} else {
 				//swpa
-				handle.sendPacket (new GameMessage (124).getRaw ());
+				handle.sendPacket (new GameMessage (124).getPacket ());
 				
 			}
 		} else {
 			//puton
 			if (equipment.containsKey (INDEX_CLOAK)) {
-				handle.sendPacket (new GameMessage (126, e.name, equipment.get (INDEX_CLOAK).name).getRaw ());
+				handle.sendPacket (new GameMessage (126, e.name, equipment.get (INDEX_CLOAK).name).getPacket ());
 			} else {
 				putOn (INDEX_ARMOR, e);
 			}
@@ -319,12 +319,12 @@ public class Equipment implements ApAccessable
 			if (equipment.get (INDEX_TSHIRT).uuid == e.uuid) {
 				//take off
 				if (equipment.containsKey (INDEX_ARMOR)) {
-					handle.sendPacket (new GameMessage (127).getRaw ());
+					handle.sendPacket (new GameMessage (127).getPacket ());
 					return;
 				}
 				
 				if (equipment.containsKey (INDEX_CLOAK)) {
-					handle.sendPacket (new GameMessage (127).getRaw ());
+					handle.sendPacket (new GameMessage (127).getPacket ());
 					return;
 				}
 				
@@ -332,17 +332,17 @@ public class Equipment implements ApAccessable
 				
 			} else {
 				//swap
-				handle.sendPacket (new GameMessage (124).getRaw ());
+				handle.sendPacket (new GameMessage (124).getPacket ());
 			}
 		} else {
 			//puton
 			if (equipment.containsKey (INDEX_CLOAK)) {
-				handle.sendPacket (new GameMessage (126, e.name, equipment.get (INDEX_ARMOR).name).getRaw ());
+				handle.sendPacket (new GameMessage (126, e.name, equipment.get (INDEX_ARMOR).name).getPacket ());
 				return;
 			}
 			
 			if (equipment.containsKey (INDEX_ARMOR)) {
-				handle.sendPacket (new GameMessage (126, e.name, equipment.get (INDEX_CLOAK).name).getRaw ());
+				handle.sendPacket (new GameMessage (126, e.name, equipment.get (INDEX_CLOAK).name).getPacket ());
 				return;
 			}
 			
@@ -357,13 +357,13 @@ public class Equipment implements ApAccessable
 				takeOff (INDEX_SHIELD, e);
 			} else {
 				//swap
-				handle.sendPacket (new GameMessage (124).getRaw ());
+				handle.sendPacket (new GameMessage (124).getPacket ());
 			}
 		} else {
 			//puton
 			if (equipment.containsKey (INDEX_WEAPON)) {
 				if (equipment.get (INDEX_WEAPON).isTwoHanded) {
-					handle.sendPacket (new GameMessage (129).getRaw ());
+					handle.sendPacket (new GameMessage (129).getPacket ());
 				} else {
 					putOn (INDEX_SHIELD, e);
 				}
@@ -383,7 +383,7 @@ public class Equipment implements ApAccessable
 				
 			} else {
 				//swap
-				handle.sendPacket (new GameMessage (124).getRaw ());
+				handle.sendPacket (new GameMessage (124).getPacket ());
 			}
 		} else {
 			//puton
@@ -399,11 +399,11 @@ public class Equipment implements ApAccessable
 				
 			} else { //weapon1->weapon2
 				swapTo (INDEX_ARROW, arrow);
-				handle.sendPacket (new GameMessage (452, arrow.getName ()).getRaw ());
+				handle.sendPacket (new GameMessage (452, arrow.getName ()).getPacket ());
 			}
 		} else { //null->weapon
 			putOn (INDEX_ARROW, arrow);
-			handle.sendPacket (new GameMessage (452, arrow.getName ()).getRaw ());
+			handle.sendPacket (new GameMessage (452, arrow.getName ()).getPacket ());
 		}
 	}
 	
@@ -414,11 +414,11 @@ public class Equipment implements ApAccessable
 				
 			} else {
 				swapTo (INDEX_STING, sting);
-				handle.sendPacket (new GameMessage (452, sting.getName ()).getRaw ());
+				handle.sendPacket (new GameMessage (452, sting.getName ()).getPacket ());
 			}
 		} else {
 			putOn (INDEX_STING, sting);
-			handle.sendPacket (new GameMessage (452, sting.getName ()).getRaw ());
+			handle.sendPacket (new GameMessage (452, sting.getName ()).getPacket ());
 		}
 	}
 	
