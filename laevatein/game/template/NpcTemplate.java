@@ -149,13 +149,20 @@ public class NpcTemplate //extends Objeto
 		actId = _attStatus;
 		bowActId = _bowActId;
 		
-		basicParameters = new AbilityParameter ();
-		basicParameters.str = _str; basicParameters.con = _con; basicParameters.dex = _dex;
-		basicParameters.wis = _wis; basicParameters.cha =  0  ; basicParameters.intel = _intel;
-		basicParameters.defWater = _weakWater; basicParameters.defWind = _weakWind;
-		basicParameters.defEarth = _weakEarth; basicParameters.defFire = _weakFire;
-		basicParameters.maxHp = _hp; basicParameters.maxMp = _mp;
-		basicParameters.ac = _ac;
+		basicParameters = new AbilityParameter (null);
+		basicParameters.setStr (_str);
+		basicParameters.setCon (_con);
+		basicParameters.setDex (_dex);
+		basicParameters.setWis (_wis);
+		basicParameters.setCha (0);
+		basicParameters.setInt (_intel);
+		basicParameters.setHp (_hp);
+		basicParameters.setMp (_mp);
+		basicParameters.setAc (_ac);
+		basicParameters.setResistWater (_weakWater);
+		basicParameters.setResistWind (_weakWind);
+		basicParameters.setResistFire (_weakFire);
+		basicParameters.setResistEarth (_weakEarth);
 		
 		level = _level;
 		exp = _exp;

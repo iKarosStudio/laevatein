@@ -9,7 +9,7 @@ public class SessionHandler extends Thread implements Runnable
 {
 	private Socket sock;
 	
-	public Account user;
+	private Account user;
 	
 	private InputStream inStream;
 	private OutputStream outStream;
@@ -214,5 +214,13 @@ public class SessionHandler extends Thread implements Runnable
 		} catch (Exception e) {
 			e.printStackTrace ();
 		}
+	}
+	
+	public Account getUser () {
+		return user;
+	}
+	
+	public void setUser (Account user) {
+		this.user = user;
 	}
 }

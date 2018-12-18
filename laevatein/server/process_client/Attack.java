@@ -11,13 +11,13 @@ public class Attack
 {
 	public Attack (SessionHandler handle, byte[] data) {
 		PacketReader packetReader = new PacketReader (data);
-		PcInstance pc = handle.user.activePc;
+		PcInstance pc = handle.getUser().getActivePc ();
 		
 		int tid = packetReader.readDoubleWord ();
 		int x = packetReader.readWord ();
 		int y = packetReader.readWord ();
 		
-		if (pc.getWeightInScale30 () > 24) { //太重
+		if (pc.getWeightScale30 () > 24) { //太重 or 0x18運算
 			handle.sendPacket (new GameMessage (110).getPacket ());
 			return;
 		}

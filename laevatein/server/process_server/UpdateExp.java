@@ -7,8 +7,8 @@ public class UpdateExp extends _PacketFrame
 {
 	public UpdateExp (PcInstance pc) {
 		packet.writeByte (ServerOpcodes.UPDATE_EXP);
-		packet.writeByte (pc.level);
-		packet.writeDoubleWord (pc.exp);
+		packet.writeByte (pc.getLevel ());
+		packet.writeDoubleWord (pc.getExp ());
 	}
 
 }

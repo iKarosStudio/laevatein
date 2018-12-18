@@ -54,6 +54,6 @@ public class RdPcSkill
 			//
 		}
 		
-		pc.sendPacket (new SkillTable (pc.type, skill).getPacket ());
+		pc.sendPacket (new SkillTable (pc.getType (), skill).getPacket ());
 	}
 }

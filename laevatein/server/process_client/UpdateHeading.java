@@ -9,12 +9,12 @@ public class UpdateHeading
 {
 	public UpdateHeading (SessionHandler handle, byte[] data) {
 		PacketReader packetReader = new PacketReader (data) ;
-		PcInstance pc = handle.user.activePc;
+		PcInstance pc = handle.getUser ().getActivePc ();
 		int heading = packetReader.readByte ();
 		
 		pc.heading = heading;
 		
 		//Pc.BoardcastPcInsightExceptSelf (new NodeHeading (Pc.Uuid, Pc.location.Heading).getRaw () ) ;
-		pc.boardcastPcInsight (new ModelHeading (pc.uuid, pc.heading).getPacket ());
+		pc.boardcastPcInsight (new ModelHeading (pc.getUuid (), pc.heading).getPacket ());
 	}
 }

@@ -32,17 +32,20 @@ public class HsTask implements Runnable
 		boolean toggleSave = false;
 		
 		try {
-			while (pc.exp >= EXP_REQUEST[pc.level]) {
-				pc.level++;
+			while (pc.getExp () >= EXP_REQUEST[pc.getLevel ()]) {
+				pc.setLevel (pc.getLevel () + 1); //level++
 				
 				//升級事項
-				pc.basicParameters.maxHp += Utility.calcIncreaseHp (pc.type, pc.hp, pc.basicParameters.maxHp, pc.basicParameters.con);
-				pc.basicParameters.maxMp += Utility.calcIncreaseMp (pc.type, pc.mp, pc.basicParameters.maxMp, pc.basicParameters.wis);
-				pc.basicParameters.ac += Utility.calcAcBonusFromDex (pc.level, pc.basicParameters.dex);
+				int hpIncrease = Utility.calcIncreaseHp (pc.getType (), pc.hp, pc.basicParameters.getHp (), pc.basicParameters.getCon ());
+				int mpIncrease = Utility.calcIncreaseMp (pc.getType (), pc.mp, pc.basicParameters.getMp (), pc.basicParameters.getWis ());
+				pc.basicParameters.setHp (pc.basicParameters.getHp () + hpIncrease);
+				pc.basicParameters.setMp (pc.basicParameters.getMp () + mpIncrease);
+				
+				pc.basicParameters.setAc (Utility.calcAcBonusFromDex (pc.getLevel (), pc.basicParameters.getDex ()));
 				
 				//重新計算sp, mr
-				pc.basicParameters.mr += Utility.calcMr (pc.type, pc.level, pc.basicParameters.wis);
-				pc.basicParameters.sp += Utility.calcSp (pc.type, pc.level, pc.basicParameters.intel);		
+				pc.basicParameters.setSp (Utility.calcSp (pc.getType (), pc.getLevel (), pc.basicParameters.getInt ()));
+				pc.basicParameters.setMr (Utility.calcMr (pc.getType (), pc.getLevel (), pc.basicParameters.getWis ()));
 				
 				toggleSave = true;
 			}

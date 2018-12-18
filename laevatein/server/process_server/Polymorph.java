@@ -16,8 +16,9 @@ public class Polymorph extends _PacketFrame
 			
 			pc.gfx = poly.polyId;
 			
-			byte[] updateGfxPacket = new UpdateModelGfx (pc.uuid, poly.polyId, false).getPacket ();
-			byte[] updateActIdPacket = new UpdateModelActId (pc.uuid, pc.actId).getPacket ();
+			int uuid = pc.getUuid ();
+			byte[] updateGfxPacket = new UpdateModelGfx (uuid, poly.polyId, false).getPacket ();
+			byte[] updateActIdPacket = new UpdateModelActId (uuid, pc.actId).getPacket ();
 			
 			pc.sendPacket (updateGfxPacket);
 			pc.sendPacket (updateActIdPacket);
@@ -33,8 +34,9 @@ public class Polymorph extends _PacketFrame
 	public Polymorph (PcInstance pc) {
 		pc.gfx = pc.originGfx;
 		
-		byte[] updateGfxPacket = new UpdateModelGfx (pc.uuid, pc.gfx, false).getPacket ();
-		byte[] updateActIdPacket = new UpdateModelActId (pc.uuid, pc.actId).getPacket ();
+		int uuid = pc.getUuid ();
+		byte[] updateGfxPacket = new UpdateModelGfx (uuid, pc.gfx, false).getPacket ();
+		byte[] updateActIdPacket = new UpdateModelActId (uuid, pc.actId).getPacket ();
 		
 		pc.sendPacket (updateGfxPacket);
 		pc.sendPacket (updateActIdPacket);

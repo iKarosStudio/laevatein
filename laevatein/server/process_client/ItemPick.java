@@ -8,7 +8,7 @@ public class ItemPick
 {
 	public ItemPick (SessionHandler handle, byte[] packet) {
 		PacketReader reader = new PacketReader (packet);
-		PcInstance pc = handle.user.activePc;
+		PcInstance pc = handle.getUser().getActivePc ();
 		
 		int x = reader.readWord ();
 		int y = reader.readWord ();

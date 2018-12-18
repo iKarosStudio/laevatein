@@ -7,13 +7,11 @@ import laevatein.game.skill.*;
 
 public abstract class Objeto
 {
-	//model packet essetial data
+	/* 通用唯一辨識編號 */
+	protected int uuid;
 	
 	/* 位置敘述 */
-	public Location loc;
-	
-	/* 通用唯一辨識編號 */
-	public int uuid;
+	protected Location loc;
 	
 	/* 外型敘述 */
 	public int originGfx;
@@ -28,16 +26,19 @@ public abstract class Objeto
 	
 	/* 移動速度 */
 	public int moveSpeed = 0;
+
+	/* 等級 */
+	protected int level;
 	
-	/* 經驗值&數量 */
-	public int exp;
+	/* 經驗值/地面數量 */
+	protected int exp;
 	
 	/* 正義值 */
-	public int lawful;
+	protected int lawful;
 	
 	/* 名稱敘述 */
-	public String name;
-	public String title;
+	protected String name;
+	protected String title;
 	
 	/* 額外狀態 */
 	public int status;
@@ -54,7 +55,6 @@ public abstract class Objeto
 	public boolean isDead = false;
 	public volatile int hp;
 	public volatile int mp;
-	public int level;
 	public int size;
 	
 	public boolean isPoison () {
@@ -92,18 +92,18 @@ public abstract class Objeto
 	public int getDirection (int x, int y) {
 		byte directionFace = 0;
 
-		if (loc.p.x == x && loc.p.y == y) {
+		if (loc.x == x && loc.y == y) {
 			return heading;
 		} else {
-			if ((x != loc.p.x) && (y != loc.p.y)) {
+			if ((x != loc.x) && (y != loc.y)) {
 				directionFace |= 0x01;
 			}
 			
-			if (((x > loc.p.x) && !(y < loc.p.y)) || ((x < loc.p.x) && !(y > loc.p.y))) {
+			if (((x > loc.x) && !(y < loc.y)) || ((x < loc.x) && !(y > loc.y))) {
 				directionFace |= 0x02;
 			}
 			
-			if (((x == loc.p.x) && (y > loc.p.y)) || (x < loc.p.x)) {
+			if (((x == loc.x) && (y > loc.y)) || (x < loc.x)) {
 				directionFace |= 0x04;
 			}
 		}
@@ -111,9 +111,9 @@ public abstract class Objeto
 		return directionFace & 0x0FF;
 	}
 	
-	public int getDistanceTo (Coordinate p) {
-		int dx = LaeMath.abs (p.x - loc.p.x);
-		int dy = LaeMath.abs (p.x - loc.p.x);
+	public int getDistanceTo (int x, int y) {
+		int dx = LaeMath.abs (x - loc.x);
+		int dy = LaeMath.abs (y - loc.y);
 		
 		return LaeMath.sqrt ((dx * dx) + (dy * dy));
 	}
@@ -122,7 +122,7 @@ public abstract class Objeto
 		if (loc.mapId != _loc.mapId) {
 			return false;
 		} else {
-			return (getDistanceTo (_loc.p) < Configurations.SIGHT_RAGNE);
+			return (getDistanceTo (_loc.x, _loc.y) < Configurations.SIGHT_RAGNE);
 		}
 	}
 	
@@ -143,4 +143,57 @@ public abstract class Objeto
 	
 	//死亡表現
 	public abstract void die ();//通用死亡表現
+
+	
+	public int getUuid () {
+		return uuid;
+	}
+	
+	public void setUuid (int uuid) {
+		this.uuid = uuid;
+	}
+	
+	public Location getLocation () {
+		return loc;
+	}
+	
+	public int getLevel () {
+		return level;
+	}
+	
+	public void setLevel (int level) {
+		this.level = level;
+	}
+	
+	public int getExp () {
+		return exp;
+	}
+	
+	public void setExp (int exp) {
+		this.exp = exp;
+	}
+	
+	public int getLawful () {
+		return lawful;
+	}
+	
+	public void setLawful (int lawful) {
+		this.lawful = lawful;
+	}
+	
+	public String getName () {
+		return name;
+	}
+	
+	public void setName (String name) {
+		this.name = name;
+	}
+	
+	public String getTitle () {
+		return title;
+	}
+	
+	public void setTitle (String title) {
+		this.title = title;
+	}
 }

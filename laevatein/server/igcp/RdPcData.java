@@ -18,7 +18,7 @@ public class RdPcData
 		if (cmdParse.length == 2) {
 			pcUuid = Integer.valueOf (cmdParse[1]);
 		} else if (cmdParse.length == 1) {
-			pcUuid = rd.uuid;
+			pcUuid = rd.getUuid ();
 		} else {
 			return;
 		}
@@ -28,8 +28,8 @@ public class RdPcData
 		if (pc != null) {
 			StringBuffer console = new StringBuffer ();
 			
-			console.append (String.format ("  %s[UUID:0x%08X]\n", pc.name, pc.uuid));
-			console.append (String.format ("  location={mapid:%d, x:%d, y:%d, heading:%d}\n", pc.loc.mapId, pc.loc.p.x, pc.loc.p.y, pc.heading));
+			console.append (String.format ("  %s[UUID:0x%08X]\n", pc.getName (), pc.getUuid ()));
+			console.append (String.format ("  location={mapid:%d, x:%d, y:%d, heading:%d}\n", pc.getLocation ().mapId, pc.getLocation ().x, pc.getLocation ().y, pc.heading));
 			console.append (String.format ("  moveSpeed:%d, actId:%d\n", pc.moveSpeed, pc.actId));
 			console.append (String.format ("  status:0x%02X\n", pc.status));
 			console.append (String.format ("  力量:%3d, 體質:%3d, 敏捷:%3d\n", pc.getStr(), pc.getCon(), pc.getDex()));
@@ -44,7 +44,7 @@ public class RdPcData
 			
 			
 			console.append (String.format ("  [item bag weight:%d/%d]->\n", pc.getWeight (), pc.getMaxWeight ()));
-			pc.itemBag.forEach ((Integer iid, ItemInstance item)->{
+			pc.getItemBag ().forEach ((Integer iid, ItemInstance item)->{
 				console.append (String.format ("    0x%08X-%s\n", iid, item.getName ()));
 			});
 			

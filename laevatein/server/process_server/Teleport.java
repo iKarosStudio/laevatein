@@ -10,9 +10,9 @@ public class Teleport
 	public Teleport (PcInstance pc, Location dest, boolean useVirtualEffect) {
 		SessionHandler handle = pc.getHandle ();
 		
-		if (pc.loc.mapId != dest.mapId) { //map change
-			pc.map.removePlayer (pc.uuid);
-			pc.loc.mapId = dest.mapId;
+		if (pc.getLocation ().mapId != dest.mapId) { //map change
+			pc.getMap ().removePlayer (pc.getUuid ());
+			pc.getLocation ().mapId = dest.mapId;
 			
 			try{
 				pc.sight.wait ();
@@ -24,8 +24,8 @@ public class Teleport
 			}
 			
 			//update map
-			pc.map = Laevatein.getInstance ().getMap (pc.loc.mapId);
-			pc.map.addPlayer (pc);
+			pc.setMap (Laevatein.getInstance ().getMap (pc.getLocation ().mapId));
+			pc.getMap ().addPlayer (pc);
 			
 			
 		}
@@ -33,14 +33,14 @@ public class Teleport
 		pc.saveBuffs ();
 		
 		//update coordinate
-		pc.loc.p.x = dest.p.x;
-		pc.loc.p.y = dest.p.y;
+		pc.getLocation ().x = dest.x;
+		pc.getLocation ().y = dest.y;
 		
-		byte[] mapPacket = new MapId (pc.loc.mapId).getPacket ();
+		byte[] mapPacket = new MapId (pc.getLocation ().mapId).getPacket ();
 		byte[] pcPacket = pc.getPacket ();
 		
 		if (useVirtualEffect) {
-			byte[] effectPacket = new VisualEffect (pc.uuid, 169).getPacket ();
+			byte[] effectPacket = new VisualEffect (pc.getUuid (), 169).getPacket ();
 			handle.sendPacket (effectPacket);
 			pc.boardcastPcInsight (effectPacket);
 			
@@ -57,7 +57,7 @@ public class Teleport
 		
 		handle.sendPacket (mapPacket);
 		handle.sendPacket (pcPacket);
-		handle.sendPacket (new UpdateModelActId (pc.uuid, pc.actId).getPacket ());
+		handle.sendPacket (new UpdateModelActId (pc.getUuid (), pc.actId).getPacket ());
 		
 		//update Skills
 		pc.loadBuffs ();

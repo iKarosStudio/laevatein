@@ -1,3 +1,4 @@
+
 package laevatein;
 
 import laevatein.config.*;
@@ -12,6 +13,7 @@ import laevatein.game.*;
 /* JVM 啟動參數
 
 	-Xincgc -server
+	-XX:+UseG1GC
 命令	描述
 jdb	命令行调试工具
 jps	列出所有Java进程的PID
@@ -25,6 +27,7 @@ public class Main
 {
 	public static void main (String[] args) throws InterruptedException {
 		System.out.println ("<LAEVATEIN>");
+		System.out.println ("anch0rite.ryan@gmail.com");
 		//System.out.printf ("KERNEL AUTHOR:%s\n", Configurations.AUTHOR);
 		//System.out.printf ("SERVER OS:%s-%s\n", System.getProperty ("os.name"), System.getProperty ("os.arch"));
 		
@@ -74,9 +77,6 @@ public class Main
 		Runtime.getRuntime().addShutdownHook (new Shutdown ());
 		
 		KernelThreadPool.getInstance ().ScheduleAtFixedRate (systemMonitor, 500, 1000);
-		
-		String todo = "接下來開始處理技能使用部分+RD指令學習技能 11/29";
-		System.out.println (todo);
 		
 		/* 本地控制台 */
 		while (true) {

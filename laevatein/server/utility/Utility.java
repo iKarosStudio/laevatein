@@ -3,6 +3,7 @@ package laevatein.server.utility;
 import java.util.*;
 
 import laevatein.config.*;
+import laevatein.constants.*;
 import laevatein.game.model.player.*;
 
 public class Utility
@@ -153,16 +154,17 @@ public class Utility
 		int k = 0;
 		
 		//set base MR
-		if (type == PcInstance.TYPE_ROYAL) {
-			mr = 10;
-		} else if (type == PcInstance.TYPE_KNIGHT) {
-			mr = 0;
-		} else if (type == PcInstance.TYPE_ELF) {
-			mr = 25;
-		} else if (type == PcInstance.TYPE_WIZARD) {
-			mr = 10;
-		} else if (type == PcInstance.TYPE_DARKELF) {
-			mr = 10;
+		switch (type) {
+		case PlayerType.ROYAL:
+		case PlayerType.WIZARD:
+		case PlayerType.DARKELF:
+			mr = 10; break;
+		case PlayerType.KNIGHT:
+			mr = 0; break;
+		case PlayerType.ELF:
+			mr = 25; break;
+		
+		default: mr = 0; break;
 		}
 		
 		//精神修正
@@ -186,18 +188,28 @@ public class Utility
 		int sp = 0;
 		int k = 0;
 		
-		if (type == PcInstance.TYPE_ROYAL) { //royan
+		switch (type) {
+		case PlayerType.ROYAL:
 			sp = level / 10;
-		} else if (type == PcInstance.TYPE_KNIGHT) { //knight
+			break;
+			
+		case PlayerType.KNIGHT:
 			sp = level / 50;
-		} else if (type == PcInstance.TYPE_ELF) { //elf
-			//sp = level / 8;
-			sp = level >>> 3;
-		} else if (type == PcInstance.TYPE_WIZARD) { //wizard
-			//sp = level / 4;
-			sp = level >>> 2;
-		} else if (type == PcInstance.TYPE_DARKELF) { //darkelf
+			break;
+			
+		case PlayerType.ELF:
+			sp = level >>> 3; // div8
+			break;
+			
+		case PlayerType.WIZARD:
+			sp = level >>> 2; // div4
+			break;
+			
+		case PlayerType.DARKELF:
 			sp = level / 12;
+			break;
+			
+		default: sp = 0; break;
 		}
 		
 		if (intel > 17) {

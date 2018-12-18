@@ -21,8 +21,8 @@ public class MonsterInstance extends Objeto
 		PacketBuilder packet = new PacketBuilder ();
 		
 		packet.writeByte (ServerOpcodes.MODEL_PACK);
-		packet.writeWord (loc.p.x);
-		packet.writeWord (loc.p.y);
+		packet.writeWord (loc.x);
+		packet.writeWord (loc.y);
 		packet.writeDoubleWord (uuid);
 		packet.writeWord (gfx); //外型
 		packet.writeByte (actId); //動作
@@ -50,7 +50,7 @@ public class MonsterInstance extends Objeto
 
 	@Override
 	public void boardcastPcInsight (byte[] packet) {
-		List<PcInstance> pcs = Laevatein.getInstance ().getMap (loc.mapId).getPcsInsight (loc.p);
+		List<PcInstance> pcs = Laevatein.getInstance ().getMap (loc.mapId).getPcsInsight (loc.x, loc.y);
 		pcs.forEach ((PcInstance p)->{
 			p.getHandle ().sendPacket (packet);
 		});

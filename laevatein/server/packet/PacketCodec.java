@@ -1,15 +1,14 @@
 package laevatein.server.packet;
 
-
 public class PacketCodec
 {
-	public int[] decodeKeyL = {0, 0} ;
-	public int[] encodeKeyL = {0, 0} ;
-	private byte[] decodeKey = new byte[8] ;
-	private byte[] encodeKey = new byte[8] ;
+	int[] decodeKeyL = {0, 0};
+	int[] encodeKeyL = {0, 0};
+	byte[] decodeKey = new byte[8];
+	byte[] encodeKey = new byte[8];
 	
-	public synchronized void updateDecodeKey (byte[] Data) {
-		int mask = ((Data[3] & 0xFF) << 24) | ((Data[2] & 0xFF) << 16) | ((Data[1] & 0xFF) << 8) | (Data[0] & 0xFF);
+	public synchronized void updateDecodeKey (byte[] packet) {
+		int mask = ((packet[3] & 0xFF) << 24) | ((packet[2] & 0xFF) << 16) | ((packet[1] & 0xFF) << 8) | (packet[0] & 0xFF);
 		decodeKeyL[0] ^= mask;
 		decodeKeyL[1] += 0x287EFFC3;
 		
@@ -22,8 +21,8 @@ public class PacketCodec
 		}
 	}
 	
-	public synchronized void updateEncodeKey (byte[] Data) {
-		int mask = ((Data[3] & 0xFF) << 24) | ((Data[2] & 0xFF) << 16) | ((Data[1] & 0xFF) << 8) | (Data[0] & 0xFF);
+	public synchronized void updateEncodeKey (byte[] packet) {
+		int mask = ((packet[3] & 0xFF) << 24) | ((packet[2] & 0xFF) << 16) | ((packet[1] & 0xFF) << 8) | (packet[0] & 0xFF);
 		encodeKeyL[0] ^= mask;
 		encodeKeyL[1] += 0x287EFFC3;
 		

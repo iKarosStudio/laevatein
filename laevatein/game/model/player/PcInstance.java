@@ -6,6 +6,8 @@ import java.util.concurrent.*;
 
 import laevatein.types.*;
 import laevatein.config.*;
+import laevatein.callback.*;
+import laevatein.constants.*;
 
 import laevatein.server.*;
 import laevatein.server.database.*;
@@ -22,41 +24,53 @@ import laevatein.game.skill.*;
 import laevatein.game.routine_task.*;
 import laevatein.game.template.*;
 
-public class PcInstance 
-	extends Objeto 
-	implements Moveable, ApAccessable, ItemProcessable, SkillAffect
+/*
+ * TODO:
+ * 
+ * 2018/12/11
+ * 應加入角色各項參數更變時的callback function
+ * 在裝備 藥水 升級時自動觸發更新,避免非同步bug產生 
+ * 
+ * 2018/12/12
+ * 強迫使用getter/setter修改參數
+ * 在setter中做封包回報的動作;
+ * 使用道具換裝備技能更新升級
+ * 一旦修改了腳色數值必須同步發送封包給客戶做更新
+ * https://www.jianshu.com/p/67190bdce647
+ * 
+ * 2018/12/17
+ * 重量快取問題優先建立統一流程
+ * 道具增減統一介面已經實踐需再加入callback function
+ * 
+ */
+public class PcInstance extends Objeto implements Moveable, ApAccessable, ItemProcessable, SkillAffect
 {
 	private SessionHandler handle;
+	private Callback callback;
 	public boolean isExit;
 	
-	public LaeMap map;
 	
-	public static final int TYPE_ROYAL   = 0;
-	public static final int TYPE_KNIGHT  = 1;
-	public static final int TYPE_ELF     = 2;
-	public static final int TYPE_WIZARD  = 3;
-	public static final int TYPE_DARKELF = 4;
+	LaeMap map;
+	
 	/* 角色職業類別 */
-	public int type;
+	int type;
 	
-	public static final int SEX_MALE   = 0;
-	public static final int SEX_FEMALE = 1;
 	/* 角色性別 */
-	public int sex;
+	int sex;
 	
 	/* 飽食度 0~29 29=100%*/
-	public int satiation;
+	int satiation;
 	
 	/* 開發人員設定 */
 	public boolean isRd = false;
 	public boolean isGm = false;
 	
 	/* 持有道具 */
-	public ConcurrentHashMap<Integer, ItemInstance> itemBag;
-	public int weight;
-	public int weightScale30; //for cache 0-29
+	ConcurrentHashMap<Integer, ItemInstance> itemBag;
+	int weight;
+	int weightScale30; //負重程度 0~29 29=100%
 	
-	/* 道具延遲效果 */
+	/* 道具延遲效果清單<k, v> = <道具ID, 時間戳記> */
 	public ConcurrentHashMap<Integer, Long> itemDelay;
 	
 	/* 人物裝備 */
@@ -66,12 +80,12 @@ public class PcInstance
 	//public SkillEffectsContainer buffs;
 	private ConcurrentHashMap<Integer, SkillEffect> buffs;
 	
-	/* A.P. */
+	/* A.P. (ability point)+ */
 	public AbilityParameter basicParameters;
 	public AbilityParameter skillParameters;
 	public AbilityParameter equipmentParameters;
 	
-	/* 視線內物件 <K, V> = <UUID, 實體> */
+	/* 視線內物件 <K, V> = <UUID, 物件實例> */
 	public ConcurrentHashMap<Integer, PcInstance> pcsInsight;
 	public ConcurrentHashMap<Integer, Objeto> objectsInsight;
 	
@@ -79,30 +93,22 @@ public class PcInstance
 	public int battleCounter;
 	public int moveCounter;
 	
+	/* 循環工作 */
 	public SightUpdate sight;
 	public HsTask hsTask;
 	public LsTask lsTask;
 	
-	public PcInstance (SessionHandler _handle) {
-		handle = _handle;
+	public PcInstance (SessionHandler handle) {
+		this.handle = handle;
 		
-		basicParameters = new AbilityParameter (); //for setup basic
+		Callback tempCb = new Callback (this);
+		basicParameters = new AbilityParameter (tempCb); //for setup basic
 		loc = new Location ();
 		
 		itemDelay = new ConcurrentHashMap<Integer, Long> ();
-		//skillDelay
-		//skillBuffs
 		
 		pcsInsight = new ConcurrentHashMap<Integer, PcInstance> ();
 		objectsInsight = new ConcurrentHashMap<Integer, Objeto> ();
-	}
-	
-	public void setHandle (SessionHandler _handle) {
-		handle = _handle;
-	}
-	
-	public SessionHandler getHandle () {
-		return handle;
 	}
 	
 	public void sendPacket (byte[] packet) {
@@ -120,6 +126,7 @@ public class PcInstance
 			ps.execute ();	
 		} catch (Exception e) {
 			e.printStackTrace ();
+			
 		} finally {
 			DatabaseUtil.close (ps);
 			DatabaseUtil.close (con);
@@ -140,8 +147,8 @@ public class PcInstance
 			rs = ps.executeQuery ();
 			if (rs.next ()) {
 				loc.mapId = rs.getInt ("MapID");
-				loc.p.x = rs.getInt ("LocX");
-				loc.p.y = rs.getInt ("LocY");
+				loc.x = rs.getInt ("LocX");
+				loc.y = rs.getInt ("LocY");
 				heading = rs.getInt ("Heading");
 				if (loc.mapId > MapLoader.MAPID_LIMIT) {
 					loc.mapId = 0;
@@ -171,29 +178,34 @@ public class PcInstance
 				originGfx = rs.getInt ("Class");
 				gfx = originGfx;
 				
-				basicParameters = new AbilityParameter ();
-				skillParameters = new AbilityParameter ();
-				equipmentParameters = new AbilityParameter ();
+				if (callback != null) {
+					callback = null;
+				}
+				callback = new Callback (this);
 				
-				basicParameters.str = rs.getByte ("Str");
-				basicParameters.con = rs.getByte ("Con");
-				basicParameters.dex = rs.getByte ("Dex");
-				basicParameters.wis = rs.getByte ("Wis");
-				basicParameters.cha = rs.getByte ("Cha");
-				basicParameters.intel = rs.getByte ("Intel");
+				basicParameters = new AbilityParameter (callback);
+				skillParameters = new AbilityParameter (callback);
+				equipmentParameters = new AbilityParameter (callback);
+				
+				basicParameters.setStr (rs.getByte ("Str"));
+				basicParameters.setCon (rs.getByte ("Con"));
+				basicParameters.setDex (rs.getByte ("Dex"));
+				basicParameters.setWis (rs.getByte ("Wis"));
+				basicParameters.setCha (rs.getByte ("Cha"));
+				basicParameters.setInt (rs.getByte ("Intel"));
 				
 				//load bonus parameters
-				basicParameters.ac = Utility.calcAcBonusFromDex (level, basicParameters.dex);
-				basicParameters.mr = Utility.calcMr (type, level, basicParameters.wis);
-				basicParameters.sp = Utility.calcSp (type, level, basicParameters.intel);
+				basicParameters.setAc (Utility.calcAcBonusFromDex (level, basicParameters.getDex()));
+				basicParameters.setSp (Utility.calcSp (type, level, basicParameters.getInt ()));
+				basicParameters.setMr (Utility.calcMr (type, level, basicParameters.getWis ()));
 				
-				basicParameters.hpR = Utility.calcHpr (basicParameters.con);				
-				basicParameters.mpR = Utility.calcMpr (basicParameters.wis);
+				basicParameters.setHpr (Utility.calcHpr (basicParameters.getCon ()));
+				basicParameters.setMpr (Utility.calcMpr (basicParameters.getWis ()));
 				
 				hp = rs.getInt ("CurHp");
 				mp = rs.getInt ("CurMp");
-				basicParameters.maxHp = rs.getInt ("MaxHp");
-				basicParameters.maxMp = rs.getInt ("MaxMp");
+				basicParameters.setHp (rs.getInt ("MaxHp"));
+				basicParameters.setMp (rs.getInt ("MaxMp"));
 				
 				//buffs = new SkillEffectsContainer (this);
 				buffs = new ConcurrentHashMap<Integer, SkillEffect> ();
@@ -232,8 +244,8 @@ public class PcInstance
 	}
 	
 	public void loadItemBag () {
-		//System.out.println ("load item bag");
 		itemBag = new ConcurrentHashMap<Integer, ItemInstance> ();
+		
 		ResultSet rs = null;
 		try {
 			rs = DatabaseCmds.loadPcItems (uuid);
@@ -271,6 +283,8 @@ public class PcInstance
 			equipmentParameters = equipment.getAbilities ();
 			
 			updateWeightCache ();
+			
+			//init weight
 			
 			handle.sendPacket (new ReportItemBag (itemBag).getPacket ());
 			
@@ -330,38 +344,32 @@ public class PcInstance
 		return (weight + _weight) < getMaxWeight ();
 	}
 	
+	//FIXME
+	/*
 	public void updateWeightCache () {
 		int prevW30 = weightScale30;
 		
 		weight = getWeight ();
-		weightScale30 = getWeightInScale30 ();
+		//weightScale30 = getWeightInScale30 ();
 		
 		if (prevW30 != weightScale30) {
 			//TODO:改用s_op:62更新
-			handle.sendPacket (new ModelStatus (this).getPacketNoPadding ());
+			//handle.sendPacket (new ModelStatus (this).getPacketNoPadding ());
+			//callback.updateWeightScale ();
 		}
-	}
-	
-	public void updateSpMr () {
-		handle.sendPacket (new ReportSpMr (getSp (), getMr ()).getPacket ());
-	}
-	
-	public void updateAc () {
-		handle.sendPacket (new UpdateAc (getAc ()).getPacket ());
-	}
-	
-	public void updateLevelExp () {
-		handle.sendPacket (new UpdateExp (this).getPacket ());
-	}
+	}*/
 	
 	//回報全部道具重量
 	public int getWeight () {
 		int totalWeight = 0;
 		
+		
 		Iterator<ItemInstance> weights = itemBag.values ().iterator ();
 		while (weights.hasNext ()) {
 			totalWeight += ((ItemInstance) weights.next ()).getWeight ();
 		}
+		
+		this.weight = totalWeight;
 		
 		return totalWeight;
 	}
@@ -370,7 +378,7 @@ public class PcInstance
 	public int getMaxWeight () {
 		int maxWeight = 1500 + (((getStr () + getCon () - 18) >> 1) * 150);
 		//TODO:apply skill effect
-		//TODL:負重強化
+		//TODO:負重強化
 		
 		//TODO:apply equip effect
 		//TODO:多羅皮帶, 歐吉皮帶, 泰坦腰帶
@@ -380,9 +388,10 @@ public class PcInstance
 		return maxWeight * 1000;
 	}
 	
+	/*
 	public int getWeightInScale30 () {
 		return (getWeight() * 100) / (int) (getMaxWeight() * 3.4);
-	}
+	}*/
 	
 	public void setWeapon (int wUuid) {
 		ItemInstance w = itemBag.get (wUuid);
@@ -432,24 +441,32 @@ public class PcInstance
 		equipment.setSting (itemBag.get (sUuid));
 	}
 	
+	public boolean isMale () {
+		return (sex == Sex.MALE);
+	}
+	
+	public boolean isFemale () {
+		return (sex == Sex.FEMALE);
+	}
+	
 	public boolean isRoyal () {
-		return (type == TYPE_ROYAL);
+		return (type == PlayerType.ROYAL);
 	}
 	
 	public boolean isKnight () {
-		return (type == TYPE_KNIGHT);
+		return (type == PlayerType.KNIGHT);
 	}
 	
 	public boolean isElf () {
-		return (type == TYPE_ELF);
+		return (type == PlayerType.ELF);
 	}
 	
 	public boolean isWizard () {
-		return (type == TYPE_WIZARD);
+		return (type == PlayerType.WIZARD);
 	}
 	
 	public boolean isDarkelf () {
-		return (type == TYPE_DARKELF);
+		return (type == PlayerType.DARKELF);
 	}
 
 	public boolean isFaceTo (Location _loc) {
@@ -461,8 +478,8 @@ public class PcInstance
 		PacketBuilder packet = new PacketBuilder ();
 		
 		packet.writeByte (ServerOpcodes.MODEL_PACK);
-		packet.writeWord (loc.p.x);
-		packet.writeWord (loc.p.y);
+		packet.writeWord (loc.x);
+		packet.writeWord (loc.y);
 		packet.writeDoubleWord (uuid);
 		packet.writeWord (gfx); //外型
 		packet.writeByte (actId); //動作
@@ -526,8 +543,8 @@ public class PcInstance
 
 	@Override
 	public void moveToHeading (int _heading) {
-		int x = loc.p.x;
-		int y = loc.p.y;
+		int x = loc.x;
+		int y = loc.y;
 		
 		map.setOccupied (x, y, false); //離開原本座標
 		switch (_heading) {
@@ -567,7 +584,7 @@ public class PcInstance
 		}
 		
 		//廣播移動訊息(x, y)
-		byte[] movePacket = new ModelMove (uuid, loc.p.x, loc.p.y, heading).getPacket ();
+		byte[] movePacket = new ModelMove (uuid, loc.x, loc.y, heading).getPacket ();
 		boardcastPcInsight (movePacket);
 		
 		//檢查是不是在傳送位址
@@ -578,8 +595,8 @@ public class PcInstance
 		}
 		
 		//更新自身位置
-		loc.p.x = x;
-		loc.p.y = y;
+		loc.x = x;
+		loc.y = y;
 		map.setOccupied (x, y, true);
 		
 		moveCounter = 0x10; //check for 16s
@@ -587,67 +604,67 @@ public class PcInstance
 
 	@Override
 	public int getStr () {
-		return basicParameters.str + skillParameters.str + equipmentParameters.str;
+		return basicParameters.getStr () + skillParameters.getStr () + equipmentParameters.getStr ();
 	}
 
 	@Override
 	public int getCon () {
-		return basicParameters.con + skillParameters.con + equipmentParameters.con;
+		return basicParameters.getCon () + skillParameters.getCon () + equipmentParameters.getCon ();
 	}
 
 	@Override
 	public int getDex () {
-		return basicParameters.dex + skillParameters.dex + equipmentParameters.dex;
+		return basicParameters.getDex () + skillParameters.getDex () + equipmentParameters.getDex ();
 	}
 
 	@Override
 	public int getWis () {
-		return basicParameters.wis + skillParameters.wis + equipmentParameters.wis;
+		return basicParameters.getWis () + skillParameters.getWis () + equipmentParameters.getWis ();
 	}
 
 	@Override
 	public int getCha () {
-		return basicParameters.cha + skillParameters.cha + equipmentParameters.cha;
+		return basicParameters.getCha () + skillParameters.getCha () + equipmentParameters.getCha ();
 	}
 
 	@Override
 	public int getIntel () {
-		return basicParameters.intel + skillParameters.intel + equipmentParameters.intel;
+		return basicParameters.getInt () + skillParameters.getInt () + equipmentParameters.getInt ();
 	}
 
 	@Override
 	public int getMaxHp () {
-		return basicParameters.maxHp + skillParameters.maxHp + equipmentParameters.maxHp;
+		return basicParameters.getHp () + skillParameters.getHp () + equipmentParameters.getHp ();
 	}
 
 	@Override
 	public int getMaxMp () {
-		return basicParameters.maxMp + skillParameters.maxMp + equipmentParameters.maxMp;
+		return basicParameters.getMp () + skillParameters.getMp () + equipmentParameters.getMp ();
 	}
 	
 	@Override
 	public int getHpR () {
-		return basicParameters.hpR + skillParameters.hpR + equipmentParameters.hpR;
+		return basicParameters.getHpr () + skillParameters.getHpr () + equipmentParameters.getHpr ();
 	}
 
 	@Override
 	public int getMpR () {
-		return basicParameters.mpR + skillParameters.mpR + equipmentParameters.mpR;
+		return basicParameters.getMpr () + skillParameters.getMpr () + equipmentParameters.getMpr ();
 	}
 
 	@Override
 	public int getSp () {
-		return basicParameters.sp + skillParameters.sp + equipmentParameters.sp;
+		return basicParameters.getSp () + skillParameters.getSp () + equipmentParameters.getSp ();
 	}
 
 	@Override
 	public int getMr () {
-		return basicParameters.mr + skillParameters.mr + equipmentParameters.mr;
+		return basicParameters.getMr () + skillParameters.getMr () + equipmentParameters.getMr ();
 	}
 
 	@Override
 	public int getAc () {
-		return basicParameters.ac + skillParameters.ac + equipmentParameters.ac;
+		return basicParameters.getAc () + skillParameters.getAc () + equipmentParameters.getAc ();
 	}
 
 	public List<ItemInstance> findItemById (int itemId) {
@@ -682,7 +699,7 @@ public class PcInstance
 			heading = getDirection (x, y);
 			
 			byte[] actionPacket = new ModelAction (ActionId.PICK_UP, uuid, heading).getPacket ();
-			byte[] removeObjPacket = new RemoveModel (pick.uuid).getPacket ();
+			byte[] removeObjPacket = new RemoveModel (pick.getUuid ()).getPacket ();
 			
 			handle.sendPacket (actionPacket);
 			handle.sendPacket (removeObjPacket);
@@ -727,9 +744,9 @@ public class PcInstance
 			//create instance on ground
 			DropInstance drop = new DropInstance (dropItem);
 			
-			drop.loc.mapId = loc.mapId;
-			drop.loc.p.x = x;
-			drop.loc.p.y = y;
+			drop.getLocation ().mapId = loc.mapId;
+			drop.getLocation ().x = x;
+			drop.getLocation ().y = y;
 			
 			drop.boardcastPcInsight (drop.getPacket ());
 			map.addModel (drop);
@@ -923,4 +940,63 @@ public class PcInstance
 		});
 	}
 
+	
+	
+	
+	public SessionHandler getHandle () {
+		return handle;
+	}
+	
+	public void setHandle (SessionHandler handle) {
+		this.handle = handle;
+	}
+	
+	public Callback getCallback () {
+		return callback;
+	}
+	
+	public void setCallback (Callback callback) {
+		this.callback = callback;
+	}
+	
+	public LaeMap getMap () {
+		return map;
+	}
+	
+	public void setMap (LaeMap map) {
+		this.map = map;
+	}
+	
+	public int getType () {
+		return type;
+	}
+	
+	public void setType (int type) {
+		this.type = type;
+	}
+	
+	public int getSex () {
+		return sex;
+	}
+	
+	public void setSex (int sex) {
+		this.sex = sex;
+	}
+	
+	public int getSatiation () {
+		return satiation;
+	}
+	
+	public void setSatiation (int satiation) {
+		this.satiation = satiation;
+	}
+	
+	public ConcurrentHashMap<Integer, ItemInstance> getItemBag () {
+		return itemBag;
+	}
+	
+	public int getWeightScale30 () {
+		return weightScale30;
+	}
+	
 }

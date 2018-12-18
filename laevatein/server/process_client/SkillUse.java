@@ -17,7 +17,7 @@ public class SkillUse
 	public SkillUse (SessionHandler _handle, byte[] data) {
 		packetReader = new PacketReader (data);
 		handle = _handle;
-		pc = handle.user.activePc;
+		pc = handle.getUser ().getActivePc ();
 		
 		int row    = packetReader.readByte ();
 		int column = packetReader.readByte ();
@@ -25,7 +25,7 @@ public class SkillUse
 		int skillId = ((row << 3) | column) + 1;
 		
 		System.out.printf ("%s use skillId(%d)-%s targetTo:0x%02X type:0x%02X ->\n", 
-				pc.name,
+				pc.getName (),
 				skillId,
 				CacheData.skill.get (skillId).name,
 				CacheData.skill.get (skillId).targetTo,

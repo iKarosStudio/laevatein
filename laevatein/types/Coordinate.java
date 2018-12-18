@@ -1,5 +1,6 @@
 package laevatein.types;
 
+@Deprecated
 public class Coordinate
 {
 	/* -32768 ~ 32767 */

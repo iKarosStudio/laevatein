@@ -9,11 +9,11 @@ public class SkillBuy
 	SessionHandler handle;
 	PacketReader reader;
 	
-	public SkillBuy (SessionHandler _handle, byte[] data) {
+	public SkillBuy (SessionHandler _handle, byte[] packet) {
 		handle = _handle;
-		reader = new PacketReader (data);
+		reader = new PacketReader (packet);
 		int skill = reader.readDoubleWord ();
 		
-		new SkillBuyList (handle, handle.user.activePc.type);
+		new SkillBuyList (handle, handle.getUser ().getActivePc ().getType ());
 	}
 }

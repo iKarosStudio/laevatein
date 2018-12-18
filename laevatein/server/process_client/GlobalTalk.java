@@ -14,7 +14,7 @@ public class GlobalTalk
 		PacketReader packetReader = new PacketReader (packet);
 		
 		handle = _handle;
-		pc = handle.user.activePc;
+		pc = handle.getUser().getActivePc ();
 		
 		int chatType = packetReader.readByte ();
 		String chat = packetReader.readString ();

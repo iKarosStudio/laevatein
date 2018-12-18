@@ -9,29 +9,29 @@ public class SkillTable extends _PacketFrame
 	public SkillTable (int _pcType, HashMap<Integer, Integer> skillTable) {		
 		packet.writeByte (ServerOpcodes.SKILL_TABLE);
 		
-		int check_5_8 = 0;
-		int check_9_10 = 0;
+		int hasLevel5to8Skill = 0;
+		int hasLevel9To10Skill = 0;
 		
 		for (int i = 5; i <= 10; i++) {
 			if (i < 9) {
-				if (skillTable.get (i) == null) {
-					check_5_8 += 0;
+				if (skillTable.get (i) == null) { //not found
+					hasLevel5to8Skill += 0;
 				} else {
-					check_5_8 += skillTable.get (i);
+					hasLevel5to8Skill += skillTable.get (i);
 				}
 			} else {
 				if (skillTable.get (i) == null) {
-					check_9_10 += 0;
+					hasLevel9To10Skill += 0;
 				} else {
-					check_9_10 += skillTable.get (i);
+					hasLevel9To10Skill += skillTable.get (i);
 				}
 			}
 		}
 		
 		//應該是技能欄的表現形態
-		if ((check_5_8 > 0) && (check_9_10 == 0)) {
+		if ((hasLevel5to8Skill > 0) && (hasLevel9To10Skill == 0)) {
 			packet.writeByte (50); //0x32
-		} else if (check_9_10 > 0) {
+		} else if (hasLevel9To10Skill > 0) {
 			packet.writeByte (100); //0x64
 		} else {
 			packet.writeByte (22); //0x16

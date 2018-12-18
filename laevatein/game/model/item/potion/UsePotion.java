@@ -114,7 +114,7 @@ public class UsePotion
 		}
 		
 		//產生特效
-		byte[] visualPacket = new VisualEffect (pc.uuid, 751).getPacket ();
+		byte[] visualPacket = new VisualEffect (pc.getUuid (), 751).getPacket ();
 		handle.sendPacket (visualPacket);
 		pc.boardcastPcInsight (visualPacket);
 		
@@ -129,7 +129,7 @@ public class UsePotion
 		}
 		
 		//產生特效
-		byte[] visualPacket = new VisualEffect (pc.uuid, 751).getPacket ();
+		byte[] visualPacket = new VisualEffect (pc.getUuid (), 751).getPacket ();
 		handle.sendPacket (visualPacket);
 		pc.boardcastPcInsight (visualPacket);
 		
@@ -139,7 +139,7 @@ public class UsePotion
 	
 	public void useHastePotion (int time) {
 		//產生特效
-		byte[] visualPacket = new VisualEffect (pc.uuid, 191).getPacket ();
+		byte[] visualPacket = new VisualEffect (pc.getUuid (), 191).getPacket ();
 		handle.sendPacket (visualPacket);
 		pc.boardcastPcInsight (visualPacket);
 		
@@ -158,7 +158,7 @@ public class UsePotion
 		handle.sendPacket (new GameMessage (1007).getPacket ()); //你感覺到魔力恢復速度加快
 		
 		//產生特效
-		byte[] visualPacket = new VisualEffect (pc.uuid, 190).getPacket ();
+		byte[] visualPacket = new VisualEffect (pc.getUuid (), 190).getPacket ();
 		handle.sendPacket (visualPacket);
 		pc.boardcastPcInsight (visualPacket);
 		
@@ -175,7 +175,7 @@ public class UsePotion
 		handle.sendPacket (new GameMessage (348).getPacket ()); //你的精神力變強
 		
 		//產生特效
-		byte[] visualPacket = new VisualEffect (pc.uuid, 750).getPacket ();
+		byte[] visualPacket = new VisualEffect (pc.getUuid (), 750).getPacket ();
 		handle.sendPacket (visualPacket);
 		pc.boardcastPcInsight (visualPacket);
 		
@@ -185,7 +185,7 @@ public class UsePotion
 	
 	public void useCurePotion () {
 		//產生特效
-		byte[] visualPacket = new VisualEffect (pc.uuid, 192).getPacket ();
+		byte[] visualPacket = new VisualEffect (pc.getUuid (), 192).getPacket ();
 		handle.sendPacket (visualPacket);
 		pc.boardcastPcInsight (visualPacket);
 		
@@ -216,10 +216,10 @@ public class UsePotion
 			pc.hp += _healHp;
 		}
 		
-		byte[] virtualPacket = new VisualEffect (pc.uuid, gfx).getPacket ();
+		byte[] virtualPacket = new VisualEffect (pc.getUuid (), gfx).getPacket ();
 		
 		handle.sendPacket (new GameMessage (77).getPacket ()); //覺得舒服多了
-		handle.sendPacket (new UpdateHp (pc.hp, pc.getMaxHp ()).getRaw ());
+		handle.sendPacket (new UpdateHp (pc.hp, pc.getMaxHp ()).getPacket ());
 		
 		handle.sendPacket (virtualPacket);
 		pc.boardcastPcInsight (virtualPacket);

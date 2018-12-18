@@ -4,14 +4,15 @@ import laevatein.server.*;
 import laevatein.server.packet.*;
 import laevatein.server.opcodes.*;
 
-/*
- * 登入公告訊息
- */
+/* 登入公告訊息 */
 public class LoginAnnounce
 {
 	public LoginAnnounce (SessionHandler handle) {
 		PacketBuilder packet = new PacketBuilder ();
-		String defaultMessage = String.format ("帳號:%s\n密碼:%s\n登入IP:%s\n", handle.user.name, handle.user.password, handle.getIP () ) ;
+		String defaultMessage = String.format ("帳號:%s\n密碼:%s\n登入IP:%s\n",
+				handle.getUser ().getName (),
+				handle.getUser ().getPassword (),
+				handle.getIP ());
 		
 		packet.writeByte (ServerOpcodes.LOGIN_WELCOME_MSG);
 		packet.writeString (defaultMessage);

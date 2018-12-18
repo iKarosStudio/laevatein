@@ -18,7 +18,7 @@ public class NpcActionCodeHandler
 			
 		case "sell" :
 			shopResult = new ReportNpcShop (npcId);
-			shopResult.sellList (handle.user.activePc); 
+			shopResult.sellList (handle.getUser().getActivePc ()); 
 			handle.sendPacket (shopResult.getPacket ());
 			break;
 			

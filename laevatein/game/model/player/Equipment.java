@@ -50,7 +50,7 @@ public class Equipment implements ApAccessable
 
 	public Equipment (SessionHandler _handle) {
 		handle = _handle;
-		pc = handle.user.activePc;
+		pc = handle.getUser().getActivePc ();
 		equipment = new ConcurrentHashMap<Integer, ItemInstance> (15);
 	}
 	
@@ -65,28 +65,28 @@ public class Equipment implements ApAccessable
 	}
 	
 	public AbilityParameter getAbilities () {
-		AbilityParameter result = new AbilityParameter ();
+		AbilityParameter result = new AbilityParameter (pc.getCallback ());
 		for (ItemInstance e : getList ()) {
-			result.str += e.str;
-			result.con += e.con;
-			result.dex += e.dex;
-			result.wis += e.wis;
-			result.cha += e.cha;
-			result.intel += e.intel;
+			result.setStr (result.getStr () + e.str);
+			result.setCon (result.getCon () + e.con);
+			result.setDex (result.getDex () + e.dex);
+			result.setWis (result.getWis () + e.wis);
+			result.setCha (result.getCha () + e.cha);
+			result.setInt (result.getInt () + e.intel);
 			
-			result.sp += e.sp;
-			result.mr += e.mr;
+			result.setSp (result.getSp () + e.sp);
+			result.setMr (result.getMr () + e.sp);
 			
-			result.maxHp += e.hp;
-			result.maxMp += e.mp;
+			result.setHp (result.getHp () + e.hp);
+			result.setMp (result.getMp () + e.mp);
+
+			result.setHpr (result.getHpr () + e.hpr);
+			result.setMpr (result.getMpr () + e.mpr);
 			
-			result.hpR += e.hpr;
-			result.mpR += e.mpr;
+			result.setAc (result.getAc () + e.ac);
 			
-			result.ac += e.ac;
-			
-			result.dmgReduction += e.dmgReduction;
-			result.weightReduction += e.weightReduction;
+			result.setDmgReduction (result.getDmgReduction () + e.dmgReduction);
+			result.setWeightReduction (result.getWeightReduction () + e.weightReduction);
 		}
 		
 		return result;
@@ -196,7 +196,7 @@ public class Equipment implements ApAccessable
 		}
 		
 		//最低等級使用檢查
-		if (pc.level < weapon.minLevel) {
+		if (pc.getLevel () < weapon.minLevel) {
 			handle.sendPacket (new GameMessage (318, String.format ("%s", weapon.minLevel)).getPacket ());
 			return;	
 		}
@@ -224,7 +224,7 @@ public class Equipment implements ApAccessable
 		
 		//改變角色外型(若需要)
 		if (prevActId != pc.actId) {
-			byte[] packet = new UpdateModelActId (pc.uuid, pc.actId).getPacket ();
+			byte[] packet = new UpdateModelActId (pc.getUuid (), pc.actId).getPacket ();
 			handle.sendPacket (packet);
 			pc.boardcastPcInsight (packet);
 		}

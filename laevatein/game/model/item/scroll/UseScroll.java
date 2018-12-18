@@ -68,7 +68,7 @@ public class UseScroll
 		case TYPE_USE_IDENTIFY:
 			System.out.printf ("鑑定卷軸\n");
 			int uuid = packetReader.readDoubleWord ();
-			ItemInstance identifyItem = pc.itemBag.get (uuid);
+			ItemInstance identifyItem = pc.getItemBag ().get (uuid);
 			if (identifyItem != null) {
 				//TODO:顯示鑑定文字
 				//訊息$133~$135使用
@@ -100,7 +100,7 @@ public class UseScroll
 		}
 		
 		Location dest;
-		dest = pc.map.getRandomLocation ();		
+		dest = pc.getMap ().getRandomLocation ();		
 		new Teleport (pc, dest, true);
 		
 		pc.removeItem (scroll.uuid, 1);

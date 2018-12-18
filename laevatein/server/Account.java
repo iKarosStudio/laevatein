@@ -8,21 +8,15 @@ import laevatein.game.model.player.*;
 
 public class Account
 {
-	private SessionHandler session;
+	SessionHandler session;
+	String name;
+	String password;
+	PcInstance activePc;
 	
-	public String name;
-	public String password;
-	
-	public PcInstance activePc = null;
-	
-	public Account () {
-		//super ();
-	}
-	
-	public Account (SessionHandler _session, String _account, String _password) {
-		session = _session;
-		name = _account;
-		password = _password;
+	public Account (SessionHandler session, String account, String password) {
+		this.session = session;
+		this.name = account;
+		this.password = password;
 	}
 	
 	/* 載入帳號 */
@@ -65,5 +59,29 @@ public class Account
 	
 	public void updateLastLogin () {
 		DatabaseCmds.updateAccountLoginTime (name, session.getIP (), session.getHostName ());
+	}
+	
+	public void setName (String account) {
+		this.name = account;
+	}
+	
+	public String getName () {
+		return name;
+	}
+	
+	public void setPassword (String pw) {
+		this.password = pw;
+	}
+	
+	public String getPassword () {
+		return password;
+	}
+	
+	public void setActivePc (PcInstance pc) {
+		this.activePc = pc;
+	}
+	
+	public PcInstance getActivePc () {
+		return activePc;
 	}
 }

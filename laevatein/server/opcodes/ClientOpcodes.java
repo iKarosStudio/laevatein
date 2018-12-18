@@ -1,6 +1,6 @@
 package laevatein.server.opcodes;
 
-public class ClientOpcodes
+public abstract class ClientOpcodes
 {
 	public static final int ITEM_USE = 0;
 	public static final int CLIENT_CONFIG = 5;

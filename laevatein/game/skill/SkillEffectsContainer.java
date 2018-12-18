@@ -20,7 +20,6 @@ public class SkillEffectsContainer extends TimerTask implements Runnable
 	private SessionHandler handle;
 	private ConcurrentHashMap<Integer, SkillEffect> buffs = null;
 	
-	
 	public SkillEffectsContainer (PcInstance pc) {
 		buffs = new ConcurrentHashMap<Integer, SkillEffect> () ;
 		this.pc = pc;
@@ -67,7 +66,7 @@ public class SkillEffectsContainer extends TimerTask implements Runnable
 		
 		ResultSet rs = null;
 		try {
-			rs = DatabaseCmds.loadSkillEffects (pc.uuid);
+			rs = DatabaseCmds.loadSkillEffects (pc.getUuid ());
 			while (rs.next ()) {
 				int skillId = rs.getInt ("skill_id");
 				int remainTime = rs.getInt ("remaining_time");
@@ -89,18 +88,18 @@ public class SkillEffectsContainer extends TimerTask implements Runnable
 	
 	public void saveBuffs () {
 		//清空全部紀錄
-		DatabaseCmds.deleteSkillEffects (pc.uuid);
+		DatabaseCmds.deleteSkillEffects (pc.getUuid ());
 		
 		//塞新的進去
 		buffs.forEach ((Integer skillId, SkillEffect effect)->{
-			DatabaseCmds.insertSkillEffect (pc.uuid, skillId, effect.remainTime, effect.polyGfx);
+			DatabaseCmds.insertSkillEffect (pc.getUuid (), skillId, effect.remainTime, effect.polyGfx);
 		});
 	}
 	
 	private void skillPacket (int skillId) {
 		switch (skillId) {
 		case SkillId.SHIELD:
-			pc.skillParameters.ac -= 1;
+			pc.skillParameters.setAc (pc.skillParameters.getAc () - 1);
 			//handle.sendPacket (new UpdateAc (pc).getRaw ());
 			//handle.sendPacket (new SkillShield (effects.get (skillId).remainTime, 0).getRaw ());
 			break;
@@ -132,7 +131,7 @@ public class SkillEffectsContainer extends TimerTask implements Runnable
 	public void removeSkill (int skillId) {
 		switch (skillId) {
 		case SkillId.SHIELD: //保護罩
-			pc.skillParameters.ac -= 1;
+			pc.skillParameters.setAc (pc.skillParameters.getAc () + 1);
 			//handle.sendPacket (new UpdateAc (pc).getRaw ());
 			//handle.sendPacket (new SkillShield (0, 0).getRaw ());
 			break;

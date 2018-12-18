@@ -139,14 +139,14 @@ public class Laevatein extends Thread
 	}
 	
 	public synchronized void addPlayer (PcInstance p) {
-		System.out.printf ("0x%08X-%s enter laevatein\n", p.uuid, p.name);
-		maps.get (p.loc.mapId).addPlayer (p);
+		System.out.printf ("0x%08X-%s enter laevatein\n", p.getUuid (), p.getName ());
+		maps.get (p.getLocation ().mapId).addPlayer (p);
 		onlinePlayers++;
 	}
 	
 	public synchronized void removePlayer (PcInstance p) {
-		System.out.printf ("0x%08X-%s exit laevatein\n", p.uuid, p.name);
-		maps.get (p.loc.mapId).removePlayer (p.uuid);
+		System.out.printf ("0x%08X-%s exit laevatein\n", p.getUuid (), p.getName ());
+		maps.get (p.getLocation ().mapId).removePlayer (p.getUuid ());
 		onlinePlayers--;
 	}
 	
@@ -155,7 +155,7 @@ public class Laevatein extends Thread
 		
 		List<PcInstance> pcs = getAllPlayer ();
 		for (PcInstance p : pcs) {
-			if (p.uuid == uuid) {
+			if (p.getUuid () == uuid) {
 				result = p;
 				break;
 			}
@@ -169,7 +169,7 @@ public class Laevatein extends Thread
 
 		List<PcInstance> pcs = getAllPlayer ();
 		for (PcInstance p : pcs) {
-			if (p.name == _name) {
+			if (p.getName () == _name) {
 				result = p;
 				break;
 			}
@@ -201,6 +201,6 @@ public class Laevatein extends Thread
 	}
 	
 	public void addModel (Objeto model) {
-		maps.get (model.loc.mapId).addModel (model);
+		maps.get (model.getLocation ().mapId).addModel (model);
 	}
 }

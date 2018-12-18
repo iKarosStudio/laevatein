@@ -1,6 +1,6 @@
 package laevatein.server.opcodes;
 
-public class ServerOpcodes
+public abstract class ServerOpcodes
 {
 	public static final int OBJ_ACTION = 3; //指定uuid執行actid動作
 	public static final int USE_MAP = 5; //開地圖

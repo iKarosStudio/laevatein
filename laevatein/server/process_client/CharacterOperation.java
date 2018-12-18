@@ -8,7 +8,7 @@ import laevatein.server.process_server.*;
 import laevatein.server.database.*;
 import laevatein.server.opcodes.*;
 import laevatein.server.utility.*;
-
+//import laevatein.callback.*;
 import laevatein.game.*;
 import laevatein.game.model.player.*;
 import laevatein.game.routine_task.*;
@@ -23,7 +23,7 @@ public class CharacterOperation {
 		PcInstance pc = new PcInstance (handle);
 		if (pc.load (charName)) {
 			//開始回報角色登入資料
-			handle.user.activePc = pc;
+			handle.getUser().setActivePc (pc);
 			
 			new Unknown1 (handle);
 			new Unknown2 (handle);
@@ -43,15 +43,15 @@ public class CharacterOperation {
 			
 			handle.sendPacket (new GameTime().getPacket ());
 			handle.sendPacket (new ModelStatus (pc).getPacketNoPadding ());
-			handle.sendPacket (new MapId (pc.loc.mapId).getPacket ());
+			handle.sendPacket (new MapId (pc.getLocation ().mapId).getPacket ());
 			handle.sendPacket (pc.getPacket ());
 
 			pc.loadBuffs ();
-			pc.updateSpMr ();
+			pc.getCallback ().updateSpMr ();
 			
 			handle.sendPacket (new ReportTitle (handle).getPacket ());
 			
-			handle.sendPacket (new ReportWeather (Laevatein.getInstance ().getWeather (pc.loc.mapId)).getPacket ());
+			handle.sendPacket (new ReportWeather (Laevatein.getInstance ().getWeather (pc.getLocation ().mapId)).getPacket ());
 			
 			//Set Emblem here
 
@@ -63,6 +63,8 @@ public class CharacterOperation {
 			pc.hsTask.start ();
 			pc.lsTask = new LsTask (pc);
 			pc.lsTask.start ();			
+			
+			pc.getCallback ().setEnable (true);
 			
 			//視距物件更新服務
 			pc.sight.start ();
@@ -115,7 +117,7 @@ public class CharacterOperation {
 		try {
 			//檢查帳號角色數量
 			ps1 = conn.prepareStatement ("SELECT count(*) as cnt FROM characters WHERE account_name=?;");
-			ps1.setString (1, handle.user.name);
+			ps1.setString (1, handle.getUser().getName ());
 			rsAmount = ps1.executeQuery ();
 			if (rsAmount.next ()) {
 				if (rsAmount.getInt ("cnt") > 4) {
@@ -142,7 +144,10 @@ public class CharacterOperation {
 			//Done, Write to Database
 			CharacterInitializer pcCreate = new CharacterInitializer (handle, charName, type, sex, str, dex, con, wis, cha, intel);
 			pcCreate.execute ();
-			System.out.printf ("create character:%s\t From user:%s @ %s\n", charName, handle.user.name, handle.getIP ());
+			System.out.printf ("create character:%s\t From user:%s @ %s\n",
+					charName,
+					handle.getUser().getName (),
+					handle.getIP ());
 			
 		} catch (Exception e) {
 			e.printStackTrace ();
@@ -166,10 +171,11 @@ public class CharacterOperation {
 		PcInstance pc = new PcInstance (handle);
 		if (pc.load (charName)) {			
 			try {
-				DatabaseCmds.deleteSkillEffects (pc.uuid);
-				DatabaseCmds.deletePcItem (pc.uuid);
-				DatabaseCmds.deletePcSkill (pc.uuid);
-				DatabaseCmds.deleteCharacter (pc.uuid);
+				int uuid = pc.getUuid ();
+				DatabaseCmds.deleteSkillEffects (uuid);
+				DatabaseCmds.deletePcItem (uuid);
+				DatabaseCmds.deletePcSkill (uuid);
+				DatabaseCmds.deleteCharacter (uuid);
 				
 				PacketBuilder resultPacket = new PacketBuilder ();
 				resultPacket.writeByte (ServerOpcodes.CHAR_DELETE);

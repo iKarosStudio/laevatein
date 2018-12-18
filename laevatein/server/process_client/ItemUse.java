@@ -18,7 +18,7 @@ public class ItemUse
 		PacketReader packetReader = new PacketReader (packet);
 		
 		handle = _handle;
-		pc = handle.user.activePc;
+		pc = handle.getUser().getActivePc ();
 		
 		if (pc.isFreeze ()) {
 			return;
@@ -30,7 +30,7 @@ public class ItemUse
 		
 		int itemUuid = packetReader.readDoubleWord ();
 		
-		ItemInstance item = pc.itemBag.get (itemUuid);
+		ItemInstance item = pc.getItemBag ().get (itemUuid);
 		if (item != null) {			
 			switch (item.majorType) {
 			case 0: //道具
@@ -46,7 +46,7 @@ public class ItemUse
 				break;
 			
 			default:
-				System.out.printf ("%s 使用不明道具%d(Major type:%d)\n", pc.name, item.uuid, item.majorType);
+				System.out.printf ("%s 使用不明道具%d(Major type:%d)\n", pc.getName (), item.uuid, item.majorType);
 				break;
 			} //end of switch
 		} //item!=null

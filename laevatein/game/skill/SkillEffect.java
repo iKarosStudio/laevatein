@@ -30,11 +30,11 @@ public class SkillEffect
 			break;
 		
 		case SkillId.STATUS_HASTE:
-			pc.sendPacket (new SkillHaste (pc.uuid, 1, remainTime).getPacket ());
+			pc.sendPacket (new SkillHaste (pc.getUuid (), 1, remainTime).getPacket ());
 			break;
 			
 		case SkillId.STATUS_BRAVE:
-			pc.sendPacket (new SkillBrave (pc.uuid, (remainTime > 0) ? 1:0, remainTime).getPacket ());
+			pc.sendPacket (new SkillBrave (pc.getUuid (), (remainTime > 0) ? 1:0, remainTime).getPacket ());
 			break;
 			
 		case SkillId.STATUS_BLUE_POTION:
@@ -59,8 +59,8 @@ public class SkillEffect
 		//if (!pc.hasSkillEffect (skillId)) {
 			switch (skillId) {
 			case SHIELD://防護罩
-				pc.skillParameters.ac -= 1;
-				pc.updateAc ();
+				pc.skillParameters.setAc (pc.skillParameters.getAc () - 1);
+				pc.getCallback ().updateAc ();
 				break;
 			
 			case STATUS_HASTE://加速
@@ -86,8 +86,7 @@ public class SkillEffect
 				break;
 				
 			case STATUS_WISDOM_POTION://慎重藥水
-				pc.skillParameters.sp += 2;
-				pc.updateSpMr ();
+				pc.skillParameters.setSp (pc.skillParameters.getSp () + 2);
 				break;
 				
 			case SHAPE_CHANGE://變形
@@ -108,7 +107,7 @@ public class SkillEffect
 			
 			switch (skillId) {
 			case SHIELD:
-				pc.skillParameters.ac += 1;
+				pc.skillParameters.setAc (pc.skillParameters.getAc () + 1);
 				remainTime = 0;
 				break;
 			
@@ -131,8 +130,7 @@ public class SkillEffect
 				break;
 			
 			case STATUS_WISDOM_POTION:
-				pc.skillParameters.sp -= 2;
-				pc.updateSpMr ();
+				pc.skillParameters.setSp (pc.skillParameters.getSp () - 2);
 				break;
 			
 			case SHAPE_CHANGE:

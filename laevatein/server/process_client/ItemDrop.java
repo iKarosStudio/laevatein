@@ -8,7 +8,7 @@ public class ItemDrop
 {
 	public ItemDrop (SessionHandler handle, byte[] packet) {
 		PacketReader packetReader = new PacketReader (packet);
-		PcInstance pc = handle.user.activePc;
+		PcInstance pc = handle.getUser().getActivePc ();
 		
 		int x = packetReader.readWord ();
 		int y = packetReader.readWord ();

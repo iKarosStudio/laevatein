@@ -49,9 +49,9 @@ public class NpcLoader
 						NpcTemplate npcData = CacheData.npcs.get (npcTemplateId);
 						NpcInstance npc = new NpcInstance (npcData);
 						
-						npc.loc.p.x = posX;
-						npc.loc.p.y = posY;
-						npc.loc.mapId = mapId;
+						npc.getLocation ().x = posX;
+						npc.getLocation ().y = posY;
+						npc.getLocation ().mapId = mapId;
 						npc.heading = heading;
 						
 						laevatein.addModel (npc);

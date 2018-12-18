@@ -34,8 +34,8 @@ public class AccountOperation
 		hostName = handle.getHostName ();
 		int port = handle.getPort ();
 		
-		Account account = new Account (handle, name, password);
-		int loginResult = account.load ();
+		Account user = new Account (handle, name, password);
+		int loginResult = user.load ();
 		
 		/* 回報登入結果 */
 		resultPacket.reset ();
@@ -48,12 +48,14 @@ public class AccountOperation
 		
 		if (loginResult == LOGIN_OK) {
 			System.out.printf ("[LOGIN]");
-			handle.user = account;
+			//handle.user = user;
+			handle.setUser (user);
 			
 			if (Laevatein.getInstance ().getOnlinePlayers () < Configurations.MAX_PLAYER) {
 				/* 登入公告訊息 */
 				new LoginAnnounce (handle);
-				handle.user.updateLastLogin ();
+				//handle.user.updateLastLogin ();
+				handle.getUser ().updateLastLogin ();
 			} else {
 				new LoginAnnounce (handle, "線上使用人數已滿");
 				handle.disconnect ();//bye
@@ -73,7 +75,8 @@ public class AccountOperation
 		} else {
 			//密碼錯誤
 			System.out.printf ("[PW ERROR]");
-			handle.user = null;
+			//handle.user = null;
+			handle.setUser (null);
 		}
 		
 		System.out.printf ("name:%s password:%s from ip:%s:%d(host:%s)\n", name, password, ip, port, hostName);
@@ -89,16 +92,16 @@ public class AccountOperation
 	
 	public int getCharacterAmount (SessionHandler handle, byte[] data) {
 		int characterAmount = 0;
-		Account account = handle.user;
+		Account user = handle.getUser ();
 		
-		characterAmount = DatabaseCmds.getCharacterAmount (account.name);
+		characterAmount = DatabaseCmds.getCharacterAmount (user.getName ());
 		
 		return characterAmount;
 	}
 	
 	//CommonClick service
 	public void getCharacterData (SessionHandler handle, byte[] data) {
-		Account account = handle.user;
+		Account user = handle.getUser ();
 		
 		int characterAmount = 0;
 		
@@ -115,7 +118,7 @@ public class AccountOperation
 			handle.sendPacket (packet.getPacket ());
 
 			if (characterAmount > 0) {
-				rs = DatabaseCmds.getAccountCharacters (account.name);
+				rs = DatabaseCmds.getAccountCharacters (user.getName ());
 				
 				//回報帳號腳色資料
 				while (rs.next ()) {
@@ -143,13 +146,13 @@ public class AccountOperation
 					packet.writeByte (0x00) ; //END	
 					handle.sendPacket (packet.getPacket ());
 				}
-			} else {
-				//do nothing
-			}
+			} //End of character > 0
 		} catch (Exception e) {
 			e.printStackTrace ();
+			
 		} finally {
 			DatabaseUtil.close (rs);
+			
 		}
 	}
 	

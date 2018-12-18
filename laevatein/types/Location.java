@@ -7,15 +7,17 @@ public class Location
 	public int mapId;
 	
 	/* 所在座標 */
-	public Coordinate p;
+	public int x, y;
 	
 	public Location () {
 		mapId = 0;
-		p = new Coordinate (0, 0);
+		x = 0;
+		y = 0;
 	}
 	
-	public Location (int _mapId, int x, int y) {
-		mapId = _mapId;
-		p = new Coordinate (x, y);
+	public Location (int mapId, int x, int y) {
+		this.mapId = mapId;
+		this.x = x;
+		this.y = y;
 	}
 }

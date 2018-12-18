@@ -43,11 +43,14 @@ public class LsTask implements Runnable
 	
 	private void resumeTrigger () {
 		int timeThreshold = 0;
-		if (pc.satiation < 29) {
+		
+		//TODO:位元處理
+		if ((pc.getSatiation () ^ 30) > 0) {
 			return; //沒飽食度不回復
 		}
 		
-		if (pc.weightScale30 > 15) {
+		//TODO:位元處理
+		if ((pc.weightScale30 & 0x10) > 0) {
 			return; //負重過半不回復
 		}
 		
@@ -63,7 +66,7 @@ public class LsTask implements Runnable
 		if ((resumeTimer & timeThreshold) > 0) {
 			hpResume ();
 			mpResume ();
-			resumeTimer ^= resumeTimer; //clear
+			resumeTimer = 0;
 		}
 	}
 	
@@ -77,7 +80,7 @@ public class LsTask implements Runnable
 			pc.hp += hpr;
 		}
 		
-		handle.sendPacket (new UpdateHp (pc.hp, maxHp).getRaw ());
+		handle.sendPacket (new UpdateHp (pc.hp, maxHp).getPacket ());
 	}
 	
 	private void mpResume () {

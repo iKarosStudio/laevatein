@@ -85,7 +85,7 @@ public class ReportNpcShop extends _PacketFrame
 		
 		List<ItemInstance> sellList = new ArrayList<ItemInstance> ();
 		
-		pc.itemBag.forEach ((Integer uuid, ItemInstance item)->{
+		pc.getItemBag ().forEach ((Integer uuid, ItemInstance item)->{
 			if (shop.itemPrice.containsKey (item.id)) {
 				sellList.add (item);
 			}

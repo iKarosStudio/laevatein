@@ -13,7 +13,7 @@ public class Talk
 	public Talk (SessionHandler handle, byte[] data) {
 		PacketReader packetReader = new PacketReader (data) ;
 		
-		PcInstance pc = handle.user.activePc;
+		PcInstance pc = handle.getUser().getActivePc ();
 		int talkType = packetReader.readByte ();
 		String talkText = packetReader.readString ();
 		
@@ -39,7 +39,7 @@ public class Talk
 			}
 		}
 
-		ModelTalks chat = new ModelTalks (pc.uuid, pc.name, talkText, ServerOpcodes.NORMAL_TALKS, talkType);
+		ModelTalks chat = new ModelTalks (pc.getUuid (), pc.getName (), talkText, ServerOpcodes.NORMAL_TALKS, talkType);
 		chat.withName ();
 		byte[] chatPacket = chat.getPacket ();  
 		
@@ -65,7 +65,7 @@ public class Talk
 				default : talkTypeName = "不明"; break;
 			}
 			
-			System.out.printf ("[%s]%s: %s", talkTypeName, pc.name, talkText);
+			System.out.printf ("[%s]%s: %s", talkTypeName, pc.getName (), talkText);
 			System.out.println();
 		}
 	}

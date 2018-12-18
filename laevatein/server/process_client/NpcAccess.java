@@ -18,14 +18,14 @@ public class NpcAccess
 	
 	public NpcAccess (SessionHandler handle, byte[] data) {
 		PacketReader packetReader = new PacketReader (data) ;
-		PcInstance pc = handle.user.activePc;
+		PcInstance pc = handle.getUser().getActivePc ();
 		int npcUuid = packetReader.readDoubleWord ();
 		
-		System.out.printf ("%s access npc(%d)\n", pc.name, npcUuid);
+		System.out.printf ("%s access npc(%d)\n", pc.getName (), npcUuid);
 		
 		if (npcUuid == 70522) { //甘特
 			String htmlKey = null;
-			switch (pc.type) {
+			switch (pc.getType ()) {
 			case 0:
 				htmlKey = "gunterp9"; break;
 			case 1:
@@ -45,7 +45,7 @@ public class NpcAccess
 		
 		if (npcUuid == 70009) { //吉倫
 			String htmlKey = null;
-			switch (pc.type) {
+			switch (pc.getType ()) {
 			case 0: //Roayn
 				htmlKey = "gerengp1"; break;
 			case 1: //Knight
@@ -69,7 +69,7 @@ public class NpcAccess
 			NpcTalkData talkData = CacheData.npcTalkData.get (npcUuid);
 			NpcAccessResult result;
 			
-			if (pc.lawful < 0) {//邪惡
+			if (pc.getLawful () < 0) {//邪惡
 				result = new NpcAccessResult (npcUuid, talkData.caoticAction);
 			} else {//中立, 正義
 				result = new NpcAccessResult (npcUuid, talkData.normalAction);

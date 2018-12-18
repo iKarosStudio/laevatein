@@ -9,11 +9,11 @@ public class ItemDelete
 {
 	public ItemDelete (SessionHandler handle, byte[] data) {
 		PacketReader packetReader = new PacketReader (data);
-		PcInstance pc = handle.user.activePc;
+		PcInstance pc = handle.getUser ().getActivePc ();
 		
 		int itemUuid = packetReader.readDoubleWord ();
 		
-		ItemInstance item = pc.itemBag.get (itemUuid);
+		ItemInstance item = pc.getItemBag ().get (itemUuid);
 		if (item != null) {
 			pc.deleteItem (item);
 		}

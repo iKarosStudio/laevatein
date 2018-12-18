@@ -82,7 +82,7 @@ public class LaeMap
 	
 	public synchronized void addPlayer (PcInstance p) {
 		//pcs.putIfAbsent (p.uuid, p);
-		objs.putIfAbsent (p.uuid, p);
+		objs.putIfAbsent (p.getUuid (), p);
 	}
 	
 	public synchronized void removePlayer (int uuid) {
@@ -100,17 +100,17 @@ public class LaeMap
 		return result;
 	}
 	
-	public List<PcInstance> getPcsInsight (Coordinate p) {
-		List<PcInstance> result = getPcsInRange (p, Configurations.SIGHT_RAGNE);
+	public List<PcInstance> getPcsInsight (int x, int y) {
+		List<PcInstance> result = getPcsInRange (x, y, Configurations.SIGHT_RAGNE);
 		
 		return result;
 	}
 	
-	public List<PcInstance> getPcsInRange (Coordinate p, int range) {
+	public List<PcInstance> getPcsInRange (int x, int y, int range) {
 		List<PcInstance> result = new ArrayList<PcInstance> ();
 		
 		objs.forEach ((Integer uuid, Objeto obj)->{
-			if ((obj.getDistanceTo (p) < range) && (obj.isPc ())) {
+			if ((obj.getDistanceTo (x, y) < range) && (obj.isPc ())) {
 				result.add ((PcInstance) obj);
 			}
 		});
@@ -119,7 +119,7 @@ public class LaeMap
 	}
 	
 	public synchronized void addModel (Objeto m) {
-		objs.put (m.uuid, m);
+		objs.put (m.getUuid (), m);
 	}
 	
 	public synchronized void removeModel (int uuid) {
@@ -130,16 +130,16 @@ public class LaeMap
 		return objs.get (uuid);
 	}
 	
-	public List<Objeto> getObjsInsight (Coordinate p) {
-		List<Objeto> result = getObjsInRange (p, Configurations.SIGHT_RAGNE);
+	public List<Objeto> getObjsInsight (int x, int y) {
+		List<Objeto> result = getObjsInRange (x, y, Configurations.SIGHT_RAGNE);
 		return result;
 	}
 	
-	public List<Objeto> getObjsInRange (Coordinate p, int range) {
+	public List<Objeto> getObjsInRange (int x, int y, int range) {
 		List<Objeto> result = new ArrayList<Objeto> ();
 		//objs.forEachValue (Configurations.PARALLELISM_THRESHOLD, (Objeto obj)->{
 		objs.forEach ((Integer uuid, Objeto obj)->{
-			if (obj.getDistanceTo (p) < range) {
+			if (obj.getDistanceTo (x, y) < range) {
 				result.add (obj);
 			}
 		});
@@ -244,23 +244,23 @@ public class LaeMap
 		Location dest = new Location (id, 0, 0);
 		
 		do {
-			dest.p.x = startX + random.nextInt (sizeX) ;
-			dest.p.y = startY + random.nextInt (sizeY) ;
-		} while (getTile (dest.p.x, dest.p.y) == 0);
+			dest.x = startX + random.nextInt (sizeX) ;
+			dest.y = startY + random.nextInt (sizeY) ;
+		} while (getTile (dest.x, dest.y) == 0);
 		
 		return dest;
 	}
 	
-	public boolean isNormalZone (Coordinate p) {
-		return (getTile (p.x, p.y) & 0x30) == 0x00;
+	public boolean isNormalZone (int x, int y) {
+		return (getTile (x, y) & 0x30) == 0x00;
 	}
 	
-	public boolean isSafeZone (Coordinate p) {
-		return (getTile (p.x, p.y) & 0x30) == 0x10;
+	public boolean isSafeZone (int x, int y) {
+		return (getTile (x, y) & 0x30) == 0x10;
 	}
 	
-	public boolean isCombatZone (Coordinate p) {
-		return (getTile (p.x, p.y) & 0x30) == 0x20;
+	public boolean isCombatZone (int x, int y) {
+		return (getTile (x, y) & 0x30) == 0x20;
 	}
 	
 	

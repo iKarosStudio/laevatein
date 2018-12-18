@@ -138,7 +138,7 @@ public class PacketHandler
 			break;
 			
 		case ClientOpcodes.RESTART:
-			handle.user.activePc.save ();
+			handle.getUser ().getActivePc ().save ();
 			break;
 		
 		case ClientOpcodes.WHO:
@@ -151,8 +151,8 @@ public class PacketHandler
 			break;
 			
 		case ClientOpcodes.RST: //重新開始
-			if (handle.user.activePc != null) {
-				handle.user.activePc.save ();
+			if (handle.getUser ().getActivePc () != null) {
+				handle.getUser ().getActivePc ().save ();
 			}
 			break;
 			

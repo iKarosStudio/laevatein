@@ -15,7 +15,7 @@ public class SkillBuyOrder
 	
 	public SkillBuyOrder (SessionHandler handle, byte[] data) {
 		reader = new PacketReader (data);
-		PcInstance pc = handle.user.activePc;
+		PcInstance pc = handle.getUser ().getActivePc ();
 		
 		int OrderCount = reader.readWord ();
 		int SkillItem[] = new int[OrderCount] ;
@@ -43,17 +43,17 @@ public class SkillBuyOrder
 		
 		/* 根據職業及角色等級過濾還不能學的選項 */
 		if (pc.isRoyal ()) {
-			if (pc.level < 10) {
+			if (pc.getLevel () < 10) {
 				L1 = 0; L1Cost = 0;
 				L2 = 0; L2Cost = 0;
-			} else if (pc.level < 20) {
+			} else if (pc.getLevel () < 20) {
 				L2 = 0; L2Cost = 0;
 			}
 			L3 = 0; L3Cost = 0;
 		}
 		
 		if (pc.isKnight ()) {
-			if (pc.level < 50) {
+			if (pc.getLevel () < 50) {
 				L1 = 0; L1Cost = 0;
 			}
 			L2 = 0; L2Cost = 0;
@@ -61,36 +61,36 @@ public class SkillBuyOrder
 		}
 		
 		if (pc.isElf ()) {
-			if (pc.level < 8) {
+			if (pc.getLevel () < 8) {
 				L1 = 0; L1Cost = 0;
 				L2 = 0; L2Cost = 0;
 				L3 = 0; L3Cost = 0;
-			} else if (pc.level < 16) {
+			} else if (pc.getLevel () < 16) {
 				L2 = 0; L2Cost = 0;
 				L3 = 0; L3Cost = 0;
-			} else if (pc.level < 24) {
+			} else if (pc.getLevel () < 24) {
 				L3 = 0; L3Cost = 0;
 			}
 		}
 		
 		if (pc.isWizard ()) {
-			if (pc.level < 4) {
+			if (pc.getLevel () < 4) {
 				L1 = 0; L1Cost = 0;
 				L2 = 0; L2Cost = 0;
 				L3 = 0; L3Cost = 0;
-			} else if (pc.level < 8) {
+			} else if (pc.getLevel () < 8) {
 				L2 = 0; L2Cost = 0;
 				L3 = 0; L3Cost = 0;
-			} else if (pc.level < 12) {
+			} else if (pc.getLevel () < 12) {
 				L3 = 0; L3Cost = 0;
 			}
 		}
 		
 		if (pc.isDarkelf ()) {
-			if (pc.level < 12) {
+			if (pc.getLevel () < 12) {
 				L1 = 0; L1Cost = 0;
 				L2 = 0; L2Cost = 0;
-			} else if (pc.level < 24) {
+			} else if (pc.getLevel () < 24) {
 				L2 = 0; L2Cost = 0;
 			}
 			L3 = 0; L3Cost = 0;
@@ -122,8 +122,8 @@ public class SkillBuyOrder
 			if (L1 != 0) {
 				for (int b = 0; b < 8; b++) {
 					if (((L1 >>> b) & 0x01) > 0) {
-						if (!DatabaseCmds.checkSkill (pc.uuid, 1+b)) {
-							DatabaseCmds.saveSkills (pc.uuid, 1+b, CacheData.skill.get (1+b).name);
+						if (!DatabaseCmds.checkSkill (pc.getUuid (), 1+b)) {
+							DatabaseCmds.saveSkills (pc.getUuid (), 1+b, CacheData.skill.get (1+b).name);
 						}
 					}
 				}
@@ -132,8 +132,8 @@ public class SkillBuyOrder
 			if (L2 != 0) {
 				for (int b = 0; b < 8; b++) {
 					if (((L2 >>> b) & 0x01) > 0) {
-						if (!DatabaseCmds.checkSkill (pc.uuid, 9+b) ) {
-							DatabaseCmds.saveSkills (pc.uuid, 9+b, CacheData.skill.get (9+b).name) ;
+						if (!DatabaseCmds.checkSkill (pc.getUuid (), 9+b) ) {
+							DatabaseCmds.saveSkills (pc.getUuid (), 9+b, CacheData.skill.get (9+b).name) ;
 						}
 					}
 				}
@@ -142,16 +142,16 @@ public class SkillBuyOrder
 			if (L3 != 0) {
 				for (int b = 0; b < 8; b++) {
 					if (((L3 >>> b) & 0x01) > 0) {
-						if (!DatabaseCmds.checkSkill (pc.uuid, 17+b) ) {
-							DatabaseCmds.saveSkills (pc.uuid, 17+b, CacheData.skill.get (17+b).name) ;
+						if (!DatabaseCmds.checkSkill (pc.getUuid (), 17+b) ) {
+							DatabaseCmds.saveSkills (pc.getUuid (), 17+b, CacheData.skill.get (17+b).name) ;
 						}
 					}
 				}
 			}
 			
 			/* show virtual effect */
-			handle.sendPacket (new VisualEffect (pc.uuid, 224).getPacket ());
-			handle.sendPacket (new SkillTable (pc.type, s).getPacket ());
+			handle.sendPacket (new VisualEffect (pc.getUuid (), 224).getPacket ());
+			handle.sendPacket (new SkillTable (pc.getType (), s).getPacket ());
 			
 			/* 扣錢  */
 			//Pc.removeItemByItemId (40308, Price) ;

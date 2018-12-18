@@ -28,24 +28,24 @@ public class SightUpdate implements Runnable
 	
 	public void run () {
 		//當下視線範圍內所有物件
-		List<Objeto> objsInRange = pc.map.getObjsInsight (pc.loc.p);
+		List<Objeto> objsInRange = pc.getMap ().getObjsInsight (pc.getLocation ().x, pc.getLocation ().y);
 		
 		//移出不在視線內物件
 		pc.objectsInsight.forEach ((Integer uuid, Objeto obj)->{
 			//if (!objsInRange.contains (obj)) {
-			if (obj.getDistanceTo (pc.loc.p) > Configurations.SIGHT_RAGNE) {
+			if (obj.getDistanceTo (pc.getLocation ().x, pc.getLocation ().y) > Configurations.SIGHT_RAGNE) {
 				pc.objectsInsight.remove (uuid);
 				handle.sendPacket (new RemoveModel (uuid).getPacket ());
-				System.out.printf ("0x%08X %s 離開視線範圍\n", uuid, obj.name);
+				//System.out.printf ("0x%08X %s 離開視線範圍\n", uuid, obj.getName ());
 			}
 		});
 		
 		pc.pcsInsight.forEach ((Integer uuid, PcInstance obj)->{
 			//if (!objsInRange.contains (obj)) {
-			if (obj.getDistanceTo (pc.loc.p) > Configurations.SIGHT_RAGNE) {
+			if (obj.getDistanceTo (pc.getLocation ().x, pc.getLocation ().y) > Configurations.SIGHT_RAGNE) {
 				pc.pcsInsight.remove (uuid);
 				handle.sendPacket (new RemoveModel (uuid).getPacket ());
-				System.out.printf ("0x%08X %s 離開視線範圍\n", uuid, obj.name);
+				//System.out.printf ("0x%08X %s 離開視線範圍\n", uuid, obj.getName ());
 			}
 		});
 		
@@ -60,18 +60,18 @@ public class SightUpdate implements Runnable
 					continue; //你自己!
 				}
 				
-				if (!pc.pcsInsight.containsKey (obj.uuid) && (obj.uuid != pc.uuid)) {
-					pc.pcsInsight.put (obj.uuid, (PcInstance) obj);
+				if (!pc.pcsInsight.containsKey (obj.getUuid ()) && (obj.getUuid () != pc.getUuid ())) {
+					pc.pcsInsight.put (obj.getUuid (), (PcInstance) obj);
 					handle.sendPacket (obj.getPacket ());
-					System.out.printf ("0x%08X %s 進入視線範圍\n", obj.uuid, obj.name);
+					//System.out.printf ("0x%08X %s 進入視線範圍\n", obj.getUuid (), obj.getName ());
 				}
 				
 				
 			} else { //檢查一般地圖物件
-				if (!pc.objectsInsight.containsKey (obj.uuid)) {
-					pc.objectsInsight.put (obj.uuid, obj);
+				if (!pc.objectsInsight.containsKey (obj.getUuid ())) {
+					pc.objectsInsight.put (obj.getUuid (), obj);
 					handle.sendPacket (obj.getPacket ());
-					System.out.printf ("0x%08X %s 進入視線範圍\n", obj.uuid, obj.name);
+					//System.out.printf ("0x%08X %s 進入視線範圍\n", obj.getUuid (), obj.getName ());
 					
 					if (obj instanceof AiControllable) {
 						((AiControllable) obj).toggleAi ();
@@ -80,19 +80,19 @@ public class SightUpdate implements Runnable
 			} //End of if obj is pc
 			
 			if (obj.isDead) {
-				handle.sendPacket (new ModelAction (ActionId.DIE, obj.uuid, obj.heading).getPacket ());
+				handle.sendPacket (new ModelAction (ActionId.DIE, obj.getUuid (), obj.heading).getPacket ());
 			}
 			
 			if (obj instanceof SkillAffect) {
 				if (obj.isPoison () || ((SkillAffect) obj).hasSkillEffect (SkillId.STATUS_POISON)) {
-					handle.sendPacket (new Poison (obj.uuid, Poison.COLOR_POISON).getPacket ());
+					handle.sendPacket (new Poison (obj.getUuid (), Poison.COLOR_POISON).getPacket ());
 				}
 				
 				if (((SkillAffect) obj).hasSkillEffect (SkillId.STATUS_CURSE_PARALYZING) || 
 					((SkillAffect) obj).hasSkillEffect (SkillId.STATUS_CURSE_PARALYZED) ||
 					((SkillAffect) obj).hasSkillEffect (SkillId.STATUS_POISON_PARALYZING) ||
 					((SkillAffect) obj).hasSkillEffect (SkillId.STATUS_POISON_PARALYZED)) {
-					handle.sendPacket (new Poison (obj.uuid, Poison.COLOR_PARALYZE).getPacket ());
+					handle.sendPacket (new Poison (obj.getUuid (), Poison.COLOR_PARALYZE).getPacket ());
 				}
 			} //End of skillaffect
 			
@@ -100,7 +100,7 @@ public class SightUpdate implements Runnable
 	}
 	
 	public void start () {
-		schedulor = KernelThreadPool.getInstance ().ScheduleAtFixedRate (this, 200, 300);
+		schedulor = KernelThreadPool.getInstance ().ScheduleAtFixedRate (this, 300, 300);
 	}
 	
 	public void stop () {

@@ -15,8 +15,8 @@ public class SkillGfx extends _PacketFrame
 		packet.writeByte (actionId);
 		
 		//src->dest uuid
-		packet.writeDoubleWord (src.uuid);
-		packet.writeDoubleWord (dest.uuid);
+		packet.writeDoubleWord (src.getUuid ());
+		packet.writeDoubleWord (dest.getUuid ());
 		
 		//命中表現
 		packet.writeByte (6); //hit
@@ -35,10 +35,10 @@ public class SkillGfx extends _PacketFrame
 		packet.writeByte (127);
 		
 		//發動方接受方座標
-		packet.writeWord (src.loc.p.x);
-		packet.writeWord (src.loc.p.y);
-		packet.writeWord (dest.loc.p.x);
-		packet.writeWord (dest.loc.p.y);
+		packet.writeWord (src.getLocation ().x);
+		packet.writeWord (src.getLocation ().y);
+		packet.writeWord (dest.getLocation ().x);
+		packet.writeWord (dest.getLocation ().y);
 		
 		packet.writeWord (0);
 		packet.writeByte (0);

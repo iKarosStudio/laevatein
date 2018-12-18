@@ -33,7 +33,7 @@ public class NpcRequest
 	
 	public NpcRequest (SessionHandler _handle, byte[] data) {
 		handle = _handle;
-		pc = _handle.user.activePc;
+		pc = _handle.getUser().getActivePc ();
 		packetReader = new PacketReader (data);
 		
 		npcId = packetReader.readDoubleWord ();
@@ -96,7 +96,7 @@ public class NpcRequest
 				int TotalAmount = orderCount[index] * packCount;
 				
 				ItemInstance item = menu.get (orderId[index]).getItem ();
-				item.ownerUuid = pc.uuid;
+				item.ownerUuid = pc.getUuid ();
 				item.count = TotalAmount;
 				totalPrice += item.count * i.sellingPrice;
 				//totalWeight += item.count * item.weight;
@@ -107,7 +107,7 @@ public class NpcRequest
 				if (orderCount[index] > 1) {
 					for (int j = 0; j < orderCount[index]; j++) {
 						ItemInstance item = menu.get (orderId[index]).getItem ();
-						item.ownerUuid = pc.uuid;
+						item.ownerUuid = pc.getUuid ();
 						item.count = 1;
 						totalPrice += item.count * i.sellingPrice;
 						//totalWeight += item.count * item.weight;
@@ -116,7 +116,7 @@ public class NpcRequest
 					}
 				} else {
 					ItemInstance item = menu.get (orderId[index]).getItem ();
-					item.ownerUuid = pc.uuid;
+					item.ownerUuid = pc.getUuid ();
 					item.count = 1;
 					totalPrice += item.count * i.sellingPrice;
 					//totalWeight += item.count * item.weight;
@@ -198,7 +198,7 @@ public class NpcRequest
 				int soldUuid = packetReader.readDoubleWord ();
 				int soldCount = packetReader.readDoubleWord ();
 				
-				totalPrice += (shop.itemPrice.get (pc.itemBag.get (soldUuid).id) >>> 1) * soldCount;
+				totalPrice += (shop.itemPrice.get (pc.getItemBag ().get (soldUuid).id) >>> 1) * soldCount;
 				pc.removeItem (soldUuid, soldCount);
 			}
 			

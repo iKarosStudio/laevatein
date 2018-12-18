@@ -20,7 +20,7 @@ public class ItemUseParser
 		pc = _pc;
 		handle = pc.getHandle ();
 		
-		System.out.printf ("item-parser:%s 使用道具-%s,major[%d],minor[%d],useType[%d]\n", pc.name, item.name, item.majorType, item.minorType, item.useType);
+		System.out.printf ("item-parser:%s 使用道具-%s,major[%d],minor[%d],useType[%d]\n", pc.getName (), item.name, item.majorType, item.minorType, item.useType);
 		
 		//麻痺時不能使用
 		if (pc.hasSkillEffect (SkillId.CURSE_PARALYZE) ||

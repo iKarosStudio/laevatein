@@ -12,7 +12,7 @@ public class InGameCommandParser
 	
 	public InGameCommandParser (SessionHandler _handle, String _text) {
 		handle = _handle;
-		pc = handle.user.activePc;
+		pc = handle.getUser().getActivePc ();
 		text = _text;
 	}
 	
@@ -47,10 +47,13 @@ public class InGameCommandParser
 			
 		} else if (text.startsWith (".server")) { //顯示伺服器資料
 			//
+			
 		} else if (text.startsWith (".map")) { //顯示地圖資料
 			//
+			
 		} else if (text.startsWith (".tile")) { //顯示座標資料
 			//
+			
 		} else {
 			isValid = false;
 		}
